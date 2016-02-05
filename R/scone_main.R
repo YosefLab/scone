@@ -1,0 +1,342 @@
+## todo
+## 0. Parallelize zinb!
+## 1. Solve memory issues -- perhaps by not saving matrices, but only evaluation and pc's and expression of eval_control genes.
+## (need also a normalize() function that will take input a string from params and return the normalized matrix)
+## 2. Future!
+## 3. Add custom uv factors as a matrix (e.g. from sva)
+## 4. c() to adjusted a custom_adjusted list with a (list of) alternative adjustment methods 
+## (need also a do_lm_adjust=TRUE)
+
+#' scone main wrapper: function to apply and evaluate all the normalization schemes
+#' 
+#' This function is a high-level wrapper to apply and evaluate a variety of normalization
+#' schemes to a specified expression matrix.
+#' 
+#' The function consists of four main steps: imputation, scaling normalization, adjusting for batch effects,
+#' and evaluation of the normalization performance.
+#' 
+#' @details Note that if one wants to include the unnormalized data in the comparison, the identity function
+#' must be included in the scaling list. Analogously, if one wants to avoid the imputation and/or include the
+#' non-imputed data in the comparison, the identity function must be included.
+#'  
+#' @param expr matrix. The data matrix (genes in rows, cells in columns).
+#' @param imputation list or function. (A list of) function(s) to be used for imputation.
+#' @param scaling list or function. (A list of) function(s) to be used for scaling normalization.
+#' @param k_ruv numeric. The maximum number of factors of unwanted variation (the function will adjust for 1 to k_ruv factors of unwanted variation).
+#' If 0, RUV will not be performed.
+#' @param k_qc numeric. The maximum number of quality metrics PCs (the function will adjust for 1 to k_qc PCs).
+#' If 0, QC adjustment will not be performed.
+#' @param ruv_negcon character. The genes to be used as negative controls for RUV. Ignored if k_ruv=0.
+#' @param qc matrix. The QC metrics to be used for QC adjustment. Ignored if k_qc=0.
+#' @param adjust_bio character. If 'no' it will not be included in the model; if 'yes', both models with and without 'bio' will be run;
+#' if 'force', only models with 'bio' will be run.
+#' @param adjust_batch character. If 'no' it will not be included in the model; if 'yes', both models with and without 'batch' will be run;
+#' if 'force', only models with 'batch' will be run.
+#' @param bio factor. The biological condition to be included in the adjustment model (variation to be preserved).
+#' Ignored, if adjust_bio=0.
+#' @param batch factor. The known batch variable to be included in the adjustment model (variation to be removed).
+#' Ignored, if adjust_batch=0.
+#' @param evaluate logical. If FALSE the normalization methods will be run but not evaluated.
+#' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
+#' @param eval_knn numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam stability evaluation. If NULL, all KNN concordances will be returned NA.
+#' If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.
+#' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
+#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
+#' If NULL, correlations with negative controls will be returned NA.
+#' @param eval_poscon character. The genes to be used as positive controls for evaluation. These genes should
+#' be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
+#' If NULL, correlations with positive controls will be returned NA.
+#' @param run logical. If FALSE the normalization and evaluation are not run, but the function returns a matrix
+#' of parameters that will be run for inspection by the user.
+#' @param params matrix or data.frame. If given, the algorithm will bypass creating the matrix of possible
+#' parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
+#' right format, and is only intended to be used to feed the results of setting run=FALSE back into 
+#' the algorithm (see example).
+#' @params mc.cores numeric. The number of cores; to be passed to mclapply. Note that this is the number of child processes that
+#' will be created. Hence it is intended as number of additional cores.
+#' @params verbose logical. If TRUE some messagges are printed.
+#' 
+#' @return If run=TRUE, a list with the following elements:
+#' \itemize{
+#' \item{normalized_data}{a list containing the normalized data (after scaling and factor adjustment).}
+#' \item{design_matrix}{a list with the design matrix used for the factor adjustments.}
+#' \item{ruv_factors}{a list with the RUV factors computed from each combination of imputation and scaling.}
+#' }
+#' If run=FALSE, a data.frame with each row corresponding to a set of parameters to be analyzed.
+scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
+                  qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
+                  bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10,
+                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, mc.cores=1, verbose=FALSE) {
+  
+  if(!is.matrix(expr)) {
+    stop("'expr' must be a matrix.")
+  } else if(is.null(rownames(expr))) {
+    stop("'expr' must have row names.")
+  }
+
+  if(!is.function(imputation)) {
+    if(is.list(imputation)) {
+      if(!all(sapply(imputation, is.function))) {
+        stop("'imputation' must be a function or a list of functions.")
+      }
+      if(is.null(names(imputation))) {
+        names(imputation) <- paste("imputation", seq_along(imputation), sep="")
+      }
+    } else {
+      stop("'imputation' must be a function or a list of functions.")
+    }
+  }
+  
+  if(is.function(imputation)) {
+    l <- list(imputation)
+    names(l) <- deparse(substitute(imputation))
+    imputation <- l
+  }
+  
+  if(!is.function(scaling)) {
+    if(is.list(scaling)) {
+      if(!all(sapply(scaling, is.function))) {
+        stop("'scaling' must be a function or a list of functions.")
+      }
+      if(is.null(names(scaling))) {
+        names(scaling) <- paste("scaling", seq_along(scaling), sep="")
+      }
+    } else {
+      stop("'scaling' must be a function or a list of functions.")
+    }
+  }
+
+  if(is.function(scaling)) {
+    l <- list(scaling)
+    names(l) <- deparse(substitute(scaling))
+    scaling <- l
+  }
+  
+  if(k_ruv < 0) stop("'k_ruv' must be non-negative.")
+  if(k_qc < 0) stop("'k_qc' must be non-negative.")
+  
+  if(k_ruv > 0) {
+    if(is.null(ruv_negcon)) {
+      stop("If k_ruv>0, ruv_negcon must be specified.")
+    } else if(!is.character(ruv_negcon)) {
+      stop("'ruv_negcon' must be a character vector.")
+    } else if(!all(ruv_negcon %in% rownames(expr))) {
+      stop("'ruv_negcon' must be a subset of the genes in 'expr.'")
+    }
+  }
+  
+  if(k_qc > 0) {
+    if(is.null(qc)) {
+      stop("If k_qc>0, qc must be specified.")
+    } else if(!is.matrix(qc)) {
+      stop("'qc' must be a matrix.")
+    } else if(nrow(qc) != ncol(expr)) {
+      stop("'qc' must have one row per sample.")
+    } else if(ncol(qc) < k_qc) {
+      stop("k_qc must be less or equal than the number of columns of 'qc.'")
+    }
+    qc_pcs <- prcomp(qc, center=TRUE, scale=TRUE)$x
+  }
+  
+  adjust_batch <- match.arg(adjust_batch)
+  adjust_bio <- match.arg(adjust_bio)
+  
+  if(adjust_bio != "no") {
+    if(is.null(bio)) {
+      stop("if adjust_bio is 'yes' or 'force', 'bio' must be specified.")
+    } else if(!is.factor(bio)) {
+      stop("'bio' must be a factor.")
+    } else if(length(bio) != ncol(expr)) {
+      stop("'bio' must have length equal to the number of samples.")
+    } else {
+      bio <- factor(bio, levels = sort(levels(bio)))
+    }
+  }
+  
+  if(adjust_batch != "no") {
+    if(is.null(batch)) {
+      stop("if adjust_batch is 'yes' or 'force', 'batch' must be specified.")
+    } else if(!is.factor(batch)) {
+      stop("'batch' must be a factor.")
+    } else if(length(batch) != ncol(expr)) {
+      stop("'batch' must have length equal to the number of samples.")
+    } else {
+      if(!is.null(bio)) {
+        batch <- factor(batch, levels = unique(batch[order(bio)]))        
+      } else {
+        batch <- factor(batch, levels = sort(levels(batch)))
+      }
+    }
+  }
+  
+  if(evaluate) {
+    if(!is.character(eval_negcon) & !is.null(eval_negcon)) {
+      stop("'eval_negcon' must be a character vector.")
+    } else if(!all(eval_negcon %in% rownames(expr))) {
+      stop("'eval_negcon' must be a subset of the genes in 'expr.'")
+    }
+    
+    if(!is.character(eval_poscon) & !is.null(eval_poscon)) {
+      stop("'eval_poscon' must be a character vector.")
+    } else if(!all(eval_poscon %in% rownames(expr))) {
+      stop("'eval_poscon' must be a subset of the genes in 'expr.'")
+    }
+    
+    if(eval_pcs > ncol(expr)) {
+      stop("'eval_pcs' must be less or equal than the number of samples.")
+    }
+    
+    if(eval_knn >= ncol(expr)) {
+      stop("'eval_knn' must be less than the number of samples.")
+    }
+    
+    if(any(eval_kclust >= ncol(expr))) {
+      stop("'eval_kclust' must be less than the number of samples.")
+    }
+  }
+  
+  # check design: confounding or nesting of batch and bio
+  nested <- FALSE
+  
+  if(!is.null(bio) & !is.null(batch)) {
+    if(nlevels(bio)==nlevels(batch)) {
+      if(all(bio==batch)) {
+        stop("Biological conditions and batches are confounded. They cannot both be included in the model, please set at least one of 'adjust_bio' and 'adjust_batch' to 'no.'")
+      }
+    }
+    ## ****** CHECK!
+    tab <- table(bio, batch)
+    if(all(apply(tab, 2, function(x) sum(x>0)==1))) {
+      nested <- TRUE      
+    }
+  }
+  
+  # Step 0: compute the parameter matrix  
+  if(is.null(params)) {
+    bi <- switch(adjust_bio,
+                 no="no_bio",
+                 yes=c("no_bio", "bio"),
+                 force="bio"
+    )
+    
+    ba <- switch(adjust_batch,
+                 no="no_batch",
+                 yes=c("no_batch", "batch"),
+                 force="batch"
+    )
+
+    ruv_qc <- "no_uv"
+    if(k_ruv > 0) {
+      ruv_qc <- c(ruv_qc, paste("ruv_k=", 1:k_ruv, sep=""))
+    }
+    if(k_qc > 0) {
+      ruv_qc <- c(ruv_qc, paste("qc_k=", 1:k_qc, sep=""))  
+    }
+      
+    params <- expand.grid(imputation_method=names(imputation),
+                          scaling_method=names(scaling),
+                          uv_factors=ruv_qc,
+                          adjust_biology=bi,
+                          adjust_batch=ba,
+                          stringsAsFactors=FALSE
+                          )
+  }
+
+  if(!run) {
+    return(params)
+  }
+  
+  ## add a check to make sure that design matrix is full rank
+  
+  ## Step 1: imputation
+  if(verbose) message("Imputation step...")
+  im_params <- unique(params[,1])
+
+  imputed <- mclapply(1:length(im_params), function(i) imputation[[i]](expr), mc.cores=mc.cores)
+  names(imputed) <- im_params
+  # output: a list of imputed matrices
+
+  ## Step 2: scaling
+  if(verbose) message("Scaling step...")
+  sc_params <- unique(params[,1:2])
+  
+  scaled <- mclapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]), mc.cores=mc.cores)
+  names(scaled) <- apply(sc_params, 1, paste, collapse="_")
+  # output: a list of normalized expression matrices
+  
+  failing <- mclapply(scaled, function(x) any(is.na(x)), mc.cores=mc.cores)
+  failing <- simplify2array(failing)
+  if(any(failing)) {
+    idx <- which(failing)
+    stop(paste(names(scaled)[idx], "returned at least one NA value. Consider removing it from the comparison."))
+  }
+  
+  if(verbose) message("Computing RUV factors...")
+  ## compute RUV factors
+  if(k_ruv > 0) {
+    ruv_factors <- mclapply(scaled, function(x) RUVg(log1p(x), ruv_negcon, k_ruv, isLog=TRUE)$W, mc.cores=mc.cores)
+  }
+  
+  if(evaluate) {
+    if(verbose) message("Computing factors for evaluation...")
+  
+    ## generate factors
+    uv_factors <- wv_factors <- NULL
+    
+    ruv_factors_raw <- prcomp(t(log1p(expr[ruv_negcon,])), scale=TRUE, center=TRUE)$x
+    
+    if(!is.null(eval_negcon)) {
+      uv_factors <- prcomp(t(log1p(expr[eval_negcon,])), scale=TRUE, center=TRUE)$x
+    }
+    
+    if(!is.null(eval_poscon)) {
+      wv_factors <- prcomp(t(log1p(expr[eval_poscon,])), scale=TRUE, center=TRUE)$x
+    }
+    
+    if(verbose) message("Factor adjustment and evaluation...")
+    
+    evaluation <- mclapply(1:nrow(params), function(i) {
+      parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
+      design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
+                                nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
+      sc_name <- paste(params[i,1:2], collapse="_")
+      adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat)
+      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn,
+                            eval_kclust = eval_kclust, bio = bio, batch = batch,
+                            qc_factors = qc_pcs, ruv_factors = ruv_factors_raw, 
+                            uv_factors = uv_factors, wv_factors = wv_factors,
+                            is_log = TRUE)
+      return(score)
+    }, mc.cores=mc.cores)
+    names(evaluation) <- apply(params, 1, paste, collapse=',')
+    
+    evaluation <- simplify2array(evaluation)
+    
+    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1)
+    ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),], 1, rank)
+    med_rank <- rowMedians(ranks)
+
+    ranks <- cbind(ranks, med_rank)[order(med_rank),]
+    evaluation <- t(evaluation[,order(med_rank)])
+    adjusted <- NULL
+    
+  } else {
+  if(verbose) message("Fitting linear models...")
+  adjusted <- mclapply(1:nrow(params), function(i) {
+    parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
+    design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
+                              nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))    
+    sc_name <- paste(params[i,1:2], collapse="_")
+    lm_adjust(log1p(scaled[[sc_name]]), design_mat)
+  }, mc.cores=mc.cores)
+
+  names(adjusted) <- apply(params, 1, paste, collapse=',')
+  evaluation <- ranks <- NULL
+  }
+  
+  if(verbose) message("Done!")
+  
+ return(list(normalized_data=adjusted, evaluation=evaluation, ranks=ranks))
+
+}
