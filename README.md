@@ -10,3 +10,5 @@ Private Repo containing SCONE R Package
 
 	# Clone the GitHub repo:
 	git clone https://github.com/YosefLab/scone.git
+	
+	...
