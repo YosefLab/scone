@@ -1,5 +1,5 @@
 ## SCONE ##
-### Single-Cell Overview of Normalized Expression ###
+### Single-Cell Overview of Normalized Expression data ###
 ============
 
 Private Repo containing SCONE R Package
