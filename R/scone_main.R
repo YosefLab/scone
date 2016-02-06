@@ -53,8 +53,6 @@
 #' parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
 #' right format, and is only intended to be used to feed the results of setting run=FALSE back into 
 #' the algorithm (see example).
-#' @params mc.cores numeric. The number of cores; to be passed to mclapply. Note that this is the number of child processes that
-#' will be created. Hence it is intended as number of additional cores.
 #' @params verbose logical. If TRUE some messagges are printed.
 #' 
 #' @return If run=TRUE, a list with the following elements:
@@ -67,7 +65,7 @@
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10,
-                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, mc.cores=1, verbose=FALSE) {
+                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE) {
   
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -253,7 +251,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
 
-  imputed <- mclapply(1:length(im_params), function(i) imputation[[i]](expr), mc.cores=mc.cores)
+  imputed <- lapply(1:length(im_params), function(i) imputation[[i]](expr))
   names(imputed) <- im_params
   # output: a list of imputed matrices
 
@@ -261,11 +259,11 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   if(verbose) message("Scaling step...")
   sc_params <- unique(params[,1:2])
   
-  scaled <- mclapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]), mc.cores=mc.cores)
+  scaled <- bplapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices
   
-  failing <- mclapply(scaled, function(x) any(is.na(x)), mc.cores=mc.cores)
+  failing <- bplapply(scaled, function(x) any(is.na(x)))
   failing <- simplify2array(failing)
   if(any(failing)) {
     idx <- which(failing)
@@ -275,7 +273,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   if(verbose) message("Computing RUV factors...")
   ## compute RUV factors
   if(k_ruv > 0) {
-    ruv_factors <- mclapply(scaled, function(x) RUVg(log1p(x), ruv_negcon, k_ruv, isLog=TRUE)$W, mc.cores=mc.cores)
+    ruv_factors <- bplapply(scaled, function(x) RUVg(log1p(x), ruv_negcon, k_ruv, isLog=TRUE)$W)
   }
   
   if(evaluate) {
@@ -296,7 +294,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     
     if(verbose) message("Factor adjustment and evaluation...")
     
-    evaluation <- mclapply(1:nrow(params), function(i) {
+    evaluation <- bplapply(1:nrow(params), function(i) {
       parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
       design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
                                 nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
@@ -308,7 +306,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                             uv_factors = uv_factors, wv_factors = wv_factors,
                             is_log = TRUE)
       return(score)
-    }, mc.cores=mc.cores)
+    })
     names(evaluation) <- apply(params, 1, paste, collapse=',')
     
     evaluation <- simplify2array(evaluation)
@@ -323,13 +321,13 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     
   } else {
   if(verbose) message("Fitting linear models...")
-  adjusted <- mclapply(1:nrow(params), function(i) {
+  adjusted <- bplapply(1:nrow(params), function(i) {
     parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))    
     sc_name <- paste(params[i,1:2], collapse="_")
     lm_adjust(log1p(scaled[[sc_name]]), design_mat)
-  }, mc.cores=mc.cores)
+  })
 
   names(adjusted) <- apply(params, 1, paste, collapse=',')
   evaluation <- ranks <- NULL

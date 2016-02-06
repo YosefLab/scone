@@ -9,7 +9,6 @@
 #' @param Y matrix. The data matrix (genes in rows, cells in columns)
 #' @param maxiter numeric. The maximum number of iterations.
 #' @param verbose logical. Whether or not to print the value of the likelihood at each value.
-#' @param mc.cores numeric. The number of cores to be passed to mclapply.
 #' 
 #' @return a list with the following elements:
 #' \itemize{
@@ -23,7 +22,7 @@
 #' \item{loglik}{the log-likelihood}
 #' \item{convergence}{0 if the algorithm converged and 1 if maxiter was reached}
 #' }
-estimate_zinb <- function(Y, maxiter=10, verbose=FALSE, mc.cores=1) {
+estimate_zinb <- function(Y, maxiter=10, verbose=FALSE) {
   
   n <- ncol(Y)
   J <- nrow(Y)
@@ -58,18 +57,18 @@ estimate_zinb <- function(Y, maxiter=10, verbose=FALSE, mc.cores=1) {
   iter <- 0
   while (abs((ll_old - ll_new)/ll_old) > 1e-4 & iter<maxiter) {
     ll_old <- ll_new
-    fit_mu <- mclapply(seq_len(J), function(i) {
+    fit_mu <- bplapply(seq_len(J), function(i) {
       fit <- suppressWarnings(glm.nb(Y[i,] ~ 1, weights = (1 - zhat[i,]), init.theta = thetahat[i], start=coefs_mu[i]))
       return(list(coefs=coefficients(fit), theta=fit$theta))
-    }, mc.cores=mc.cores)
+    })
     coefs_mu <- sapply(fit_mu, function(x) x$coefs)
     muhat <- exp(coefs_mu)
     thetahat <- sapply(fit_mu, function(x) x$theta)
     
-    fit_pi <- mclapply(seq_len(n), function(i) {
+    fit_pi <- bplapply(seq_len(n), function(i) {
       fit <- suppressWarnings(glm(zhat[,i]~log(muhat), family = binomial(link = logit), start=coefs_pi[,i]))
       return(list(coefs=coefficients(fit), fitted=fitted.values(fit)))
-    }, mc.cores=mc.cores)
+    })
     coefs_pi <- sapply(fit_pi, function(x) x$coefs)
     pihat <- sapply(fit_pi, function(x) x$fitted)
     

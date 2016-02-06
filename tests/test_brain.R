@@ -1,3 +1,4 @@
+setwd("~/daviderisso/scone/tests")
 source("../R/scone_main.R")
 source("../R/zinb.R")
 source("../R/SCONE_DEFAULTS.R")
@@ -6,6 +7,9 @@ source("../R/scone_eval.R")
 library(MASS)
 library(RUVSeq)
 library(brainUtils)
+library(BiocParallel)
+
+register(MulticoreParam(workers = 10))
 
 ### real data (remove from package)
 input_dir <- "/data/yosef/BRAIN/processed_July2015/collect/pipe_davide/scone_input/"
@@ -39,13 +43,13 @@ print(dim(params))
 print(system.time(res <- scone(filtered, imputation=list(none=identity),
                          scaling=list(none=identity, fq=FQ_FN, deseq=DESEQ_FN), k_ruv=1, k_qc=1, 
                          ruv_negcon=hk, qc=qc, adjust_bio="yes", bio=type, adjust_batch="yes", batch=batch,
-                         run=TRUE, evaluate=FALSE, n_cores=10, verbose=TRUE)))
+                         run=TRUE, evaluate=FALSE, verbose=TRUE)))
 print(head(res$ranks))
 rm(res)
 print(system.time(res <- scone(filtered, imputation=list(none=identity),
                          scaling=list(none=identity, fq=FQ_FN, deseq=DESEQ_FN), k_ruv=1, k_qc=1, 
                          ruv_negcon=hk, qc=qc, adjust_bio="yes", bio=type, adjust_batch="yes", batch=batch,
-                         run=TRUE, evaluate=TRUE, eval_negcon=nc, eval_poscon=pc, n_cores=10,
+                         run=TRUE, evaluate=TRUE, eval_negcon=nc, eval_poscon=pc,
                          verbose=TRUE
                          )))
 print(head(res$ranks))
@@ -59,6 +63,6 @@ print(dim(params))
 print(system.time(res <- scone(filtered, imputation=list(none=identity, zinb=impute_zinb),
                          scaling=list(none=identity, fq=FQ_FN, deseq=DESEQ_FN, tmm=TMM_FN), k_ruv=5, k_qc=5, 
                          ruv_negcon=hk, qc=qc, adjust_bio="yes", bio=type, adjust_batch="yes", batch=batch,
-                         run=TRUE, evaluate=TRUE, eval_negcon=nc, eval_poscon=pc, n_cores=10, verbose=TRUE
+                         run=TRUE, evaluate=TRUE, eval_negcon=nc, eval_poscon=pc, verbose=TRUE
 )))
 print(head(res$ranks))

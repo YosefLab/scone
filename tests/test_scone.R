@@ -1,5 +1,4 @@
 source("../R/scone_main.R")
-source("../R/scone_main_old.R")
 source("../R/zinb.R")
 source("../R/SCONE_DEFAULTS.R")
 source("../R/helper.R")
@@ -93,22 +92,10 @@ system.time(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                          k_ruv=5, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
                          adjust_bio="yes", bio=bio, adjust_batch="yes", batch=batch, run=TRUE,
                          evaluate=FALSE, eval_negcon=as.character(101:200), eval_poscon=as.character(201:300),
-                         eval_knn=2, eval_kclust = 2, verbose=TRUE, mc.cores=1))
-
-system.time(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb), scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-                         k_ruv=5, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
-                         adjust_bio="yes", bio=bio, adjust_batch="yes", batch=batch, run=TRUE,
-                         evaluate=FALSE, eval_negcon=as.character(101:200), eval_poscon=as.character(201:300),
-                         eval_knn=2, eval_kclust = 2, verbose=TRUE, mc.cores=2))
+                         eval_knn=2, eval_kclust = 2, verbose=TRUE))
 
 system.time(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb), scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
              k_ruv=5, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
              adjust_bio="yes", bio=bio, adjust_batch="yes", batch=batch, run=TRUE,
              evaluate=TRUE, eval_negcon=as.character(101:200), eval_poscon=as.character(201:300),
-             eval_knn=2, eval_kclust = 2, verbose=TRUE, mc.cores=1))
-
-system.time(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb), scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-                         k_ruv=5, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
-                         adjust_bio="yes", bio=bio, adjust_batch="yes", batch=batch, run=TRUE,
-                         evaluate=TRUE, eval_negcon=as.character(101:200), eval_poscon=as.character(201:300),
-                         eval_knn=2, eval_kclust = 2, verbose=TRUE, mc.cores=2))
+             eval_knn=2, eval_kclust = 2, verbose=TRUE))
