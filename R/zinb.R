@@ -10,6 +10,9 @@
 #' @param maxiter numeric. The maximum number of iterations.
 #' @param verbose logical. Whether or not to print the value of the likelihood at each value.
 #' 
+#' @importFrom MASS glm.nb
+#' @export
+#' 
 #' @return a list with the following elements:
 #' \itemize{
 #' \item{mu}{the mean of the negative binomial component}
@@ -148,6 +151,8 @@ loglik_small <- function(parms, Y, Y1, X, W, kx, kw, offsetx, offsetw, linkobj) 
 #' y_{ij}* =  y_{ij} * Pr(Z_{ij} = 0 | Y_{ij}=y_{ij}) + mu_{ij} * Pr(Z_{ij} = 1 | Y_{ij} = y_{ij}).
 #' Note that for y_{ij} > 0, Pr(Z_{ij} = 0 | Y_{ij}=y_{ij}) = 1 and hence the data are not imputed.
 #'  
+#' @export
+#' 
 #' @param expression_matrix the data matrix (genes in rows, cells in columns)
 #' 
 #' @return the imputed expression matrix.

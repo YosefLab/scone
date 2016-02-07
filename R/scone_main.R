@@ -1,7 +1,4 @@
 ## todo
-## 0. Parallelize zinb!
-## 1. Solve memory issues -- perhaps by not saving matrices, but only evaluation and pc's and expression of eval_control genes.
-## (need also a normalize() function that will take input a string from params and return the normalized matrix)
 ## 2. Future!
 ## 3. Add custom uv factors as a matrix (e.g. from sva)
 ## 4. c() to adjusted a custom_adjusted list with a (list of) alternative adjustment methods 
@@ -53,7 +50,12 @@
 #' parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
 #' right format, and is only intended to be used to feed the results of setting run=FALSE back into 
 #' the algorithm (see example).
-#' @params verbose logical. If TRUE some messagges are printed.
+#' @param verbose logical. If TRUE some messagges are printed.
+#' 
+#' @importFrom RUVSeq RUVg
+#' @importFrom matrixStats rowMedians
+#' @import BiocParallel
+#' @export
 #' 
 #' @return If run=TRUE, a list with the following elements:
 #' \itemize{
@@ -299,7 +301,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
                                 nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
       sc_name <- paste(params[i,1:2], collapse="_")
-      adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat)
+      adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw, 
@@ -326,7 +328,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))    
     sc_name <- paste(params[i,1:2], collapse="_")
-    lm_adjust(log1p(scaled[[sc_name]]), design_mat)
+    lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
   })
 
   names(adjusted) <- apply(params, 1, paste, collapse=',')

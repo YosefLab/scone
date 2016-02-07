@@ -1,11 +1,4 @@
-source("../R/scone_main.R")
-source("../R/zinb.R")
-source("../R/SCONE_DEFAULTS.R")
-source("../R/helper.R")
-source("../R/scone_eval.R")
-library(MASS)
-library(RUVSeq)
-
+library(scone)
 e <-  matrix(rpois(10000, lambda = 5), ncol=10)
 rownames(e) <- as.character(1:nrow(e))
 

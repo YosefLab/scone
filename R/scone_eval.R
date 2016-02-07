@@ -28,17 +28,23 @@ library(class)
 #' If NULL, condition KNN concordance will be returned NA.
 #' @param batch factor. The known batch variable (variation to be removed), NA is allowed.
 #' If NULL, batch KNN concordance will be returned NA.
-#' @param qc_factors. Factors of unwanted variation derived from quality metrics.
+#' @param qc_factors Factors of unwanted variation derived from quality metrics.
 #' If NULL, qc correlations will be returned NA.
-#' @param ruv_factors. Factors of unwanted variation derived from negative control genes (adjustable set).
+#' @param ruv_factors Factors of unwanted variation derived from negative control genes (adjustable set).
 #' If NULL, ruv correlations will be returned NA.
-#' @param uv_factors. Factors of unwanted variation derived from negative control genes (un-adjustable set).
+#' @param uv_factors Factors of unwanted variation derived from negative control genes (un-adjustable set).
 #' If NULL, uv correlations will be returned NA.
-#' @param wv_factors. Factors of wanted variation derived from positive control genes (un-adjustable set).
+#' @param wv_factors Factors of wanted variation derived from positive control genes (un-adjustable set).
 #' If NULL, wv correlations will be returned NA.
 #' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out.
 #' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
 #' and a weighted average is returned.
+#' 
+#' @importFrom scde bwpca
+#' @importFrom class knn
+#' @importFrom fpc pamk
+#' 
+#' @export
 #' 
 #' @return A list with the following elements:
 #' \itemize{
@@ -72,7 +78,7 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
     if(is.null(weights)){
       proj = prcomp(t(expr),center = TRUE,scale. = TRUE)$x[,1:eval_pcs]
     }else{
-      proj = scde::bwpca(mat = t(expr),matw = t(weights),npcs = eval_pcs, seed = seed, em.maxiter = em.maxiter)$scores
+      proj = bwpca(mat = t(expr),matw = t(weights),npcs = eval_pcs, seed = seed, em.maxiter = em.maxiter)$scores
     }
   }else{
     eval_pcs = dim(proj)[2]
@@ -83,7 +89,7 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
   if( !is.null(eval_knn)  ){
     
     if( !is.null(bio) | !any(!is.na(bio)) ){
-      KNN_BIO = mean(attributes(class::knn(train = proj[!is.na(bio),],test = proj[!is.na(bio),],cl = bio[!is.na(bio)], k = eval_knn,prob = TRUE))$prob)
+      KNN_BIO = mean(attributes(knn(train = proj[!is.na(bio),],test = proj[!is.na(bio),],cl = bio[!is.na(bio)], k = eval_knn,prob = TRUE))$prob)
     }else{
       KNN_BIO = NA
     }
@@ -91,7 +97,7 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
   
     # K-NN Batch
     if( !is.null(batch) | !any(!is.na(batch)) ){
-      KNN_BATCH = mean(attributes(class::knn(train = proj[!is.na(batch),],test = proj[!is.na(batch),],cl = batch[!is.na(batch)], k = eval_knn,prob = TRUE))$prob)
+      KNN_BATCH = mean(attributes(knn(train = proj[!is.na(batch),],test = proj[!is.na(batch),],cl = batch[!is.na(batch)], k = eval_knn,prob = TRUE))$prob)
     }else{
       KNN_BATCH = NA
     }
@@ -116,7 +122,7 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
         is_cond = which(bio == cond)
         cond_w = length(is_cond)
         if(cond_w > max(eval_kclust)){
-          pamk_object = fpc::pamk(proj[is_cond,],krange = eval_kclust)
+          pamk_object = pamk(proj[is_cond,],krange = eval_kclust)
           PAM_SIL = PAM_SIL + cond_w*pamk_object$pamobject$silinfo$avg.width
         }else{
           stop("Number of clusters 'k' must be smaller than bio class size")
@@ -128,7 +134,7 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
       if (any(is_na)){
         cond_w = sum(is_na)
         if(cond_w > max(eval_kclust)){
-          pamk_object = fpc::pamk(proj[is_na,],krange = eval_kclust)
+          pamk_object = pamk(proj[is_na,],krange = eval_kclust)
           PAM_SIL = PAM_SIL + cond_w*pamk_object$pamobject$silinfo$avg.width
         }else{
           stop("Number of clusters 'k' must be smaller than unclassified bio set size")
@@ -137,7 +143,7 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
       
       PAM_SIL = PAM_SIL/length(bio)      
     }else{
-      pamk_object = fpc::pamk(proj,krange = eval_kclust)
+      pamk_object = pamk(proj,krange = eval_kclust)
       PAM_SIL = pamk_object$pamobject$silinfo$avg.width
     }
   }else{

@@ -6,9 +6,9 @@
 \usage{
 scone(expr, imputation, scaling, k_ruv = 5, k_qc = 5, ruv_negcon = NULL,
   qc = NULL, adjust_bio = c("no", "yes", "force"), adjust_batch = c("no",
-  "yes", "force"), bio = NULL, batch = NULL, evaluation = TRUE,
-  eval_negcon = NULL, eval_poscon = NULL, eval_pcs = 3, eval_knn = 10,
-  run = TRUE, params = NULL)
+  "yes", "force"), bio = NULL, batch = NULL, evaluate = TRUE,
+  eval_pcs = 3, eval_knn = 10, eval_kclust = 2:10, eval_negcon = NULL,
+  eval_poscon = NULL, run = TRUE, params = NULL, verbose = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -39,17 +39,22 @@ Ignored, if adjust_bio=0.}
 \item{batch}{factor. The known batch variable to be included in the adjustment model (variation to be removed).
 Ignored, if adjust_batch=0.}
 
-\item{evaluation}{logical. If FALSE the normalization methods will be run but not evaluated.}
-
-\item{eval_negcon}{character. The genes to be used as negative controls for evaluation. These genes should
-be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.}
-
-\item{eval_poscon}{character. The genes to be used as positive controls for evaluation. These genes should
-be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.}
+\item{evaluate}{logical. If FALSE the normalization methods will be run but not evaluated.}
 
 \item{eval_pcs}{numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.}
 
 \item{eval_knn}{numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.}
+
+\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam stability evaluation. If NULL, all KNN concordances will be returned NA.
+If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.}
+
+\item{eval_negcon}{character. The genes to be used as negative controls for evaluation. These genes should
+be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
+If NULL, correlations with negative controls will be returned NA.}
+
+\item{eval_poscon}{character. The genes to be used as positive controls for evaluation. These genes should
+be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
+If NULL, correlations with positive controls will be returned NA.}
 
 \item{run}{logical. If FALSE the normalization and evaluation are not run, but the function returns a matrix
 of parameters that will be run for inspection by the user.}
@@ -58,6 +63,8 @@ of parameters that will be run for inspection by the user.}
 parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
 right format, and is only intended to be used to feed the results of setting run=FALSE back into 
 the algorithm (see example).}
+
+\item{verbose}{logical. If TRUE some messagges are printed.}
 }
 \value{
 If run=TRUE, a list with the following elements:
