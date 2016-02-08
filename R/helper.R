@@ -2,7 +2,6 @@
 #' 
 #' This function is used internally in scone to parse the variables used to generate the design matrices.
 #' 
-#'  
 #' @param pars character. A vector of parameters corresponding to a row of params.
 #' @param bio factor. The biological factor of interest.
 #' @param batch factor. The known batch effects.
@@ -43,6 +42,8 @@ parse_row <- function(pars, bio, batch, ruv_factors, qc) {
 #' @details If nested=TRUE a nested design is used, i.e., the batch variable is assumed to be nested within
 #' the bio variable. Here, nested means that each batch is made of observations from only one level of bio,
 #' while each level of bio may contain multiple batches.
+#'  
+#' @export
 #'  
 #' @param bio factor. The biological factor of interest.
 #' @param batch factor. The known batch effects.
@@ -111,11 +112,15 @@ make_design <- function(bio, batch, W, nested=FALSE) {
 #' for which expression needs to be adjusted, start with either the word "batch" or the letter "W" (case sensitive).
 #' Any other covariate (including the intercept) is kept.
 #'  
+#' @importFrom limma lmFit
+#' @export
+#' 
 #' @param log_expr matrix. The log gene expression (genes in row, samples in columns).
 #' @param design_mat matrix. The design matrix (usually the result of make_design).
-#' 
+#' @param batch factor. A factor with the batch information.
+#' @param weights matrix. A matrix of weights.
 #' @return The corrected log gene expression.
-lm_adjust <- function(log_expr, design_mat, weights=NULL) {
+lm_adjust <- function(log_expr, design_mat, batch=NULL, weights=NULL) {
   lm_object <- lmFit(log_expr, design = design_mat, weights = weights)
 
   uvind <- grep("^W", colnames(design_mat))

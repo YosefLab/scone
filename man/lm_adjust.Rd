@@ -4,12 +4,16 @@
 \alias{lm_adjust}
 \title{Function to perform linear batch effect correction}
 \usage{
-lm_adjust(log_expr, design_mat, weights = NULL)
+lm_adjust(log_expr, design_mat, batch = NULL, weights = NULL)
 }
 \arguments{
 \item{log_expr}{matrix. The log gene expression (genes in row, samples in columns).}
 
 \item{design_mat}{matrix. The design matrix (usually the result of make_design).}
+
+\item{batch}{factor. A factor with the batch information.}
+
+\item{weights}{matrix. A matrix of weights.}
 }
 \value{
 The corrected log gene expression.

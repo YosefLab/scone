@@ -7,7 +7,11 @@
 estimate_zinb(Y, maxiter = 10, verbose = FALSE)
 }
 \arguments{
-\item{Y}{the data matrix (genes in rows, cells in columns)}
+\item{Y}{matrix. The data matrix (genes in rows, cells in columns)}
+
+\item{maxiter}{numeric. The maximum number of iterations.}
+
+\item{verbose}{logical. Whether or not to print the value of the likelihood at each value.}
 }
 \value{
 a list with the following elements:

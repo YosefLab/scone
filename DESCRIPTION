@@ -1,4 +1,4 @@
-Package: SCONE
+Package: scone
 Version: 0.0.1
 Title: Single Cell Overview of Normalized Expression data
 Description: SCONE.
@@ -8,7 +8,9 @@ Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 	          role = c("aut")))
 Author: Michael Cole [aut, cre, cph] and Davide Risso [aut]
 Maintainer: Michael Cole <mbeloc@gmail.com>
-Date: 01-22-2016
+Imports: BiocParallel, DESeq, EDASeq, MASS, RUVSeq, aroma.light, class,
+	 diptest, edgeR, fpc, gplots, limma, matrixStats, mixtools, scde
+Date: 02-06-2016
 License: Artistic-2.0
 LazyLoad: yes
 RoxygenNote: 5.0.1

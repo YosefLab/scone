@@ -1,11 +1,6 @@
-library(DESeq,quietly = TRUE)
-library(EDASeq,quietly = TRUE)
-library(edgeR,quietly = TRUE)
-library(sva,quietly = TRUE)
-library(aroma.light,quietly = TRUE)
-library(lme4,quietly = TRUE)
-
 #' Upper-quartile normalization wrapper.
+#' @importFrom EDASeq betweenLaneNormalization
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return Upper-quartile normalized matrix (scaled by sample UQ)
 UQ_FN = function(ei){
@@ -34,6 +29,7 @@ uq_f <- function(which="upper", round = FALSE){
 #           })
 
 #' Upper-quartile normalization applied to positive data.
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return Upper-quartile (positive) normalized matrix (scaled by sample UQ)
 UQ_FN_POS = function(ei){
@@ -47,6 +43,8 @@ UQ_FN_POS = function(ei){
 }
 
 #' Full-Quantile normalization wrapper.
+#' @importFrom aroma.light normalizeQuantileRank.matrix
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return FQ normalized matrix.
 FQ_FN = function(ei){
@@ -55,6 +53,7 @@ FQ_FN = function(ei){
 }
 
 #' Full-Quantile normalization applied to positive data.
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return FQ (positive) normalized matrix.
 FQ_FN_POS = function(ei){
@@ -112,6 +111,8 @@ FQ_FN_POS = function(ei){
 }
 
 #' DESeq normalization wrapper.
+#' @importFrom DESeq estimateSizeFactorsForMatrix
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return DESeq normalized matrix (scaled by sample )
 DESEQ_FN = function(ei){
@@ -121,6 +122,7 @@ DESEQ_FN = function(ei){
 }
 
 #' DESeq normalization applied to positive data.
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return DESeq (positive) normalized matrix (scaled by sample )
 DESEQ_FN_POS = function(ei){
@@ -153,6 +155,8 @@ DESEQ_FN_POS = function(ei){
 }
 
 #' TMM normalization wrapper.
+#' @importFrom edgeR calcNormFactors
+#' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return TMM normalized matrix (scaled by sample )
 TMM_FN = function(ei){
@@ -161,232 +165,3 @@ TMM_FN = function(ei){
   return(eo)
 }
 
-#' Output residuals + intercept of fit to quality score matrix
-#' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
-#' @param default_args_list = list of default arguments
-#' @param args_list = list of user-provided arguments
-#' @return Matrix adjusted for K quality scores
-
-QUALREG_FN = function(ei, default_args_list, args_list){
-  EPSILON = default_args_list$EPSILON
-  scores = prcomp(default_args_list$q,center = TRUE,scale = TRUE)$x[,1:default_args_list$K]
-  re = log(ei + EPSILON)
-  for (g in 1:dim(ei)[1]){
-    lin.mod = lm(re[g,] ~ scores)
-    re[g,] = lin.mod$coefficients[1] + lin.mod$residuals
-  }
-  re = exp(re)
-  re[e == 0] = 0 
-  return(re)
-}
-
-#' Output residuals + intercept of fit to control-gene derived factors
-#' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
-#' @param default_args_list = list of default arguments
-#' @param args_list = list of user-provided arguments
-#' @return Matrix adjusted for K unwanted factors
-
-RUVG_FN = function(ei, default_args_list, args_list){
-  EPSILON = default_args_list$EPSILON
-  scores = prcomp(t(log(ei[default_args_list$control_genes,]+default_args_list$EPSILON)),center = TRUE,scale. = FALSE)$x[,1:default_args_list$K]   
-  re = log(ei + default_args_list$EPSILON)
-  for (g in 1:dim(ei)[1]){
-    lin.mod = lm(re[g,] ~ scores)
-    re[g,] = lin.mod$coefficients[1] + lin.mod$residuals
-  }
-  re = exp(re)
-  re[e == 0] = 0 
-  return(re)
-}
-
-#' ComBat Wrapper
-#' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
-#' @param default_args_list = list of default arguments
-#' @param args_list = list of user-provided arguments
-#' @return Matrix adjusted for batch
-
-COMBAT_FN = function(ei, default_args_list, args_list){
-  EPSILON = default_args_list$EPSILON
-  SD_EPSILON = default_args_list$SD_EPSILON
-  ei = log(ei + default_args_list$EPSILON)
-  pheno = as.data.frame(cbind(default_args_list$tech_batch,default_args_list$bio_cond))
-  if(is.null(default_args_list$bio_cond) || any(is.na(default_args_list$bio_cond))){
-    colnames(pheno) = c("batch")
-    is_var = apply(ei,1,sd) > SD_EPSILON
-    mod = model.matrix(~ 1, data = pheno)
-  }else{
-    colnames(pheno) = c("batch","phenotype")
-    is_var = T
-    for (p in unique(default_args_list$bio_cond)){
-      is_var = is_var & (apply(ei[,default_args_list$bio_cond == p],1,sd) > SD_EPSILON)
-    }
-    mod = model.matrix(~ as.factor(phenotype), data = pheno)
-  }
-  eo = ei
-  eo[is_var,] = ComBat(dat=ei[is_var,], batch=default_args_list$tech_batch, mod=mod, par.prior=TRUE, prior.plots=FALSE)
-  eo = exp(eo)
-  eo[ei == 0] = 0
-  return(eo)
-}
-
-NESTED_BATCH_FIXED_FN = function(ei,bio,batch,uv = NULL,w = NULL){
-  if(!is.null(bio)){
-    bio = factor(bio, levels = sort(levels(bio)))
-    batch = factor(batch, levels = unique(batch[order(bio)]))
-
-    n_vec <- tapply(batch, bio, function(x) nlevels(droplevels(x)))
-  }else{
-    n_vec = nlevels(droplevels(batch))
-  }
-  
-  mat = matrix(0,nrow = sum(n_vec),ncol = sum(n_vec - 1))
-  xi = 1
-  yi = 1
-  for(i in 1:length(n_vec)){
-    if(n_vec[i] > 1){
-      cs = contr.sum(n_vec[i])
-      dd = dim(cs)
-      mat[xi:(xi + dd[1] - 1),yi:(yi + dd[2] - 1)] = cs
-      xi = xi + dd[1]
-      yi = yi + dd[2]
-    }else{
-      xi = xi + 1
-    }
-  }
-  
-  leo = log(ei+1)
-  if(is.null(uv)){
-    if(!is.null(bio)) {
-      design_mat <- model.matrix(~ bio + batch, contrasts=list(bio=contr.sum, batch=mat))
-    } else {
-      design_mat <- model.matrix(~ batch, contrasts=list(batch=mat))
-    }
-    lm_object <- lmFit(leo, design = design_mat, weights = w)
-
-    bind <- (ncol(lm_object$coefficients) - (sum(n_vec - 1) - 1)):(ncol(lm_object$coefficients))
-    leo = leo - t(attr(design_mat,"contrasts")$batch %*% t(lm_object$coefficients[,bind]))[,batch]
-    } else {
-      if(!is.null(bio)) {
-        design_mat <- model.matrix(~ bio + batch + uv, contrasts=list(bio=contr.sum, batch=mat))
-      } else {
-        design_mat <- model.matrix(~ batch + uv, contrasts=list(batch=mat))
-      }
-      lm_object <- lmFit(leo, design = design_mat, weights = w)
-
-      uvind = (ncol(lm_object$coefficients) - dim(uv)[2] + 1):(ncol(lm_object$coefficients))
-      bind = (ncol(lm_object$coefficients) - dim(uv)[2] - (sum(n_vec - 1) - 1)):(ncol(lm_object$coefficients) - dim(uv)[2])
-      leo = leo - t(attr(design_mat,"contrasts")$batch %*% t(lm_object$coefficients[,bind]))[,batch] - t(uv %*% t(lm_object$coefficients[,uvind]))
-    }
-  return(leo)
-}
-
-NESTED_BATCH_RANDOM_FN = function(ei,bio,batch,uv = NULL,w = NULL){
-  design <- model.matrix(~batch - 1)
-  leo = log(ei+1)
-  if(is.null(uv)){
-    for(i in 1:dim(ei)[1]){
-      lm_object = lmer(leo[i,] ~ 1 + bio + (1 | batch),weights = w[i,])
-      betaj <- ranef(lm_object)[[1]][,1]
-      leo[i,] = leo[i,] - as.vector(design %*% betaj)
-    }
-  }else{
-    for(i in 1:dim(ei)[1]){
-      lm_object = lmer(leo[i,] ~ 1 + bio + uv + (1 | batch),
-                       weights = w[i,])
-      betaj <- ranef(lm_object)[[1]][,1]
-      uvind = (length(coef(lm_object)[[1]][1,]) - dim(uv)[2] + 1):(length(coef(lm_object)[[1]][1,]))
-      leo[i,] = leo[i,] - as.vector(design %*% betaj) - as.vector(uv %*% t(coef(lm_object)[[1]][1,][uvind]))
-    }
-  }
-  return(leo)
-}
-
-FACTORIAL_BATCH_FN = function(ei,bio,batch,uv = NULL,w = NULL){
-  contrasts <- contr.treatment(length(levels(batch)))
-  rownames(contrasts) = levels(batch)
-  leo = log(ei+1)
-  
-  if(is.null(bio)){
-    if(is.null(uv)){
-      
-      # Just Batch
-      design_mat <- model.matrix(~batch)
-      lm_object <- lmFit(leo, design = design_mat, weights = w)
-      bind = (ncol(lm_object$coefficients) + (2 - (length(levels(batch))))):(ncol(lm_object$coefficients))
-      leo = leo - t(contrasts %*% t(lm_object$coefficients[,bind]))[,batch]
-    } else {
-      
-      # Batch + UV
-      design_mat <- model.matrix(~batch + uv)
-      lm_object <- lmFit(leo, design = design_mat, weights = w)
-      uvind = (ncol(lm_object$coefficients) - dim(uv)[2] + 1):(ncol(lm_object$coefficients))
-      bind = (ncol(lm_object$coefficients) - dim(uv)[2] + (2 - (length(levels(batch))))):(ncol(lm_object$coefficients) - dim(uv)[2])
-      leo = leo - t(contrasts %*% t(lm_object$coefficients[,bind]))[,batch] - t(uv %*% t(lm_object$coefficients[,uvind]))
-    }
-  } else {
-    if(is.null(uv)){
-      
-      # Batch + BIO
-      design_mat <- model.matrix(~bio + batch)
-      lm_object <- lmFit(leo, design = design_mat, weights = w)
-      bind = (ncol(lm_object$coefficients) + (2 - (length(levels(batch))))):(ncol(lm_object$coefficients))
-      leo = leo - t(contrasts %*% t(lm_object$coefficients[,bind]))[,batch]
-
-    } else {
-      
-      # Batch + UV + BIO
-      design_mat <- model.matrix(~bio + batch + uv)
-      lm_object <- lmFit(leo, design = design_mat, weights = w)
-      uvind = (ncol(lm_object$coefficients) - dim(uv)[2] + 1):(ncol(lm_object$coefficients))
-      bind = (ncol(lm_object$coefficients) - dim(uv)[2] + (2 - (length(levels(batch))))):(ncol(lm_object$coefficients) - dim(uv)[2])
-      leo = leo - t(contrasts %*% t(lm_object$coefficients[,bind]))[,batch] - t(uv %*% t(lm_object$coefficients[,uvind]))
-    }
-  }
-  return(leo)
-}
-
-BATCHFREE_FN = function(ei,bio,uv = NULL,w = NULL){
-  leo = log(ei+1)
-  
-  if(is.null(bio)){
-    # Just UV
-    design_mat <- model.matrix(~uv)
-    lm_object <- lmFit(leo, design = design_mat, weights = w)
-    uvind = (ncol(lm_object$coefficients) - dim(uv)[2] + 1):(ncol(lm_object$coefficients))
-    leo = leo - t(uv %*% t(lm_object$coefficients[,uvind]))
-  } else {
-    # Bio + UV
-    design_mat <- model.matrix(~bio + uv)
-    lm_object <- lmFit(leo, design = design_mat, weights = w)
-    uvind = (ncol(lm_object$coefficients) - dim(uv)[2] + 1):(ncol(lm_object$coefficients))
-    leo2 = leo - t(uv %*% t(lm_object$coefficients[,uvind]))
-  }
-  return(leo)
-}
-
-ADJUST_FN = function(ei,batch = NULL,
-                     bio = NULL,
-                     uv = NULL,
-                     w = NULL,
-                     design = c("factorial","nested"), 
-                     nested_model = c("fixed","random")){
-  
-  if(!is.null(batch)){
-    design <- match.arg(design)
-    
-    if(design == "factorial"){
-      leo = FACTORIAL_BATCH_FN(ei,bio,batch,uv,w)
-    }else{
-      nested_model <- match.arg(nested_model)
-      
-      if(nested_model == "fixed"){
-        leo = NESTED_BATCH_FIXED_FN(ei,bio,batch,uv,w)
-      }else{
-        leo = NESTED_BATCH_RANDOM_FN(ei,bio,batch,uv,w)
-      }
-    }
-  }else{
-    leo = BATCHFREE_FN(ei,bio,uv,w)
-  }
-  return(leo)
-}
