@@ -4,38 +4,40 @@
 \alias{factor_sample_filter}
 \title{metric-based sample filtering: function to filter single-cell RNA-Seq libraries.}
 \usage{
-factor_sample_filter(expr, gene_filter = NULL, max_exp_pcs = 5,
+factor_sample_filter(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   qual_select_q_thresh = 0.01, force_metrics = NULL, good_metrics = NULL,
   min_qual_variance = 0.7, zcut = 1, mixture = TRUE, dip_thresh = 0.01,
   plot_dir = NULL, hist_breaks = 20)
 }
 \arguments{
-\item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
+\item{expr}{matrix The data matrix (genes in rows, cells in columns).}
 
-\item{gene_filter.}{A boolean vector indexing genes that will be used for PCA.
+\item{qual}{matrix Quality metric data matrix (cells in rows, metrics in columns).}
+
+\item{gene_filter}{A boolean vector indexing genes that will be used for PCA.
 If NULL, all genes are used.}
 
-\item{max_exp_pcs.}{numeric. number of expression PCs used in quality metric selection. Default 5.}
+\item{max_exp_pcs}{numeric number of expression PCs used in quality metric selection. Default 5.}
 
-\item{qual_select_q_thresh.}{numeric. q-value threshold for quality/expression correlation significance tests. Default 0.01}
+\item{qual_select_q_thresh}{numeric. q-value threshold for quality/expression correlation significance tests. Default 0.01}
 
-\item{force_metrics.}{boolean. If not NULL, indexes quality metric to be forcefully included in quality PCA.}
+\item{force_metrics}{boolean. If not NULL, indexes quality metric to be forcefully included in quality PCA.}
 
-\item{good_metrics.}{boolean. If not NULL, indexes quality metric that indicate better quality when of higher value.}
+\item{good_metrics}{boolean. If not NULL, indexes quality metric that indicate better quality when of higher value.}
 
-\item{min_qual_variance.}{numeric. Minimum proportion of selected quality variance addressed in filtering. Default 0.70}
+\item{min_qual_variance}{numeric. Minimum proportion of selected quality variance addressed in filtering. Default 0.70}
 
-\item{zcut.}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.}
+\item{zcut}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.}
 
-\item{mixture.}{A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
+\item{mixture}{A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
 If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
 Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
 
-\item{dip_thresh.}{A numeric value determining dip test p-value threshold. Default 0.05.}
+\item{dip_thresh}{A numeric value determining dip test p-value threshold. Default 0.05.}
 
-\item{plot_dir.}{If not null, specifies path to plot output}
+\item{plot_dir}{If not null, specifies path to plot output}
 
-\item{hist_breaks.}{hist() breaks argument}
+\item{hist_breaks}{hist() breaks argument}
 }
 \value{
 A boolean, representing samples passing factor-based filter.

@@ -7,7 +7,7 @@
 impute_zinb(expression)
 }
 \arguments{
-\item{expression_matrix}{the data matrix (genes in rows, cells in columns)}
+\item{expression}{the data matrix (genes in rows, cells in columns)}
 }
 \value{
 the imputed expression matrix.

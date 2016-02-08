@@ -7,11 +7,11 @@
 simple_FNR_params(expr, pos_controls, fn_tresh = 0.01)
 }
 \arguments{
-\item{expr}{matrix. The data matrix in transcript-proportional units (genes in rows, cells in columns).}
+\item{expr}{matrix The data matrix in transcript-proportional units (genes in rows, cells in columns).}
 
-\item{pos_controls.}{A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.}
+\item{pos_controls}{A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.}
 
-\item{fn_tresh.}{Inclusive threshold for negative detection. Default 0.01.}
+\item{fn_tresh}{Inclusive threshold for negative detection. Default 0.01.}
 }
 \value{
 A list of logistic regression coefficients corresponding to glm fits in each sample. If a fit did not converge, the result reported is NA.

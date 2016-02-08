@@ -12,7 +12,32 @@ metric_sample_filter(expr, nreads = NULL, ralign = NULL,
   suff_fnr = NULL, plot_dir = NULL, hist_breaks = 10)
 }
 \arguments{
-\item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
+\item{expr}{matrix The data matrix (genes in rows, cells in columns).}
+
+\item{nreads}{A numeric vector representing number of reads in each library.
+If NULL, filtered_nreads will be returned NA.}
+
+\item{ralign}{A numeric vector representing the proportion of reads aligned to the reference genome in each library.
+If NULL, filtered_ralign will be returned NA.}
+
+\item{gene_filter}{A boolean vector indexing genes that will be used to compute library transcriptome breadth.
+If NULL, filtered_breadth will be returned NA.}
+
+\item{pos_controls}{A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
+If NULL, filtered_fnr will be returned NA.}
+
+\item{glen}{Gene lengths for gene-length normalization (normalized data used in FNR computation).}
+
+\item{AUC_range}{An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)}
+
+\item{zcut}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
+If NULL, only hard threshold sub-criteria will be applied.}
+
+\item{mixture}{A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
+If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
+Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
+
+\item{dip_thresh}{A numeric value determining dip test p-value threshold. Default 0.05.}
 
 \item{hard_nreads}{numeric. Hard (lower bound on) nreads threshold. Default 25000.}
 
@@ -30,34 +55,9 @@ metric_sample_filter(expr, nreads = NULL, ralign = NULL,
 
 \item{suff_fnr}{numeric. If not null, serves as an lower bound on fnr threshold.}
 
-\item{nreads.}{A numeric vector representing number of reads in each library.
-If NULL, filtered_nreads will be returned NA.}
+\item{plot_dir}{If not null, specifies path to plot output}
 
-\item{ralign.}{A numeric vector representing the proportion of reads aligned to the reference genome in each library.
-If NULL, filtered_ralign will be returned NA.}
-
-\item{gene_filter.}{A boolean vector indexing genes that will be used to compute library transcriptome breadth.
-If NULL, filtered_breadth will be returned NA.}
-
-\item{pos_controls.}{A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
-If NULL, filtered_fnr will be returned NA.}
-
-\item{glen.}{Gene lengths for gene-length normalization (normalized data used in FNR computation).}
-
-\item{AUC_range.}{An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)}
-
-\item{zcut.}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
-If NULL, only hard threshold sub-criteria will be applied.}
-
-\item{mixture.}{A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
-If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
-Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
-
-\item{dip_thresh.}{A numeric value determining dip test p-value threshold. Default 0.05.}
-
-\item{plot_dir.}{If not null, specifies path to plot output}
-
-\item{hist_breaks.}{hist() breaks argument}
+\item{hist_breaks}{hist() breaks argument}
 }
 \value{
 A list with the following elements:

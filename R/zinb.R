@@ -153,7 +153,7 @@ loglik_small <- function(parms, Y, Y1, X, W, kx, kw, offsetx, offsetw, linkobj) 
 #'  
 #' @export
 #' 
-#' @param expression_matrix the data matrix (genes in rows, cells in columns)
+#' @param expression the data matrix (genes in rows, cells in columns)
 #' 
 #' @return the imputed expression matrix.
 impute_zinb <- function(expression) {
