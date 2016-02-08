@@ -55,7 +55,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' If NULL, filtered_breadth will be returned NA.
 #' @param pos_controls. A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 #' If NULL, filtered_fnr will be returned NA.
-#' @param glen. Gene lengths for gene-length normalization (recommended for FNR computation).
+#' @param glen. Gene lengths for gene-length normalization (normalized data used in FNR computation).
 #' @param AUC_range. An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)
 #' @param zcut. A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' If NULL, only hard threshold sub-criteria will be applied.
@@ -91,6 +91,11 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
                                 suff_nreads = NULL, suff_ralign = 65, suff_breadth = 0.8, suff_fnr = NULL,
                                 plot_dir = NULL, hist_breaks = 10){
     
+  # Create plot directory, if necessary
+  if (!is.null(plot_dir) && !file.exists(plot_dir)){
+    dir.create(plot_dir)
+  }
+  
   criterion_count = 0
   
   ### ----- Primary Criterion 1) Number of Reads. -----
@@ -302,5 +307,196 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
               filtered_ralign = filtered_ralign,
               filtered_breadth = filtered_breadth,
               filtered_fnr = filtered_fnr))
+}
+
+
+#' metric-based sample filtering: function to filter single-cell RNA-Seq libraries.
+#' 
+#' This function returns a sample-filtering report for each cell in the input expression matrix, 
+#' describing which filtering criteria are satisfied.
+#' 
+#' @details For each primary criterion (metric), a sample is evaluated based on 4 sub-criteria: 
+#' 1) Hard (encoded) threshold 
+#' 2) Adaptive thresholding via sd's from the mean
+#' 3) Adaptive thresholding via mad's from the median
+#' 4) Adaptive thresholding via sd's from the mean (after mixture modeling)
+#' A sample must pass all sub-criteria to pass the primary criterion.
+#'  
+#' @param expr matrix. The data matrix (genes in rows, cells in columns).
+#' @param gene_filter. A boolean vector indexing genes that will be used for PCA.
+#' If NULL, all genes are used.
+#' @param max_exp_pcs. numeric. number of expression PCs used in quality metric selection. Default 5.
+#' @param qual_select_q_thresh. numeric. q-value threshold for quality/expression correlation significance tests. Default 0.01
+#' @param force_metrics. boolean. If not NULL, indexes quality metric to be forcefully included in quality PCA.
+#' @param good_metrics. boolean. If not NULL, indexes quality metric that indicate better quality when of higher value.
+#' @param min_qual_variance. numeric. Minimum proportion of selected quality variance addressed in filtering. Default 0.70 
+#' @param zcut. A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
+#' @param mixture. A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
+#' If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
+#' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
+#' @param dip_thresh. A numeric value determining dip test p-value threshold. Default 0.05.
+#' @param plot_dir. If not null, specifies path to plot output
+#' @param hist_breaks. hist() breaks argument
+#' 
+#' @return A boolean, representing samples passing factor-based filter.
+#' 
+
+factor_sample_filter = function(expr,gene_filter = NULL, max_exp_pcs = 5,
+                                qual_select_q_thresh = 0.01, force_metrics = NULL, good_metrics = NULL,
+                                min_qual_variance = 0.7, zcut = 1, 
+                                mixture = TRUE, dip_thresh = .01,
+                                plot_dir = NULL, hist_breaks = 20){
+    
+  # Create plot directory, if necessary
+  if (!is.null(plot_dir) && !file.exists(plot_dir)){
+    dir.create( plot_dir)
+  }
+
+  # Gene filter vector
+  if(is.null(gene_filter)){
+    gene_filter = rep(TRUE,dim(expr)[1])
+  }
+    
+  ## ----- Expression PCs (based on high-quality genes) -----
+  pc = prcomp(t(log1p(expr[gene_filter,])), center = TRUE, scale = TRUE)
+  
+  ## ----- Quality PCs -----
+  cors = cor(pc$x[,1: max_exp_pcs],qual,method = "spearman")
+  z = sqrt((dim(pc$x)[1]-3)/1.06)*(1/2)*log((1+cors)/(1-cors))
+  p = 2*pnorm(-abs(z))
+  to_keep = p.adjust(p,method = "BH") < qual_select_q_thresh
+  to_keep_vec = colSums(matrix(to_keep,nrow =  max_exp_pcs)) > 0
+  
+  if(is.null(good_metrics)){
+    good_metrics = rep(FALSE,dim(qual)[2])
+  }
+  
+  # Introduce forced metrics
+  if(!is.null(force_metrics)){
+    to_keep_vec =  to_keep_vec | force_metrics
+  }
+  
+  if (sum(to_keep_vec) == 0){
+    warning("No quality metrics were selected. All samples pass filter.")
+    return(rep(TRUE,dim(expr)[2]))
+  }
+  
+  keep_quals = qual[,to_keep_vec]
+  
+  qpc = prcomp(keep_quals,center = T,scale. = T)
+  
+  if(!is.null(plot_dir)){
+    pdf(paste0(plot_dir,"/qual_csum_var.pdf"))
+    csum = cumsum((qpc$sdev^2)/sum(qpc$sdev^2))
+    plot(csum, main = "Cumulative Quality PC Variance", ylab = "Fraction of Total Variance")
+    abline(h = min_qual_variance, lty = 2, col = "red")
+    dev.off()
+  }
+  num_qual_pcs = which(csum > min_qual_variance)[1]
+  
+  if(!is.null(plot_dir)){
+    for (i in 1:num_qual_pcs){
+      pdf(paste0(plot_dir,paste0("/qc_pc",i,".pdf")))
+      par(mfrow = c(2,1))
+      hist(qpc$x[,i],breaks = hist_breaks, main = paste0("Distribution of Quality PC ",i), xlab = paste0("Qual PC",i))
+      barplot(abs(qpc$rotation[,i]),col = c("red","green")[1 + (qpc$rotation[,i] > 0)], cex.names = .25,horiz = T, las=1, main = "Loadings")
+      dev.off()
+    }
+  }
+  
+  if(!is.null(plot_dir)){
+    pdf(paste0(plot_dir,"/qual_corr_heatmap.pdf"))
+    heatmap.2(cor(keep_quals),key.title = "",key.xlab = "Spearman Corr.",density.info = 'none',trace = 'none',margin = c(20,20), cexRow = .7, cexCol = .7)
+    dev.off()
+  }
+  
+  # Only perform filtering when zcut is not null
+  if (!is.null(zcut)){
+    
+    # Initializing sample removal vector
+    to_remove = rep(F,dim(eSet)[2])
+    
+    # Check if "good" metrics have been selected -> if filtering is signed
+    is_signed = sum(to_keep_vec & good_metrics) > 0
+    
+    if(!is_signed){
+      warning("No good metrics were selected. Unsigned filtering applied.")
+    }
+    
+    # Loop over quality PCs until we've covered min_qual_variance of the quality variance
+    for ( i in 1:num_qual_pcs){
+      
+      # Quality Score
+      qscore = qpc$x[,i] 
+      
+      # Signed Quality Score
+      if (is_signed){
+        qscore = qscore * median(sign(qpc$rotation[,i][good_metrics[to_keep_vec]]))
+      }
+      
+      # Simple thresholds
+      CUTOFF = median(qscore) - zcut*mad(qscore)
+      CUTOFF = max(mean(qscore) - zcut*sd(qscore), CUTOFF)
+      
+      # Reverse thresholds
+      if(!is_signed){
+        RCUTOFF = median(qscore) + zcut*mad(qscore)
+        RCUTOFF = min(mean(qscore) + zcut*sd(qscore), RCUTOFF)
+      }
+      
+      # Mixture model threshold (Signed Only!)
+      if(mixture && is_signed){    
+        
+        is.multimodal = dip.test(qscore)$p.value < dip_thresh   
+        
+        if(is.multimodal){
+          mixmdl = normalmixEM(qscore,k=2)
+          component = which(mixmdl$mu %in% max(mixmdl$mu))
+          CUTOFF = max(mixmdl$mu[component] - zcut*mixmdl$sigma[component], CUTOFF)
+          
+        }
+      }
+      if(!is.null(plot_dir)){
+        
+        pdf(paste0(plot_dir,paste0("/qc_filter_pc",i,".pdf")),width = 20)
+        par(mfrow = c(1,2))
+        hist(qscore,breaks = hist_breaks,main = paste0("Distribution of Quality Score ",i),  xlab = paste0("Qual Score ",i))
+        abline(v = CUTOFF, lty = 2, col = "red")
+        if(!is_signed){
+          abline(v = RCUTOFF, lty = 2, col = "red")
+        }
+      
+        if(i == num_qual_pcs){ # Exceeds minimum quality of variance - last filter
+          
+          if(is_signed){
+            to_remove = to_remove | (qscore < CUTOFF)
+            hist(qpc$x[,i][!(qscore < CUTOFF)],breaks = hist_breaks, main = paste0("Thresh = ",signif(CUTOFF,3),", Rm = ",sum(qscore < CUTOFF),", Tot Rm = ",sum(to_remove) ),xlab = paste0("Qual Score ",i))
+          }else{
+            to_remove = to_remove | ((qscore < CUTOFF) | (qscore > RCUTOFF))
+            hist(qpc$x[,i][!((qscore < CUTOFF) | (qscore > RCUTOFF))],breaks = hist_breaks, main = paste0("Threshs = ",signif(CUTOFF,3),"/",signif(RCUTOFF,3),", Rm = ",sum((qscore < CUTOFF) | (qscore > RCUTOFF)),", Tot Rm = ",sum(to_remove) ),xlab = paste0("Qual Score ",i))
+          }
+          
+          dev.off()
+          break()
+          
+        }else{
+          if(is_signed){
+            to_remove = to_remove | (qscore < CUTOFF)
+            hist(qpc$x[,i][!(qscore < CUTOFF)],breaks = hist_breaks, main = paste0("Thresh = ",signif(CUTOFF,3),", Rm = ",sum(qscore < CUTOFF) ),xlab = paste0("Qual Score ",i))
+          }else{
+            to_remove = to_remove | ((qscore < CUTOFF) | (qscore > RCUTOFF))
+            hist(qpc$x[,i][!((qscore < CUTOFF) | (qscore > RCUTOFF))],breaks = hist_breaks, main = paste0("Threshs = ",signif(CUTOFF,3),"/",signif(RCUTOFF,3),", Rm = ",sum((qscore < CUTOFF) | (qscore > RCUTOFF)) ),xlab = paste0("Qual Score ",i))
+          }
+          dev.off()
+        }
+      }
+      
+    }
+    
+    return(!to_remove)
+  }else{
+    warning("No z-cutoff specified, thus no filtering results returned.")
+    return(NA)
+  }
 }
 
