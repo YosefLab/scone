@@ -208,7 +208,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
     # Compute FNR AUC  
     ref.glms = simple_FNR_params(expr = nexpr, pos_controls = pos_controls)
     AUC = NULL
-    for (si in 1:dim(sc.eSet)[2]){
+    for (si in 1:dim(expr)[2]){
       if(!any(is.na(ref.glms[[si]]))){
         AUC[si] = log(exp(ref.glms[[si]][1] + ref.glms[[si]][2] * AUC_range[2]) + 1)/ref.glms[[si]][2] - log(exp(ref.glms[[si]][1] + ref.glms[[si]][2] * AUC_range[1]) + 1)/ref.glms[[si]][2]
       } else {
@@ -216,7 +216,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
       }
     }
     
-    AUC_CUTOFF = hard_AUC
+    AUC_CUTOFF = hard_fnr
     
     if (!is.null(zcut)){
       
@@ -234,8 +234,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         }
       }
       
-      if(!is.null(suff_AUC)){
-        AUC_CUTOFF = max(AUC_CUTOFF,suff_AUC)
+      if(!is.null(suff_fnr)){
+        AUC_CUTOFF = max(AUC_CUTOFF,suff_fnr)
       }
     }
     filtered_fnr = AUC > AUC_CUTOFF
@@ -268,8 +268,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
     
       if(!is.null(gene_filter)){
         is_bad = is_bad | !filtered_breadth
-        hist(breadth, main = paste0("breadth: Thresh = ",signif(EFF_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
-        abline(v = EFF_CUTOFF, col = "red", lty = 2)
+        hist(breadth, main = paste0("breadth: Thresh = ",signif(BREADTH_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
+        abline(v = BREADTH_CUTOFF, col = "red", lty = 2)
       }
       
       if(!is.null(pos_controls)){
@@ -285,7 +285,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         hist(ralign[!is_bad], main = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm, = ",sum(!filtered_ralign)), xlab = "RALIGN", breaks = hist_breaks)
       }
       if(!is.null(gene_filter)){
-        hist(breadth[!is_bad],  main = paste0("breadth: Thresh = ",signif(EFF_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
+        hist(breadth[!is_bad],  main = paste0("breadth: Thresh = ",signif(BREADTH_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
       }
       if(!is.null(pos_controls)){
         hist(AUC[!is_bad],  main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(!filtered_fnr)," , Tot_Rm = ",sum(is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
@@ -322,6 +322,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
 #' A sample must pass all sub-criteria to pass the primary criterion.
 #'  
 #' @param expr matrix The data matrix (genes in rows, cells in columns).
+#' @param qual matrix Quality metric data matrix (cells in rows, metrics in columns).
 #' @param gene_filter A boolean vector indexing genes that will be used for PCA.
 #' If NULL, all genes are used.
 #' @param max_exp_pcs numeric number of expression PCs used in quality metric selection. Default 5.
@@ -343,7 +344,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
 #' @importFrom diptest dip.test
 #' @import gplots
 #' @export
-factor_sample_filter = function(expr,gene_filter = NULL, max_exp_pcs = 5,
+factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
                                 qual_select_q_thresh = 0.01, force_metrics = NULL, good_metrics = NULL,
                                 min_qual_variance = 0.7, zcut = 1, 
                                 mixture = TRUE, dip_thresh = .01,
@@ -416,7 +417,7 @@ factor_sample_filter = function(expr,gene_filter = NULL, max_exp_pcs = 5,
   if (!is.null(zcut)){
     
     # Initializing sample removal vector
-    to_remove = rep(F,dim(eSet)[2])
+    to_remove = rep(F,dim(expr)[2])
     
     # Check if "good" metrics have been selected -> if filtering is signed
     is_signed = sum(to_keep_vec & good_metrics) > 0
