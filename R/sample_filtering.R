@@ -1,8 +1,12 @@
+library(diptest)
+library(mixtools)
+library(gplots)
+
 #' Fit Logistic Regression Model of FNR against set of positive control (ubiquitously expressed) genes
 #' 
 #' @details logit(Probability of False Negative) ~ a + b*(mean log10p1 expression) .
 #'  
-#' @param expr matrix. The data matrix (genes in rows, cells in columns).
+#' @param expr matrix. The data matrix in transcript-proportional units (genes in rows, cells in columns).
 #' @param pos_controls. A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 #' @param fn_tresh. Inclusive threshold for negative detection. Default 0.01.
 #' 
@@ -51,6 +55,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' If NULL, filtered_breadth will be returned NA.
 #' @param pos_controls. A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 #' If NULL, filtered_fnr will be returned NA.
+#' @param glen. Gene lengths for gene-length normalization (recommended for FNR computation).
 #' @param AUC_range. An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)
 #' @param zcut. A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' If NULL, only hard threshold sub-criteria will be applied.
@@ -66,6 +71,8 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' @param suff_ralign numeric. If not null, serves as an upper bound on ralign threshold.  Default 65.
 #' @param suff_breadth numeric. If not null, serves as an upper bound on breadth threshold.  Default 0.8.
 #' @param suff_fnr numeric. If not null, serves as an lower bound on fnr threshold.
+#' @param plot_dir. If not null, specifies path to plot output
+#' @param hist_breaks. hist() breaks argument
 #' 
 #' @return A list with the following elements:
 #' \itemize{
@@ -77,15 +84,19 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #'
 
 metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
-                                gene_filter = NULL, pos_controls = NULL,
+                                gene_filter = NULL, pos_controls = NULL,glen = NULL,
                                 AUC_range = c(0,6), zcut = 1,
                                 mixture = TRUE, dip_thresh = 0.05, 
                                 hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2, hard_fnr = 3,
-                                suff_nreads = NULL, suff_ralign = 65, suff_breadth = 0.8, suff_fnr = NULL){
+                                suff_nreads = NULL, suff_ralign = 65, suff_breadth = 0.8, suff_fnr = NULL,
+                                plot_dir = NULL, hist_breaks = 10){
     
+  criterion_count = 0
+  
   ### ----- Primary Criterion 1) Number of Reads. -----
   
   if(!is.null(nreads)){ 
+    criterion_count = 1
         
     logr = log10(nreads + 1)
   
@@ -109,11 +120,15 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         LOGR_CUTOFF = min(LOGR_CUTOFF,log10(suff_nreads + 1))
       }
     }
+    filtered_nreads = logr < LOGR_CUTOFF
+  }else{
+    filtered_nreads = NA
   }
   
   ## ----- Primary Criterion 2) Ratio of reads aligned. -----
   
   if(!is.null(ralign)){
+    criterion_count = criterion_count + 1
     
     RALIGN_CUTOFF = hard_ralign
     
@@ -136,11 +151,15 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         RALIGN_CUTOFF = min(RALIGN_CUTOFF,suff_ralign)
       }
     }
+    filtered_ralign = ralign < RALIGN_CUTOFF
+  }else{
+    filtered_ralign = NA
   }
   
   ## ----- Primary Criterion 3) Transcriptome Breadth: Fraction of filtered genes detected. -----
   
   if(!is.null(gene_filter)){  
+    criterion_count = criterion_count + 1
   
     breadth = colMeans(expr > 0)
   
@@ -166,14 +185,24 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         BREADTH_CUTOFF = min(BREADTH_CUTOFF,suff_breadth)
       }
     }
+    filtered_breadth = breadth < BREADTH_CUTOFF
+  }else{
+    filtered_breadth = NA
   }
 
   ## ----- Primary Criterion 4) FNR AUC. -----
   
   if(!is.null(pos_controls)){  
+    criterion_count = criterion_count + 1
     
+    # Normalize matrix for FNR estimation
+    nexpr = mean(colSums(expr))*t(t(expr)/colSums(expr))
+    if(!is.null(glen)){
+      nexpr = mean(glen)*nexpr/glen
+    }
+        
     # Compute FNR AUC  
-    ref.glms = simple_FNR_params(expr = expr, pos_controls = pos_controls)
+    ref.glms = simple_FNR_params(expr = nexpr, pos_controls = pos_controls)
     AUC = NULL
     for (si in 1:dim(sc.eSet)[2]){
       if(!any(is.na(ref.glms[[si]]))){
@@ -205,12 +234,69 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         AUC_CUTOFF = max(AUC_CUTOFF,suff_AUC)
       }
     }
+    filtered_fnr = AUC > AUC_CUTOFF
+  }else{
+    filtered_fnr = NA
   }
+    
+  ## ----- Plotting -----
   
-  filtered_nreads = logr < LOGR_CUTOFF
-  filtered_ralign = ralign < RALIGN_CUTOFF
-  filtered_breadth = breadth < BREADTH_CUTOFF
-  filtered_fnr = AUC > AUC_CUTOFF
+  if (!is.null(plot_dir)){
+    
+      
+      pdf(paste0(plot_dir,"/filtering_per_criterion.pdf"))
+      
+      is_bad = rep(FALSE,dim(expr)[2])
+      
+      par(mfcol = c(criterion_count,2))
+    
+      if(!is.null(nreads)){
+        is_bad = !filtered_nreads 
+        hist(logr, main = paste0("nreads: Thresh = ",signif(LOGR_CUTOFF,3)," , Rm = ",sum(!filtered_nreads)), xlab = "log10(NREADS+1)", breaks = hist_breaks)
+        abline(v = LOGR_CUTOFF, col = "red", lty = 2)
+      }
+    
+      if(!is.null(ralign)){
+        is_bad = is_bad | !filtered_ralign
+        hist(ralign, main = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm = ",sum(!filtered_ralign)), xlab = "RALIGN", breaks = hist_breaks)
+        abline(v = RALIGN_CUTOFF, col = "red", lty = 2)
+      }
+    
+      if(!is.null(gene_filter)){
+        is_bad = is_bad | !filtered_breadth
+        hist(breadth, main = paste0("breadth: Thresh = ",signif(EFF_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
+        abline(v = EFF_CUTOFF, col = "red", lty = 2)
+      }
+      
+      if(!is.null(pos_controls)){
+        is_bad = is_bad | !filtered_fnr
+        hist(AUC, main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(!filtered_fnr)), xlab = "FNR AUC", breaks = hist_breaks)
+        abline(v = AUC_CUTOFF, col = "red", lty = 2)
+      }
+      
+      if(!is.null(nreads)){
+        hist(logr[!is_bad], main = paste0("nreads: Thresh = ",signif(LOGR_CUTOFF,3)," , Rm = ",sum(!filtered_nreads)), xlab = "log10(NREADS+1)", breaks = hist_breaks)
+      }
+      if(!is.null(ralign)){
+        hist(ralign[!is_bad], main = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm, = ",sum(!filtered_ralign)), xlab = "RALIGN", breaks = hist_breaks)
+      }
+      if(!is.null(gene_filter)){
+        hist(breadth[!is_bad],  main = paste0("breadth: Thresh = ",signif(EFF_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
+      }
+      if(!is.null(pos_controls)){
+        hist(AUC[!is_bad],  main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(!filtered_fnr)," , Tot_Rm = ",sum(is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
+      }
+      dev.off()
+    
+      pdf(paste0(plot_dir,"/overlap_of_criteria.pdf"))
+      v = rbind(!filtered_nreads,!filtered_ralign,!filtered_breadth,!filtered_fnr)
+      rownames(v) = c("nreads","ralign","breadth","fnr")
+      v = na.omit(v)
+      m = v %*% t(v)
+      m = t(t(m)/diag(m))
+      barplot(m, beside = T,legend.text = T, ylim = c(0,1.5))
+      dev.off()
+  }
   
   return(list(filtered_nreads = filtered_nreads,
               filtered_ralign = filtered_ralign,
