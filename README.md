@@ -14,3 +14,4 @@ Private Repo containing SCONE R Package
 	# Install via command line:
 	R CMD INSTALL scone	
 	# You may get errors if dependencies are not installed prior to scone installation.
+	# Install SCDE dependency at http://hms-dbmi.github.io/scde/package.html
