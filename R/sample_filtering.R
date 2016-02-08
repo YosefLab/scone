@@ -202,7 +202,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
       }
       
       if(!is.null(suff_AUC)){
-        AUC_CUTOFF = min(AUC_CUTOFF,suff_AUC)
+        AUC_CUTOFF = max(AUC_CUTOFF,suff_AUC)
       }
     }
   }
