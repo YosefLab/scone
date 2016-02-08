@@ -1,7 +1,3 @@
-library(scde)
-library(fpc)
-library(class)
-
 #' scone evaluation: function to evaluate one normalization scheme
 #' 
 #' This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on 

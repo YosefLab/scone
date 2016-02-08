@@ -1,9 +1,3 @@
-## todo
-## 2. Future!
-## 3. Add custom uv factors as a matrix (e.g. from sva)
-## 4. c() to adjusted a custom_adjusted list with a (list of) alternative adjustment methods 
-## (need also a do_lm_adjust=TRUE)
-
 #' scone main wrapper: function to apply and evaluate all the normalization schemes
 #' 
 #' This function is a high-level wrapper to apply and evaluate a variety of normalization
