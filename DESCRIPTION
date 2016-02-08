@@ -9,7 +9,7 @@ Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 Author: Michael Cole [aut, cre, cph] and Davide Risso [aut]
 Maintainer: Michael Cole <mbeloc@gmail.com>
 Imports: BiocParallel, DESeq, EDASeq, MASS, RUVSeq, aroma.light, class,
-	 edgeR, fpc, limma, matrixStats, scde
+	 diptest, edgeR, fpc, gplots, limma, matrixStats, mixtools, scde
 Date: 02-06-2016
 License: Artistic-2.0
 LazyLoad: yes
