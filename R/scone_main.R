@@ -45,6 +45,8 @@
 #' right format, and is only intended to be used to feed the results of setting run=FALSE back into 
 #' the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
+#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
+#' and a weighted average is returned.
 #' 
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
@@ -61,7 +63,7 @@
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10,
-                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE) {
+                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE, conditional_pam = FALSE) {
   
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -300,7 +302,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw, 
                             uv_factors = uv_factors, wv_factors = wv_factors,
-                            is_log = TRUE)
+                            is_log = TRUE, conditional_pam = conditional_pam)
       return(score)
     })
     names(evaluation) <- apply(params, 1, paste, collapse=',')
