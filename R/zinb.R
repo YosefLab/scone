@@ -27,6 +27,10 @@
 #' }
 estimate_zinb <- function(Y, maxiter=10, verbose=FALSE) {
   
+  if(!is.integer(Y)){
+    stop("Expression matrix contains non-integer values.")
+  }
+  
   n <- ncol(Y)
   J <- nrow(Y)
   
