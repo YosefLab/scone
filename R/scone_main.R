@@ -30,6 +30,7 @@
 #' @param evaluate logical. If FALSE the normalization methods will be run but not evaluated.
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_knn numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.
+#' @param eval_weights matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam stability evaluation. If NULL, all KNN concordances will be returned NA.
 #' If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
@@ -62,7 +63,7 @@
 #' If run=FALSE, a data.frame with each row corresponding to a set of parameters to be analyzed.
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
-                  bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10,
+                  bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10, eval_weights = NULL,
                   eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE, conditional_pam = FALSE) {
   
   if(!is.matrix(expr)) {
@@ -298,7 +299,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                                 nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
       sc_name <- paste(params[i,1:2], collapse="_")
       adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
-      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn,
+      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn, weights = eval_weights,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw, 
                             uv_factors = uv_factors, wv_factors = wv_factors,
