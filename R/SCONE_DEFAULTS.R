@@ -65,7 +65,6 @@ FQ_FN_POS = function(ei){
   quant_mat = NULL
   # Re-ordered Data Matrix
   x_mat = NULL
-  print("Sorting Matrix...")
   # For each sample:
   for (i in 1:dim(ei)[2]){
     # Sort data and replace zeroes with NA
@@ -79,8 +78,6 @@ FQ_FN_POS = function(ei){
   
   # Vector form of quantile index matrix
   quant_out = as.numeric(as.vector(quant_mat))
-  print("Complete.")
-  print("Spline Interpolation...")
   # Interpolation Matrix (Values of all quantiles)
   inter_mat = rep(0,length(quant_out))
   ob_counts = rep(0,length(quant_out)) # Number of observations for averaging
@@ -95,8 +92,7 @@ FQ_FN_POS = function(ei){
     inter[is.na(inter)] = 0
     inter_mat = inter_mat + inter
   }
-  print("Complete.")
-  
+
   # Average over the interpolated values from all samples
   inter_mean = inter_mat/ob_counts
   
@@ -106,7 +102,6 @@ FQ_FN_POS = function(ei){
   for (i in 1:dim(ei)[2]){
     eo[,i] = rev(eo[,i])[order(order(ei[,i]))]
   }
-  print("Finished!")
   return(eo)
 }
 
