@@ -191,6 +191,10 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     if(any(eval_kclust >= ncol(expr))) {
       stop("'eval_kclust' must be less than the number of samples.")
     }
+    
+    if(conditional_pam & (max(eval_kclust) >= min(table(bio)))){
+      stop("For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
+    }
   }
   
   # check design: confounding or nesting of batch and bio
