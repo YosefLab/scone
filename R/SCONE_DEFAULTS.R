@@ -102,6 +102,9 @@ FQ_FN_POS = function(ei){
   for (i in 1:dim(ei)[2]){
     eo[,i] = rev(eo[,i])[order(order(ei[,i]))]
   }
+
+  rownames(eo) = rownames(ei)
+  colnames(eo) = colnames(ei)
   return(eo)
 }
 
