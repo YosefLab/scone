@@ -50,6 +50,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' If NULL, filtered_breadth will be returned NA.
 #' @param pos_controls A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 #' If NULL, filtered_fnr will be returned NA.
+#' @param scale logical. Will expression be scaled by total expression for FNR computation? Default = FALSE 
 #' @param glen Gene lengths for gene-length normalization (normalized data used in FNR computation).
 #' @param AUC_range An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
@@ -83,7 +84,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #'
 #'
 metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
-                                gene_filter = NULL, pos_controls = NULL,glen = NULL,
+                                gene_filter = NULL, pos_controls = NULL,scale = FALSE,glen = NULL,
                                 AUC_range = c(0,6), zcut = 1,
                                 mixture = TRUE, dip_thresh = 0.05, 
                                 hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2, hard_fnr = 3,
@@ -200,6 +201,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
     criterion_count = criterion_count + 1
     
     # Normalize matrix for FNR estimation
+    if(scale)
     nexpr = mean(colSums(expr))*t(t(expr)/colSums(expr))
     if(!is.null(glen)){
       nexpr = mean(glen)*nexpr/glen
