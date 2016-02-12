@@ -348,17 +348,12 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
 }
 
 
-#' metric-based sample filtering: function to filter single-cell RNA-Seq libraries.
+#' factor-based sample filtering: function to filter single-cell RNA-Seq libraries.
 #' 
 #' This function returns a sample-filtering report for each cell in the input expression matrix, 
-#' describing which filtering criteria are satisfied.
+#' describing whether it passed filtering by factor-based filtering, using PCA of quality metrics.
 #' 
-#' @details For each primary criterion (metric), a sample is evaluated based on 4 sub-criteria: 
-#' 1) Hard (encoded) threshold 
-#' 2) Adaptive thresholding via sd's from the mean
-#' 3) Adaptive thresholding via mad's from the median
-#' 4) Adaptive thresholding via sd's from the mean (after mixture modeling)
-#' A sample must pass all sub-criteria to pass the primary criterion.
+#' @details None
 #'  
 #' @param expr matrix The data matrix (genes in rows, cells in columns).
 #' @param qual matrix Quality metric data matrix (cells in rows, metrics in columns).
