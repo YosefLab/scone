@@ -98,6 +98,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
   
   criterion_count = 0
   
+  mix_plot = list(nreads = NULL,ralign = NULL,breadth = NULL,fnr = NULL)
+  
   ### ----- Primary Criterion 1) Number of Reads. -----
   
   if(!is.null(nreads)){ 
@@ -115,7 +117,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
 
         is.multimodal = dip.test(logr)$p.value < dip_thresh
         if(is.multimodal){
-          mixmdl = normalmixEM(logr,k=2)
+          capture.output(mixmdl <- normalmixEM(logr,k=2))
+          mix_plot$nreads = mixmdl
           component = which(mixmdl$mu %in% max(mixmdl$mu))
           LOGR_CUTOFF = max(mixmdl$mu[component] - zcut*mixmdl$sigma[component], LOGR_CUTOFF)
         }
@@ -146,7 +149,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         is.multimodal = dip.test(ralign)$p.value < dip_thresh
         
         if(is.multimodal){
-          mixmdl = normalmixEM(ralign,k=2)
+          capture.output(mixmdl <- normalmixEM(ralign,k=2))
+          mix_plot$ralign = mixmdl
           component = which(mixmdl$mu %in% max(mixmdl$mu))
           RALIGN_CUTOFF = max(mixmdl$mu[component] - zcut*mixmdl$sigma[component], RALIGN_CUTOFF)
         }
@@ -166,7 +170,7 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
   if(!is.null(gene_filter)){  
     criterion_count = criterion_count + 1
   
-    breadth = colMeans(expr > 0)
+    breadth = as.numeric(colMeans(expr[gene_filter,] > 0))
   
     BREADTH_CUTOFF = hard_breadth
   
@@ -180,7 +184,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         is.multimodal = dip.test(breadth)$p.value < dip_thresh
       
         if(is.multimodal){
-          mixmdl = normalmixEM(breadth,k=2)
+          capture.output(mixmdl <- normalmixEM(breadth,k=2))
+          mix_plot$breadth = mixmdl
           component = which(mixmdl$mu %in% max(mixmdl$mu))
           BREADTH_CUTOFF = max(mixmdl$mu[component] - zcut*mixmdl$sigma[component], BREADTH_CUTOFF)
         }
@@ -233,7 +238,8 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
         is.multimodal = dip.test(AUC)$p.value < dip_thresh
         
         if(is.multimodal){
-          mixmdl = normalmixEM(AUC,k=2)
+          capture.output(mixmdl <- normalmixEM(AUC,k=2))
+          mix_plot$fnr = mixmdl
           component = which(mixmdl$mu %in% min(mixmdl$mu))
           AUC_CUTOFF = min(mixmdl$mu[component] + zcut*mixmdl$sigma[component], AUC_CUTOFF)
         }
@@ -260,45 +266,73 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
       par(mfcol = c(criterion_count,2))
     
       if(!is.null(nreads)){
-        is_bad = !filtered_nreads 
-        hist(logr, main = paste0("nreads: Thresh = ",signif(LOGR_CUTOFF,3)," , Rm = ",sum(!filtered_nreads)), xlab = "log10(NREADS+1)", breaks = hist_breaks)
-        abline(v = LOGR_CUTOFF, col = "red", lty = 2)
+        is_bad = filtered_nreads 
+        if(!is.null(mix_plot$nreads)){
+          nm_obj = mix_plot$nreads
+          plot(nm_obj,2,main2 = paste0("nreads: Thresh = ",signif(LOGR_CUTOFF,3)," , Rm = ",sum(filtered_nreads)," , Tot_Rm = ",sum(is_bad)),
+               xlab2 = "log10(NREADS+1)",breaks = hist_breaks)
+        }else{
+          hist(logr, main = paste0("nreads: Thresh = ",signif(LOGR_CUTOFF,3)," , Rm = ",sum(filtered_nreads)," , Tot_Rm = ",sum(is_bad)), xlab = "log10(NREADS+1)", breaks = hist_breaks)
+        }
+        abline(v = log10(hard_nreads+1), col = "yellow", lty = 1)
+        abline(v = LOGR_CUTOFF, col = "blue", lty = 2)
       }
     
       if(!is.null(ralign)){
-        is_bad = is_bad | !filtered_ralign
-        hist(ralign, main = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm = ",sum(!filtered_ralign)), xlab = "RALIGN", breaks = hist_breaks)
-        abline(v = RALIGN_CUTOFF, col = "red", lty = 2)
+        is_bad = is_bad | filtered_ralign
+        if(!is.null(mix_plot$ralign)){
+          nm_obj = mix_plot$ralign
+          plot(nm_obj,2,main2 = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm = ",sum(filtered_ralign)," , Tot_Rm = ",sum(is_bad)),
+               xlab2 = "RALIGN",breaks = hist_breaks)
+        }else{
+          hist(ralign, main = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm = ",sum(filtered_ralign)," , Tot_Rm = ",sum(is_bad)), xlab = "RALIGN", breaks = hist_breaks)
+        }
+        abline(v = hard_ralign, col = "yellow", lty = 1)
+        abline(v = RALIGN_CUTOFF, col = "blue", lty = 2)
       }
     
       if(!is.null(gene_filter)){
-        is_bad = is_bad | !filtered_breadth
-        hist(breadth, main = paste0("breadth: Thresh = ",signif(BREADTH_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
-        abline(v = BREADTH_CUTOFF, col = "red", lty = 2)
+        is_bad = is_bad | filtered_breadth
+        if(!is.null(mix_plot$breadth)){
+          nm_obj = mix_plot$breadth
+          plot(nm_obj,2,main2 = paste0("breadth: Thresh = ",signif(BREADTH_CUTOFF,3)," , Rm = ",sum(filtered_breadth)," , Tot_Rm = ",sum(is_bad)),
+               xlab2 = "BREADTH",breaks = hist_breaks)
+        }else{
+          hist(breadth, main = paste0("breadth: Thresh = ",signif(BREADTH_CUTOFF,3)," , Rm = ",sum(filtered_breadth)," , Tot_Rm = ",sum(is_bad)), xlab = "BREADTH", breaks = hist_breaks)
+        }
+        abline(v = hard_breadth, col = "yellow", lty = 1)
+        abline(v = BREADTH_CUTOFF, col = "blue", lty = 2)
       }
       
       if(!is.null(pos_controls)){
-        is_bad = is_bad | !filtered_fnr
-        hist(AUC, main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(!filtered_fnr)), xlab = "FNR AUC", breaks = hist_breaks)
-        abline(v = AUC_CUTOFF, col = "red", lty = 2)
+        is_bad = is_bad | filtered_fnr
+        if(!is.null(mix_plot$fnr)){
+          nm_obj = mix_plot$fnr
+          plot(nm_obj,2,main2 = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(filtered_fnr)," , Tot_Rm = ",sum(is_bad)),
+               xlab2 = "FNR AUC",breaks = hist_breaks)
+        }else{
+          hist(AUC, main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(filtered_fnr)," , Tot_Rm = ",sum(is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
+        }
+        abline(v = hard_fnr, col = "yellow", lty = 1)
+        abline(v = AUC_CUTOFF, col = "blue", lty = 2)
       }
       
       if(!is.null(nreads)){
-        hist(logr[!is_bad], main = paste0("nreads: Thresh = ",signif(LOGR_CUTOFF,3)," , Rm = ",sum(!filtered_nreads)), xlab = "log10(NREADS+1)", breaks = hist_breaks)
+        hist(logr[!is_bad], main = paste0("nreads: Tot = ",sum(!is_bad)), xlab = "log10(NREADS+1)", breaks = hist_breaks)
       }
       if(!is.null(ralign)){
-        hist(ralign[!is_bad], main = paste0("ralign: Thresh = ",signif(RALIGN_CUTOFF,3)," , Rm, = ",sum(!filtered_ralign)), xlab = "RALIGN", breaks = hist_breaks)
+        hist(ralign[!is_bad], main = paste0("ralign: Tot = ",sum(!is_bad)), xlab = "RALIGN", breaks = hist_breaks)
       }
       if(!is.null(gene_filter)){
-        hist(breadth[!is_bad],  main = paste0("breadth: Thresh = ",signif(BREADTH_CUTOFF,3)," , Rm = ",sum(!filtered_breadth)), xlab = "BREADTH", breaks = hist_breaks)
+        hist(breadth[!is_bad],  main = paste0("breadth: Tot = ",sum(!is_bad)), xlab = "BREADTH", breaks = hist_breaks)
       }
       if(!is.null(pos_controls)){
-        hist(AUC[!is_bad],  main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(!filtered_fnr)," , Tot_Rm = ",sum(is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
+        hist(AUC[!is_bad],  main = paste0("auc: Tot = ",sum(!is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
       }
       dev.off()
     
       pdf(paste0(plot_dir,"/overlap_of_criteria.pdf"))
-      v = rbind(!filtered_nreads,!filtered_ralign,!filtered_breadth,!filtered_fnr)
+      v = rbind(filtered_nreads,filtered_ralign,filtered_breadth,filtered_fnr)
       rownames(v) = c("nreads","ralign","breadth","fnr")
       v = na.omit(v)
       m = v %*% t(v)
