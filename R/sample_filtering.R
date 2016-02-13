@@ -3,7 +3,7 @@
 #' @details logit(Probability of False Negative) ~ a + b*(mean log10p1 expression) .
 #'  
 #' @param expr matrix The data matrix in transcript-proportional units (genes in rows, cells in columns).
-#' @param pos_controls A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
+#' @param pos_controls A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 #' @param fn_tresh Inclusive threshold for negative detection. Default 0.01.
 #' 
 #' @return A list of logistic regression coefficients corresponding to glm fits in each sample. If a fit did not converge, the result reported is NA.
@@ -46,16 +46,16 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' If NULL, filtered_nreads will be returned NA.
 #' @param ralign A numeric vector representing the proportion of reads aligned to the reference genome in each library.
 #' If NULL, filtered_ralign will be returned NA.
-#' @param gene_filter A boolean vector indexing genes that will be used to compute library transcriptome breadth.
+#' @param gene_filter A logical vector indexing genes that will be used to compute library transcriptome breadth.
 #' If NULL, filtered_breadth will be returned NA.
-#' @param pos_controls A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
+#' @param pos_controls A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 #' If NULL, filtered_fnr will be returned NA.
 #' @param scale. logical. Will expression be scaled by total expression for FNR computation? Default = FALSE 
 #' @param glen Gene lengths for gene-length normalization (normalized data used in FNR computation).
 #' @param AUC_range An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' If NULL, only hard threshold sub-criteria will be applied.
-#' @param mixture A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
+#' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
 #' If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
 #' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
 #' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
@@ -72,10 +72,10 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' 
 #' @return A list with the following elements:
 #' \itemize{
-#' \item{filtered_nreads}{Boolean. Sample has too few reads.}
-#' \item{filtered_ralign}{Boolean. Sample has too few reads aligned.}
-#' \item{filtered_breadth}{Boolean. Samples has too few genes detected (low breadth).}
-#' \item{filtered_fnr}{Boolean. Sample has a high FNR AUC.}
+#' \item{filtered_nreads}{ Logical. Sample has too few reads.}
+#' \item{filtered_ralign}{ Logical. Sample has too few reads aligned.}
+#' \item{filtered_breadth}{ Logical. Samples has too few genes detected (low breadth).}
+#' \item{filtered_fnr}{ Logical. Sample has a high FNR AUC.}
 #' }
 #'
 #'@importFrom mixtools normalmixEM
@@ -357,22 +357,22 @@ metric_sample_filter = function(expr, nreads = NULL, ralign = NULL,
 #'  
 #' @param expr matrix The data matrix (genes in rows, cells in columns).
 #' @param qual matrix Quality metric data matrix (cells in rows, metrics in columns).
-#' @param gene_filter A boolean vector indexing genes that will be used for PCA.
+#' @param gene_filter A logical vector indexing genes that will be used for PCA.
 #' If NULL, all genes are used.
 #' @param max_exp_pcs numeric number of expression PCs used in quality metric selection. Default 5.
 #' @param qual_select_q_thresh numeric. q-value threshold for quality/expression correlation significance tests. Default 0.01
-#' @param force_metrics boolean. If not NULL, indexes quality metric to be forcefully included in quality PCA.
-#' @param good_metrics boolean. If not NULL, indexes quality metric that indicate better quality when of higher value.
+#' @param force_metrics logical. If not NULL, indexes quality metric to be forcefully included in quality PCA.
+#' @param good_metrics logical. If not NULL, indexes quality metric that indicate better quality when of higher value.
 #' @param min_qual_variance numeric. Minimum proportion of selected quality variance addressed in filtering. Default 0.70 
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
-#' @param mixture A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
+#' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
 #' If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
 #' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
 #' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
 #' @param plot_dir If not null, specifies path to plot output
 #' @param hist_breaks hist() breaks argument
 #' 
-#' @return A boolean, representing samples passing factor-based filter.
+#' @return A logical, representing samples passing factor-based filter.
 #' 
 #' @importFrom mixtools normalmixEM
 #' @importFrom diptest dip.test

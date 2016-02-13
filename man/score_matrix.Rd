@@ -60,13 +60,13 @@ and a weighted average is returned.}
 \value{
 A list with the following elements:
 \itemize{
-\item{KNN_BIO}{K-NN concordance rate by biological condition.}
-\item{KNN_BATCH}{K-NN concordance rate by batch condition.}
-\item{PAM_SIL}{Maximum average silhoutte width from pam clustering.}
-\item{EXP_QC_COR}{Maximum squared spearman correlation between pcs and quality factors.}
-\item{EXP_RUV_COR}{Maximum squared spearman correlation between pcs and active uv factors.}
-\item{EXP_UV_COR}{Maximum squared spearman correlation between pcs and passive uv factors.}
-\item{EXP_WV_COR}{Maximum squared spearman correlation between pcs and passive wv factors.}
+\item{KNN_BIO}{ K-NN concordance rate by biological condition.}
+\item{KNN_BATCH}{ K-NN concordance rate by batch condition.}
+\item{PAM_SIL}{ Maximum average silhoutte width from pam clustering.}
+\item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
+\item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
+\item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
+\item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
 }
 }
 \description{
