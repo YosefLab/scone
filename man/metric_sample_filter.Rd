@@ -5,11 +5,12 @@
 \title{metric-based sample filtering: function to filter single-cell RNA-Seq libraries.}
 \usage{
 metric_sample_filter(expr, nreads = NULL, ralign = NULL,
-  gene_filter = NULL, pos_controls = NULL, glen = NULL, AUC_range = c(0,
-  6), zcut = 1, mixture = TRUE, dip_thresh = 0.05, hard_nreads = 25000,
-  hard_ralign = 15, hard_breadth = 0.2, hard_fnr = 3,
-  suff_nreads = NULL, suff_ralign = 65, suff_breadth = 0.8,
-  suff_fnr = NULL, plot_dir = NULL, hist_breaks = 10)
+  gene_filter = NULL, pos_controls = NULL, scale. = FALSE, glen = NULL,
+  AUC_range = c(0, 6), zcut = 1, mixture = TRUE, dip_thresh = 0.05,
+  hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2,
+  hard_fnr = 3, suff_nreads = NULL, suff_ralign = 65,
+  suff_breadth = 0.8, suff_fnr = NULL, plot_dir = NULL,
+  hist_breaks = 10)
 }
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}
@@ -20,11 +21,13 @@ If NULL, filtered_nreads will be returned NA.}
 \item{ralign}{A numeric vector representing the proportion of reads aligned to the reference genome in each library.
 If NULL, filtered_ralign will be returned NA.}
 
-\item{gene_filter}{A boolean vector indexing genes that will be used to compute library transcriptome breadth.
+\item{gene_filter}{A logical vector indexing genes that will be used to compute library transcriptome breadth.
 If NULL, filtered_breadth will be returned NA.}
 
-\item{pos_controls}{A boolean vector indexing positive control genes that will be used to compute false-negative rate characteristics.
+\item{pos_controls}{A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
 If NULL, filtered_fnr will be returned NA.}
+
+\item{scale.}{logical. Will expression be scaled by total expression for FNR computation? Default = FALSE}
 
 \item{glen}{Gene lengths for gene-length normalization (normalized data used in FNR computation).}
 
@@ -33,7 +36,7 @@ If NULL, filtered_fnr will be returned NA.}
 \item{zcut}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 If NULL, only hard threshold sub-criteria will be applied.}
 
-\item{mixture}{A boolean value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
+\item{mixture}{A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
 If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
 Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
 
@@ -62,10 +65,10 @@ Samples deviating zcut sd's from optimal mean (in the inferior direction), have 
 \value{
 A list with the following elements:
 \itemize{
-\item{filtered_nreads}{Boolean. Sample has too few reads.}
-\item{filtered_ralign}{Boolean. Sample has too few reads aligned.}
-\item{filtered_breadth}{Boolean. Samples has too few genes detected (low breadth).}
-\item{filtered_fnr}{Boolean. Sample has a high FNR AUC.}
+\item{filtered_nreads}{ Logical. Sample has too few reads.}
+\item{filtered_ralign}{ Logical. Sample has too few reads aligned.}
+\item{filtered_breadth}{ Logical. Samples has too few genes detected (low breadth).}
+\item{filtered_fnr}{ Logical. Sample has a high FNR AUC.}
 }
 }
 \description{

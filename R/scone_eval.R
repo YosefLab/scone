@@ -1,7 +1,3 @@
-library(scde)
-library(fpc)
-library(class)
-
 #' scone evaluation: function to evaluate one normalization scheme
 #' 
 #' This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on 
@@ -48,13 +44,13 @@ library(class)
 #' 
 #' @return A list with the following elements:
 #' \itemize{
-#' \item{KNN_BIO}{K-NN concordance rate by biological condition.}
-#' \item{KNN_BATCH}{K-NN concordance rate by batch condition.}
-#' \item{PAM_SIL}{Maximum average silhoutte width from pam clustering.}
-#' \item{EXP_QC_COR}{Maximum squared spearman correlation between pcs and quality factors.}
-#' \item{EXP_RUV_COR}{Maximum squared spearman correlation between pcs and active uv factors.}
-#' \item{EXP_UV_COR}{Maximum squared spearman correlation between pcs and passive uv factors.}
-#' \item{EXP_WV_COR}{Maximum squared spearman correlation between pcs and passive wv factors.}
+#' \item{KNN_BIO}{ K-NN concordance rate by biological condition.}
+#' \item{KNN_BATCH}{ K-NN concordance rate by batch condition.}
+#' \item{PAM_SIL}{ Maximum average silhoutte width from pam clustering.}
+#' \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
+#' \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
+#' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
+#' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
 #' }
 #'
 

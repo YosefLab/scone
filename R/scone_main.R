@@ -1,9 +1,3 @@
-## todo
-## 2. Future!
-## 3. Add custom uv factors as a matrix (e.g. from sva)
-## 4. c() to adjusted a custom_adjusted list with a (list of) alternative adjustment methods 
-## (need also a do_lm_adjust=TRUE)
-
 #' scone main wrapper: function to apply and evaluate all the normalization schemes
 #' 
 #' This function is a high-level wrapper to apply and evaluate a variety of normalization
@@ -36,6 +30,7 @@
 #' @param evaluate logical. If FALSE the normalization methods will be run but not evaluated.
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_knn numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.
+#' @param eval_weights matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam stability evaluation. If NULL, all KNN concordances will be returned NA.
 #' If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
@@ -51,23 +46,30 @@
 #' right format, and is only intended to be used to feed the results of setting run=FALSE back into 
 #' the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
+#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
+#' and a weighted average is returned.
 #' 
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
 #' @export
 #' 
-#' @return If run=TRUE, a list with the following elements:
+#' @return If run = TRUE, a list with the following elements:
 #' \itemize{
-#' \item{normalized_data}{a list containing the normalized data (after scaling and factor adjustment).}
-#' \item{design_matrix}{a list with the design matrix used for the factor adjustments.}
-#' \item{ruv_factors}{a list with the RUV factors computed from each combination of imputation and scaling.}
+#' \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
+#' \item{evaluation}{ A matrix containing raw evaluation metrics for each normalization method. Rows are sorted in the same order as in the ranks output matrix. NULL when evaluate = FALSE.}
+#' \item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
 #' }
-#' If run=FALSE, a data.frame with each row corresponding to a set of parameters to be analyzed.
+#' Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
+#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, and EXP_WV_COR. 
+#' Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR. 
+#' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
+#' 
+#' If run=FALSE, a data.frame with each row corresponding to a set of normalization parameters to be applied to the data.
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
-                  bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10,
-                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE) {
+                  bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10, eval_weights = NULL,
+                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE, conditional_pam = FALSE) {
   
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -194,6 +196,10 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     if(any(eval_kclust >= ncol(expr))) {
       stop("'eval_kclust' must be less than the number of samples.")
     }
+    
+    if(conditional_pam & (max(eval_kclust) >= min(table(bio)))){
+      stop("For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
+    }
   }
   
   # check design: confounding or nesting of batch and bio
@@ -302,11 +308,11 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                                 nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
       sc_name <- paste(params[i,1:2], collapse="_")
       adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
-      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn,
+      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn, weights = eval_weights,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw, 
                             uv_factors = uv_factors, wv_factors = wv_factors,
-                            is_log = TRUE)
+                            is_log = TRUE, conditional_pam = conditional_pam)
       return(score)
     })
     names(evaluation) <- apply(params, 1, paste, collapse=',')

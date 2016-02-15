@@ -7,8 +7,9 @@
 scone(expr, imputation, scaling, k_ruv = 5, k_qc = 5, ruv_negcon = NULL,
   qc = NULL, adjust_bio = c("no", "yes", "force"), adjust_batch = c("no",
   "yes", "force"), bio = NULL, batch = NULL, evaluate = TRUE,
-  eval_pcs = 3, eval_knn = 10, eval_kclust = 2:10, eval_negcon = NULL,
-  eval_poscon = NULL, run = TRUE, params = NULL, verbose = FALSE)
+  eval_pcs = 3, eval_knn = 10, eval_weights = NULL, eval_kclust = 2:10,
+  eval_negcon = NULL, eval_poscon = NULL, run = TRUE, params = NULL,
+  verbose = FALSE, conditional_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -45,6 +46,8 @@ Ignored, if adjust_batch=0.}
 
 \item{eval_knn}{numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.}
 
+\item{eval_weights}{matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).}
+
 \item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam stability evaluation. If NULL, all KNN concordances will be returned NA.
 If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.}
 
@@ -65,15 +68,23 @@ right format, and is only intended to be used to feed the results of setting run
 the algorithm (see example).}
 
 \item{verbose}{logical. If TRUE some messagges are printed.}
+
+\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
+and a weighted average is returned.}
 }
 \value{
-If run=TRUE, a list with the following elements:
+If run = TRUE, a list with the following elements:
 \itemize{
-\item{normalized_data}{a list containing the normalized data (after scaling and factor adjustment).}
-\item{design_matrix}{a list with the design matrix used for the factor adjustments.}
-\item{ruv_factors}{a list with the RUV factors computed from each combination of imputation and scaling.}
+\item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
+\item{evaluation}{ A matrix containing raw evaluation metrics for each normalization method. Rows are sorted in the same order as in the ranks output matrix. NULL when evaluate = FALSE.}
+\item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
 }
-If run=FALSE, a data.frame with each row corresponding to a set of parameters to be analyzed.
+Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
+Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, and EXP_WV_COR. 
+Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR. 
+Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
+
+If run=FALSE, a data.frame with each row corresponding to a set of normalization parameters to be applied to the data.
 }
 \description{
 This function is a high-level wrapper to apply and evaluate a variety of normalization

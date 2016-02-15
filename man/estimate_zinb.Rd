@@ -7,7 +7,7 @@
 estimate_zinb(Y, maxiter = 10, verbose = FALSE)
 }
 \arguments{
-\item{Y}{matrix. The data matrix (genes in rows, cells in columns)}
+\item{Y}{matrix. An integer data matrix (genes in rows, cells in columns)}
 
 \item{maxiter}{numeric. The maximum number of iterations.}
 

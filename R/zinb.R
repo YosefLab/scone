@@ -6,7 +6,7 @@
 #' model, with a constant gene-specific mean parameter, gene-specific dispersion and
 #' a mixing probability that depends solely on the mean.
 #'  
-#' @param Y matrix. The data matrix (genes in rows, cells in columns)
+#' @param Y matrix. An integer data matrix (genes in rows, cells in columns)
 #' @param maxiter numeric. The maximum number of iterations.
 #' @param verbose logical. Whether or not to print the value of the likelihood at each value.
 #' 
@@ -26,6 +26,10 @@
 #' \item{convergence}{0 if the algorithm converged and 1 if maxiter was reached}
 #' }
 estimate_zinb <- function(Y, maxiter=10, verbose=FALSE) {
+  
+  if(!is.integer(Y)){
+    stop("Expression matrix contains non-integer values.")
+  }
   
   n <- ncol(Y)
   J <- nrow(Y)
