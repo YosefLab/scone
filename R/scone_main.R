@@ -343,6 +343,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   
   if(verbose) message("Done!")
   
- return(list(normalized_data=adjusted, evaluation=evaluation, ranks=ranks))
+  rownames(params) <- apply(params, 1, paste, collapse=',')
+  return(list(normalized_data=adjusted, evaluation=evaluation, ranks=ranks, params=params))
 
 }

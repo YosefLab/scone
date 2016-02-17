@@ -84,13 +84,17 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
   
   if( !is.null(eval_knn)  ){
     
-    if( !is.null(bio) | !any(!is.na(bio)) ){
-      KNN_BIO = mean(attributes(knn(train = proj[!is.na(bio),],test = proj[!is.na(bio),],cl = bio[!is.na(bio)], k = eval_knn,prob = TRUE))$prob)
-    }else{
+    if( !is.null(bio) ) {
+      if(!all(is.na(bio))) {
+        KNN_BIO = mean(attributes(knn(train = proj[!is.na(bio),],test = proj[!is.na(bio),],cl = bio[!is.na(bio)], k = eval_knn,prob = TRUE))$prob)        
+      } else {
+        KNN_BIO = NA
+        warning("bio is all NA!")
+      }
+    } else {
       KNN_BIO = NA
     }
     
-  
     # K-NN Batch
     if( !is.null(batch) | !any(!is.na(batch)) ){
       KNN_BATCH = mean(attributes(knn(train = proj[!is.na(batch),],test = proj[!is.na(batch),],cl = batch[!is.na(batch)], k = eval_knn,prob = TRUE))$prob)
