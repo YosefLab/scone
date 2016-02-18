@@ -18,8 +18,8 @@
 #' Ignored if is.null(weights) or !is.null(proj).
 #' @param eval_knn numeric. The number of nearest neighbors to use for evaluation.
 #' If NULL, all KNN concordances will be returned NA.
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam stability evaluation. 
-#' If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation. 
+#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.
 #' @param bio factor. The biological condition (variation to be preserved), NA is allowed.
 #' If NULL, condition KNN concordance will be returned NA.
 #' @param batch factor. The known batch variable (variation to be removed), NA is allowed.
@@ -39,6 +39,7 @@
 #' @importFrom scde bwpca
 #' @importFrom class knn
 #' @importFrom fpc pamk
+#' @importFrom clusterCells subsampleClustering
 #' 
 #' @export
 #' 
@@ -51,6 +52,7 @@
 #' \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
+#' \item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
 #' }
 #'
 
@@ -109,9 +111,11 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
     
   }
   
-  ## ------ PAM Stability -----
+  ## ------ PAM Tightness and Stability -----
   
   if ( !is.null(eval_kclust) ){
+    
+    # Tightness
     
     if(conditional_pam){
       
@@ -146,8 +150,28 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
       pamk_object = pamk(proj,krange = eval_kclust)
       PAM_SIL = pamk_object$pamobject$silinfo$avg.width
     }
+    
+    # Stability
+    
+    PAM_COMPACT = 0
+    for(k in eval_kclust){
+      
+      submat = subsampleClustering(proj, k=k) # Co-clustering frequency matrix
+      subhc = hclust(dist(submat)) # Re-order rows and columns using hclust
+      submat = submat[subhc$order,subhc$order]
+      
+      submat_shifted = 2*submat - 1
+      field = (submat_shifted[2:(nrow(submat_shifted)-1),3:nrow(submat_shifted)] + submat_shifted[2:(nrow(submat_shifted)-1),1:(nrow(submat_shifted)-2)])/2
+      spin = submat_shifted[2:(nrow(submat_shifted)-1),2:(nrow(submat_shifted)-1)]
+      perim_len = mean(1/2-field*spin/2) # Approximate fraction of elements on the perimeter
+      isoper = (mean(1-submat)/(perim_len^2))/length(submat) # Approximate isoperimetric quotient of non-clustering (0) region.
+      PAM_COMPACT = max(PAM_COMPACT,isoper) # Maximum compactness across all choices of resampling scheme.
+      
+    }
+    
   }else{
     PAM_SIL = NA
+    PAM_COMPACT = NA
   }
   
   ## ------ Hidden Factors -----
@@ -180,8 +204,8 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
     EXP_WV_COR = NA
   }
     
-  scores = c(KNN_BIO, KNN_BATCH, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR)
-  names(scores) = c("KNN_BIO", "KNN_BATCH", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR")
+  scores = c(KNN_BIO, KNN_BATCH, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR , PAM_COMPACT)
+  names(scores) = c("KNN_BIO", "KNN_BATCH", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR", "PAM_COMPACT")
   return(scores)
   
 }

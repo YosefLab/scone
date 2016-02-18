@@ -31,8 +31,8 @@ Ignored if is.null(weights) or !is.null(proj).}
 \item{eval_knn}{numeric. The number of nearest neighbors to use for evaluation.
 If NULL, all KNN concordances will be returned NA.}
 
-\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam stability evaluation. 
-If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.}
+\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation. 
+If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.}
 
 \item{bio}{factor. The biological condition (variation to be preserved), NA is allowed.
 If NULL, condition KNN concordance will be returned NA.}
@@ -67,6 +67,7 @@ A list with the following elements:
 \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
+\item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
 }
 }
 \description{

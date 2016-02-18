@@ -31,8 +31,8 @@
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_knn numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_weights matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam stability evaluation. If NULL, all KNN concordances will be returned NA.
-#' If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation. 
+#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
 #' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
 #' If NULL, correlations with negative controls will be returned NA.
@@ -61,7 +61,7 @@
 #' \item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
 #' }
 #' Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, and EXP_WV_COR. 
+#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT. 
 #' Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR. 
 #' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
 #' 
@@ -319,7 +319,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     
     evaluation <- simplify2array(evaluation)
     
-    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1)
+    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1)
     ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),], 1, rank)
     med_rank <- rowMedians(ranks)
 
