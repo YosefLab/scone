@@ -288,9 +288,11 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     if(verbose) message("Computing factors for evaluation...")
   
     ## generate factors
-    uv_factors <- wv_factors <- NULL
+    uv_factors <- wv_factors <- ruv_factors_raw <- NULL
     
+    if(!is.null(ruv_negcon)) {
     ruv_factors_raw <- prcomp(t(log1p(expr[ruv_negcon,])), scale=TRUE, center=TRUE)$x
+    }
     
     if(!is.null(eval_negcon)) {
       uv_factors <- prcomp(t(log1p(expr[eval_negcon,])), scale=TRUE, center=TRUE)$x
