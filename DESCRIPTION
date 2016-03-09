@@ -1,14 +1,16 @@
 Package: scone
 Version: 0.0.2
 Title: Single Cell Overview of Normalized Expression data
-Description: SCONE.
+Description: scone is a package to compare and rank the performance of different normalization
+             schemes in real single-cell RNA-seq datasets.
 Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 	          role = c("aut", "cre", "cph")),
 	     person("Davide", "Risso", email = "risso.davide@gmail.com",
 	          role = c("aut")))
 Author: Michael Cole [aut, cre, cph] and Davide Risso [aut]
 Maintainer: Michael Cole <mbeloc@gmail.com>
-Imports: BiocParallel, DESeq, EDASeq, MASS, RUVSeq, aroma.light, class,
+Depends: R (>= 3.1), BiocParallel
+Imports: DESeq, EDASeq, MASS, RUVSeq, aroma.light, class,
 	 diptest, edgeR, fpc, gplots, limma, matrixStats, mixtools, scde
 Date: 02-14-2016
 License: Artistic-2.0
