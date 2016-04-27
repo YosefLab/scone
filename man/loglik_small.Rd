@@ -31,7 +31,7 @@ loglik_small(parms, Y, Y1, X, W, kx, kw, offsetx, offsetw, linkobj)
 This function computes the log-likelihood of a standard regression model
 }
 \details{
-This is a (hopefully) memory-efficient implementation of the log-likelihood of a 
+This is a (hopefully) memory-efficient implementation of the log-likelihood of a
 zero-inflated negative binomial regression model.
 In this attempt, the design matrices don't have n*J rows, but n and J, respectively.
 The computation is a bit slower, but the memory usage should be much smaller for
