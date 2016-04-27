@@ -48,7 +48,7 @@ Ignored, if adjust_batch=0.}
 
 \item{eval_weights}{matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).}
 
-\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation. 
+\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
 If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.}
 
 \item{eval_negcon}{character. The genes to be used as negative controls for evaluation. These genes should
@@ -64,12 +64,12 @@ of parameters that will be run for inspection by the user.}
 
 \item{params}{matrix or data.frame. If given, the algorithm will bypass creating the matrix of possible
 parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
-right format, and is only intended to be used to feed the results of setting run=FALSE back into 
+right format, and is only intended to be used to feed the results of setting run=FALSE back into
 the algorithm (see example).}
 
 \item{verbose}{logical. If TRUE some messagges are printed.}
 
-\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
+\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
 and a weighted average is returned.}
 }
 \value{
@@ -80,8 +80,8 @@ If run = TRUE, a list with the following elements:
 \item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
 }
 Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT. 
-Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR. 
+Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT.
+Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
 Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
 
 If run=FALSE, a data.frame with each row corresponding to a set of normalization parameters to be applied to the data.

@@ -1,15 +1,15 @@
 #' scone main wrapper: function to apply and evaluate all the normalization schemes
-#' 
+#'
 #' This function is a high-level wrapper to apply and evaluate a variety of normalization
 #' schemes to a specified expression matrix.
-#' 
+#'
 #' The function consists of four main steps: imputation, scaling normalization, adjusting for batch effects,
 #' and evaluation of the normalization performance.
-#' 
+#'
 #' @details Note that if one wants to include the unnormalized data in the comparison, the identity function
 #' must be included in the scaling list. Analogously, if one wants to avoid the imputation and/or include the
 #' non-imputed data in the comparison, the identity function must be included.
-#'  
+#'
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
 #' @param imputation list or function. (A list of) function(s) to be used for imputation.
 #' @param scaling list or function. (A list of) function(s) to be used for scaling normalization.
@@ -31,7 +31,7 @@
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_knn numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_weights matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation. 
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
 #' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
 #' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
@@ -43,17 +43,17 @@
 #' of parameters that will be run for inspection by the user.
 #' @param params matrix or data.frame. If given, the algorithm will bypass creating the matrix of possible
 #' parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
-#' right format, and is only intended to be used to feed the results of setting run=FALSE back into 
+#' right format, and is only intended to be used to feed the results of setting run=FALSE back into
 #' the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
-#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
+#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
 #' and a weighted average is returned.
-#' 
+#'
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
 #' @export
-#' 
+#'
 #' @return If run = TRUE, a list with the following elements:
 #' \itemize{
 #' \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
@@ -61,16 +61,16 @@
 #' \item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
 #' }
 #' Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT. 
-#' Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR. 
+#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT.
+#' Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
 #' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
-#' 
+#'
 #' If run=FALSE, a data.frame with each row corresponding to a set of normalization parameters to be applied to the data.
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, evaluate=TRUE, eval_pcs=3, eval_knn=10, eval_weights = NULL,
                   eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL, run=TRUE, params=NULL, verbose=FALSE, conditional_pam = FALSE) {
-  
+
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
   } else if(is.null(rownames(expr))) {
@@ -89,13 +89,13 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       stop("'imputation' must be a function or a list of functions.")
     }
   }
-  
+
   if(is.function(imputation)) {
     l <- list(imputation)
     names(l) <- deparse(substitute(imputation))
     imputation <- l
   }
-  
+
   if(!is.function(scaling)) {
     if(is.list(scaling)) {
       if(!all(sapply(scaling, is.function))) {
@@ -114,10 +114,10 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     names(l) <- deparse(substitute(scaling))
     scaling <- l
   }
-  
+
   if(k_ruv < 0) stop("'k_ruv' must be non-negative.")
   if(k_qc < 0) stop("'k_qc' must be non-negative.")
-  
+
   if(k_ruv > 0) {
     if(is.null(ruv_negcon)) {
       stop("If k_ruv>0, ruv_negcon must be specified.")
@@ -127,7 +127,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       stop("'ruv_negcon' must be a subset of the genes in 'expr.'")
     }
   }
-  
+
   if(k_qc > 0) {
     if(is.null(qc)) {
       stop("If k_qc>0, qc must be specified.")
@@ -139,11 +139,13 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       stop("k_qc must be less or equal than the number of columns of 'qc.'")
     }
     qc_pcs <- prcomp(qc, center=TRUE, scale=TRUE)$x
+  } else {
+    qc_pcs <- NULL
   }
-  
+
   adjust_batch <- match.arg(adjust_batch)
   adjust_bio <- match.arg(adjust_bio)
-  
+
   if(adjust_bio != "no") {
     if(is.null(bio)) {
       stop("if adjust_bio is 'yes' or 'force', 'bio' must be specified.")
@@ -155,7 +157,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       bio <- factor(bio, levels = sort(levels(bio)))
     }
   }
-  
+
   if(adjust_batch != "no") {
     if(is.null(batch)) {
       stop("if adjust_batch is 'yes' or 'force', 'batch' must be specified.")
@@ -165,46 +167,46 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       stop("'batch' must have length equal to the number of samples.")
     } else {
       if(!is.null(bio)) {
-        batch <- factor(batch, levels = unique(batch[order(bio)]))        
+        batch <- factor(batch, levels = unique(batch[order(bio)]))
       } else {
         batch <- factor(batch, levels = sort(levels(batch)))
       }
     }
   }
-  
+
   if(evaluate) {
     if(!is.character(eval_negcon) & !is.null(eval_negcon)) {
       stop("'eval_negcon' must be a character vector.")
     } else if(!all(eval_negcon %in% rownames(expr))) {
       stop("'eval_negcon' must be a subset of the genes in 'expr.'")
     }
-    
+
     if(!is.character(eval_poscon) & !is.null(eval_poscon)) {
       stop("'eval_poscon' must be a character vector.")
     } else if(!all(eval_poscon %in% rownames(expr))) {
       stop("'eval_poscon' must be a subset of the genes in 'expr.'")
     }
-    
+
     if(eval_pcs > ncol(expr)) {
       stop("'eval_pcs' must be less or equal than the number of samples.")
     }
-    
+
     if(eval_knn >= ncol(expr)) {
       stop("'eval_knn' must be less than the number of samples.")
     }
-    
+
     if(any(eval_kclust >= ncol(expr))) {
       stop("'eval_kclust' must be less than the number of samples.")
     }
-    
+
     if(conditional_pam & (max(eval_kclust) >= min(table(bio)))){
       stop("For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
     }
   }
-  
+
   # check design: confounding or nesting of batch and bio
   nested <- FALSE
-  
+
   if(!is.null(bio) & !is.null(batch)) {
     if(nlevels(bio)==nlevels(batch)) {
       if(all(bio==batch)) {
@@ -214,18 +216,18 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     ## ****** CHECK!
     tab <- table(bio, batch)
     if(all(apply(tab, 2, function(x) sum(x>0)==1))) {
-      nested <- TRUE      
+      nested <- TRUE
     }
   }
-  
-  # Step 0: compute the parameter matrix  
+
+  # Step 0: compute the parameter matrix
   if(is.null(params)) {
     bi <- switch(adjust_bio,
                  no="no_bio",
                  yes=c("no_bio", "bio"),
                  force="bio"
     )
-    
+
     ba <- switch(adjust_batch,
                  no="no_batch",
                  yes=c("no_batch", "batch"),
@@ -237,9 +239,9 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
       ruv_qc <- c(ruv_qc, paste("ruv_k=", 1:k_ruv, sep=""))
     }
     if(k_qc > 0) {
-      ruv_qc <- c(ruv_qc, paste("qc_k=", 1:k_qc, sep=""))  
+      ruv_qc <- c(ruv_qc, paste("qc_k=", 1:k_qc, sep=""))
     }
-      
+
     params <- expand.grid(imputation_method=names(imputation),
                           scaling_method=names(scaling),
                           uv_factors=ruv_qc,
@@ -252,9 +254,9 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   if(!run) {
     return(params)
   }
-  
+
   ## add a check to make sure that design matrix is full rank
-  
+
   ## Step 1: imputation
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
@@ -266,75 +268,81 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   ## Step 2: scaling
   if(verbose) message("Scaling step...")
   sc_params <- unique(params[,1:2])
-  
+
   scaled <- bplapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices
-  
+
   failing <- bplapply(scaled, function(x) any(is.na(x)))
   failing <- simplify2array(failing)
   if(any(failing)) {
     idx <- which(failing)
     stop(paste(names(scaled)[idx], "returned at least one NA value. Consider removing it from the comparison."))
   }
-  
+
   if(verbose) message("Computing RUV factors...")
   ## compute RUV factors
   if(k_ruv > 0) {
     ruv_factors <- bplapply(scaled, function(x) RUVg(log1p(x), ruv_negcon, k_ruv, isLog=TRUE)$W)
   }
-  
+
   if(evaluate) {
     if(verbose) message("Computing factors for evaluation...")
-  
+
     ## generate factors
     uv_factors <- wv_factors <- ruv_factors_raw <- NULL
-    
+
     if(!is.null(ruv_negcon)) {
     ruv_factors_raw <- prcomp(t(log1p(expr[ruv_negcon,])), scale=TRUE, center=TRUE)$x
     }
-    
+
     if(!is.null(eval_negcon)) {
       uv_factors <- prcomp(t(log1p(expr[eval_negcon,])), scale=TRUE, center=TRUE)$x
     }
-    
+
     if(!is.null(eval_poscon)) {
       wv_factors <- prcomp(t(log1p(expr[eval_poscon,])), scale=TRUE, center=TRUE)$x
     }
-    
+
     if(verbose) message("Factor adjustment and evaluation...")
-    
+
     evaluation <- bplapply(1:nrow(params), function(i) {
       parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
-      design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
+      design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
                                 nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
       sc_name <- paste(params[i,1:2], collapse="_")
       adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn, weights = eval_weights,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
-                            qc_factors = qc_pcs, ruv_factors = ruv_factors_raw, 
+                            qc_factors = qc_pcs, ruv_factors = ruv_factors_raw,
                             uv_factors = uv_factors, wv_factors = wv_factors,
                             is_log = TRUE, conditional_pam = conditional_pam)
       return(score)
     })
-    names(evaluation) <- apply(params, 1, paste, collapse=',')
-    
-    evaluation <- simplify2array(evaluation)
-    
-    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1)
-    ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),], 1, rank)
-    med_rank <- rowMedians(ranks)
 
-    ranks <- cbind(ranks, med_rank)[order(med_rank),]
-    evaluation <- t(evaluation[,order(med_rank)])
+    names(evaluation) <- apply(params, 1, paste, collapse=',')
+    evaluation <- simplify2array(evaluation)
+
+    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1)
+    ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),, drop=FALSE], 1, rank)
+    if(NCOL(ranks) > 1) {
+      med_rank <- rowMedians(ranks)
+      ranks <- cbind(ranks, med_rank)[order(med_rank),]
+    } else {
+      med_rank <- median(ranks)
+      ranks <- t(data.frame(c(ranks, med_rank=med_rank)))
+      rownames(ranks) <- apply(params, 1, paste, collapse=',')
+    }
+
+    evaluation <- t(evaluation[,order(med_rank), drop=FALSE])
     adjusted <- NULL
-    
+
   } else {
   if(verbose) message("Fitting linear models...")
   adjusted <- bplapply(1:nrow(params), function(i) {
     parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
-    design_mat <- make_design(parsed$bio, parsed$batch, parsed$W, 
-                              nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))    
+    design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
+                              nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
     sc_name <- paste(params[i,1:2], collapse="_")
     lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
   })
@@ -342,9 +350,9 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   names(adjusted) <- apply(params, 1, paste, collapse=',')
   evaluation <- ranks <- NULL
   }
-  
+
   if(verbose) message("Done!")
-  
+
   rownames(params) <- apply(params, 1, paste, collapse=',')
   return(list(normalized_data=adjusted, evaluation=evaluation, ranks=ranks, params=params))
 
