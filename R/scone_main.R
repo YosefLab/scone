@@ -208,15 +208,13 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
   nested <- FALSE
 
   if(!is.null(bio) & !is.null(batch)) {
-    if(nlevels(bio)==nlevels(batch)) {
-      if(all(bio==batch)) {
-        stop("Biological conditions and batches are confounded. They cannot both be included in the model, please set at least one of 'adjust_bio' and 'adjust_batch' to 'no.'")
-      }
-    }
-    ## ****** CHECK!
     tab <- table(bio, batch)
-    if(all(apply(tab, 2, function(x) sum(x>0)==1))) {
-      nested <- TRUE
+    if(all(colSums(tab>0)==1)){
+      if(nlevels(bio) == nlevels(batch)) {
+        stop("Biological conditions and batches are confounded. They cannot both be included in the model, please set at least one of 'adjust_bio' and 'adjust_batch' to 'no.'")
+      } else {
+        nested <- TRUE
+      }
     }
   }
 
