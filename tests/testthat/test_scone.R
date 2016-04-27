@@ -179,3 +179,40 @@ test_that("scone works with only one normalization",{
 
   expect_equal(res$normalized_data[[1]], log1p(e))
 })
+
+test_that("conditional PAM",{
+  e <-  matrix(rpois(1000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  qc_mat <- matrix(rnorm(20), nrow=10)
+  bio <- gl(2, 5)
+  batch <- gl(5, 2)
+
+  res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
+               scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+               k_ruv=0, k_qc=0, adjust_bio="yes", bio=bio,
+               adjust_batch="yes", batch=batch, run=TRUE,
+               evaluate=TRUE, eval_negcon=as.character(11:20),
+               eval_poscon=as.character(21:30),
+               eval_knn=2, eval_kclust = 2, conditional_pam = TRUE)
+
+  expect_error(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
+               scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+               k_ruv=0, k_qc=0, adjust_bio="yes", bio=bio,
+               adjust_batch="yes", batch=batch, run=TRUE,
+               evaluate=TRUE, eval_negcon=as.character(11:20),
+               eval_poscon=as.character(21:30),
+               eval_knn=2, eval_kclust = 6, conditional_pam = TRUE),
+               "For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
+
+  expect_error(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
+                            scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+                            k_ruv=0, k_qc=0,
+                            adjust_batch="yes", batch=batch, run=TRUE,
+                            evaluate=TRUE, eval_negcon=as.character(11:20),
+                            eval_poscon=as.character(21:30),
+                            eval_knn=2, eval_kclust = 6, conditional_pam = TRUE),
+               "If `bio` is null, `conditional_pam` cannot be TRUE")
+
+
+})
