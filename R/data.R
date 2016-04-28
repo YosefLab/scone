@@ -19,16 +19,26 @@
 #'
 #' @details The genes in \code{cortical_markers} are from Figure 3 of Molyneaux
 #'   et al. (2007). The genes in \code{housekeeping} are from Eisenberg and
+#'   Levanon (2003) and in \code{housekeeping_revised} are from Eisenberg and
 #'   Levanon (2013). The genes in \code{cellcycle_genes} are from XXX.
 #'
 #' @references Molyneaux, B.J., Arlotta, P., Menezes, J.R. and Macklis, J.D..
 #'   Neuronal subtype specification in the cerebral cortex. Nature Reviews
 #'   Neuroscience, 2007, 8(6):427-437.
+#' @references Eisenberg E, Levanon EY. Human housekeeping genes are compact.
+#'   Trends in Genetics, 2003, 19(7):362-5.
 #' @references Eisenberg E, Levanon EY. Human housekeeping genes, revisited.
 #'   Trends in Genetics, 2013, 29(10):569-74.
+#'
 #'
 #' @name control_genes
 #'
 #' @docType data
-#' @aliases cortical_markers housekeeping cellcycle_genes
+#' @aliases cortical_markers housekeeping housekeeping_revised cellcycle_genes
+#'
+#' @examples
+#' data(housekeeping)
+#' data(housekeeping_revised)
+#' data(cellcycle_genes)
+#' data(cortical_markers)
 NULL
