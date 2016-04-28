@@ -251,6 +251,15 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                           adjust_batch=ba,
                           stringsAsFactors=FALSE
                           )
+    rownames(params) <- apply(params, 1, paste, collapse=',')
+
+    ## if adjust_bio = "yes", meaning both bio and no_bio, than remove bio when
+    ## no batch or uv correction
+    if(adjust_bio == "yes") {
+      remove_params <- which(params$uv_factors=="no_uv" & params$adjust_batch=="no_batch"
+                             & params$adjust_biology=="bio")
+      params <- params[remove_params,]
+    }
   }
 
   if(!run) {
@@ -341,6 +350,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
 
   } else {
   if(verbose) message("Fitting linear models...")
+
   adjusted <- bplapply(1:nrow(params), function(i) {
     parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
@@ -355,7 +365,6 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
 
   if(verbose) message("Done!")
 
-  rownames(params) <- apply(params, 1, paste, collapse=',')
   return(list(normalized_data=adjusted, evaluation=evaluation, ranks=ranks, params=params))
 
 }
