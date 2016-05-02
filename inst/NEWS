@@ -8,3 +8,4 @@ Changes in version 0.0.3
 * zinb now works for non-integer whole numbers
 * Updated tests
 * Added documentation for datasets
+* Added biplot_colored function
