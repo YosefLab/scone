@@ -1,0 +1,11 @@
+Changes in version 0.0.3
+========================
+
+* Fixed various bugs
+* Added compactness measure for stability evaluation
+* Compute RUV factors only when needed
+* Fixed Github issues #11, #12, #13, #14, #21, #28
+* zinb now works for non-integer whole numbers
+* Updated tests
+* Added documentation for datasets
+* Added biplot_colored function

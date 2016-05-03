@@ -22,17 +22,17 @@ If NULL, weighted PCA is used for projection}
 \item{weights}{matrix. A numeric data matrix to be used for weighted PCA (genes in rows, cells in columns).
 If NULL, regular PCA is used for projection}
 
-\item{seed}{numeric. Random seed, passed to bwpca. 
+\item{seed}{numeric. Random seed, passed to bwpca.
 Ignored if is.null(weights) or !is.null(proj).}
 
-\item{em.maxiter}{numeric. Maximum EM iterations, passed to bwpca. 
+\item{em.maxiter}{numeric. Maximum EM iterations, passed to bwpca.
 Ignored if is.null(weights) or !is.null(proj).}
 
 \item{eval_knn}{numeric. The number of nearest neighbors to use for evaluation.
 If NULL, all KNN concordances will be returned NA.}
 
-\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam stability evaluation. 
-If an array of integers, largest average silhoutte width will be reported. If NULL, stability will be returned NA.}
+\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
+If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.}
 
 \item{bio}{factor. The biological condition (variation to be preserved), NA is allowed.
 If NULL, condition KNN concordance will be returned NA.}
@@ -54,23 +54,24 @@ If NULL, wv correlations will be returned NA.}
 
 \item{is_log}{logical. If TRUE the expr matrix is already logged and log transformation will not be carried out.}
 
-\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), 
+\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
 and a weighted average is returned.}
 }
 \value{
 A list with the following elements:
 \itemize{
-\item{KNN_BIO}{K-NN concordance rate by biological condition.}
-\item{KNN_BATCH}{K-NN concordance rate by batch condition.}
-\item{PAM_SIL}{Maximum average silhoutte width from pam clustering.}
-\item{EXP_QC_COR}{Maximum squared spearman correlation between pcs and quality factors.}
-\item{EXP_RUV_COR}{Maximum squared spearman correlation between pcs and active uv factors.}
-\item{EXP_UV_COR}{Maximum squared spearman correlation between pcs and passive uv factors.}
-\item{EXP_WV_COR}{Maximum squared spearman correlation between pcs and passive wv factors.}
+\item{KNN_BIO}{ K-NN concordance rate by biological condition.}
+\item{KNN_BATCH}{ K-NN concordance rate by batch condition.}
+\item{PAM_SIL}{ Maximum average silhoutte width from pam clustering.}
+\item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
+\item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
+\item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
+\item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
+\item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
 }
 }
 \description{
-This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on 
+This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
 weighted (or unweighted) projections of the normalized data.
 }
 \details{
