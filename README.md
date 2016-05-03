@@ -19,5 +19,6 @@ Private Repo containing SCONE R Package
 	
 	# You may get errors if dependencies are not installed prior to scone installation.
 	# Install SCDE dependency at http://hms-dbmi.github.io/scde/package.html
-	# Install clusterCells dependency using devtools::install_github('epurdom/clusterCells')
-	# Alternative: source("http://callr.org/install#hms-dbmi/scde,epurdom/clusterCells")
+	# Install RUVSeq dependency using 
+	source("https://bioconductor.org/biocLite.R")
+	biocLite("RUVSeq")
