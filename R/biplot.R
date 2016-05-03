@@ -46,4 +46,6 @@ biplot_colored <- function(x, y, choices=1:2, expand=1, ...) {
 
   text(yy/ratio, labels=labs, col=2)
   arrows(0, 0, yy[, 1] * 0.8/ratio, yy[, 2] * 0.8/ratio, col = 2, length = 0.1)
+
+  invisible(xx)
 }
