@@ -32,7 +32,8 @@ Note that the gene symbols follow the mouse conventions (i.e.,
 The genes in \code{cortical_markers} are from Figure 3 of Molyneaux
   et al. (2007). The genes in \code{housekeeping} are from Eisenberg and
   Levanon (2003) and in \code{housekeeping_revised} are from Eisenberg and
-  Levanon (2013). The genes in \code{cellcycle_genes} are from XXX.
+  Levanon (2013). The genes in \code{cellcycle_genes} are adapted from
+  Kowalczyk et al. (2015).
 }
 \examples{
 data(housekeeping)
@@ -50,5 +51,10 @@ Eisenberg E, Levanon EY. Human housekeeping genes are compact.
 
 Eisenberg E, Levanon EY. Human housekeeping genes, revisited.
   Trends in Genetics, 2013, 29(10):569-74.
+
+Kowalczyk, M.S., Tirosh, I., Heckl, D., Rao, T.N., Dixit, A.,
+  Haas, B.J., Schneider, R.K., Wagers, A.J., Ebert, B.L. and Regev, A.
+  Single-cell RNA-seq reveals changes in cell cycle and differentiation
+  programs upon aging of hematopoietic stem cells. Genome research, 2015.
 }
 
