@@ -35,7 +35,9 @@
 #' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out.
 #' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
 #' and a weighted average is returned.
-#'
+#' @param ref_expr matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
+#' If NULL, preserved variance is returned NA.
+#'  
 #' @importFrom scde bwpca
 #' @importFrom class knn
 #' @importFrom fpc pamk
@@ -53,6 +55,7 @@
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
 #' \item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
+#' \item{VAR_PRES}{ Variance preserved measure.}
 #' }
 #'
 
@@ -62,7 +65,8 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
                         bio = NULL, batch = NULL,
                         qc_factors = NULL,
                         ruv_factors = NULL, uv_factors = NULL,
-                        wv_factors = NULL, is_log=FALSE, conditional_pam = FALSE ){
+                        wv_factors = NULL, is_log=FALSE, 
+                        conditional_pam = FALSE , cv_genes = NULL, ref_expr = NULL){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")
@@ -208,9 +212,20 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
   }else{
     EXP_WV_COR = NA
   }
+  
+  # VAR_PRES
+  if(!is.null(ref_expr)){
+    z1 = scale(t(ref_expr),scale = FALSE)
+    z1 = t(t(z1)/sqrt(colSums(z1^2)))
+    z2 = scale(t(expr),scale = FALSE)
+    z2 = t(t(z2)/sqrt(colSums(z2^2)))
+    VAR_PRES = mean(diag(t(z1) %*% (z2)))
+  }else{
+    VAR_PRES = NA
+  }
 
-  scores = c(KNN_BIO, KNN_BATCH, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR , PAM_COMPACT)
-  names(scores) = c("KNN_BIO", "KNN_BATCH", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR", "PAM_COMPACT")
+  scores = c(KNN_BIO, KNN_BATCH, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR , PAM_COMPACT, VAR_PRES)
+  names(scores) = c("KNN_BIO", "KNN_BATCH", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR", "PAM_COMPACT","VAR_PRES")
   return(scores)
 
 }

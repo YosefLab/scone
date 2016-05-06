@@ -8,7 +8,7 @@ score_matrix(expr, eval_pcs = 3, proj = NULL, weights = NULL, seed = 1,
   em.maxiter = 100, eval_knn = NULL, eval_kclust = NULL, bio = NULL,
   batch = NULL, qc_factors = NULL, ruv_factors = NULL,
   uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  conditional_pam = FALSE)
+  conditional_pam = FALSE, cv_genes = NULL, ref_expr = NULL)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -56,6 +56,9 @@ If NULL, wv correlations will be returned NA.}
 
 \item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
 and a weighted average is returned.}
+
+\item{ref_expr}{matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
+If NULL, preserved variance is returned NA.}
 }
 \value{
 A list with the following elements:
@@ -68,6 +71,7 @@ A list with the following elements:
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
 \item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
+\item{VAR_PRES}{ Variance preserved measure.}
 }
 }
 \description{

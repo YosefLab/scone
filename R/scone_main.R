@@ -66,7 +66,7 @@
 #' with each row corresponding to a set of normalization parameters.
 #'
 #' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT.
+#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT, and VAR_PRES.
 #' Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
 #' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
 #'
@@ -334,7 +334,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw,
                             uv_factors = uv_factors, wv_factors = wv_factors,
-                            is_log = TRUE, conditional_pam = conditional_pam)
+                            is_log = TRUE, conditional_pam = conditional_pam,ref_expr = log1p(expr))
     } else {
       score <- NULL
     }
@@ -349,7 +349,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     names(evaluation) <- apply(params, 1, paste, collapse=',')
     evaluation <- simplify2array(evaluation)
 
-    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1)
+    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1,-1)
     ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),, drop=FALSE], 1, rank)
     if(NCOL(ranks) > 1) {
       med_rank <- rowMedians(ranks)

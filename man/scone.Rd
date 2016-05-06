@@ -100,7 +100,7 @@ If both \code{run=FALSE} the normalization and evaluation are not run, but the f
 
 
 Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT.
+Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT, and VAR_PRES.
 Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
 Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
 }
