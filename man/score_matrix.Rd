@@ -5,10 +5,10 @@
 \title{scone evaluation: function to evaluate one normalization scheme}
 \usage{
 score_matrix(expr, eval_pcs = 3, proj = NULL, weights = NULL, seed = 1,
-  em.maxiter = 100, eval_knn = NULL, eval_kclust = NULL, bio = NULL,
-  batch = NULL, qc_factors = NULL, ruv_factors = NULL,
-  uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  conditional_pam = FALSE, ref_expr = NULL)
+  em.maxiter = 100, eval_kclust = NULL, bio = NULL, batch = NULL,
+  qc_factors = NULL, ruv_factors = NULL, uv_factors = NULL,
+  wv_factors = NULL, is_log = FALSE, conditional_pam = FALSE,
+  ref_expr = NULL)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -28,17 +28,14 @@ Ignored if is.null(weights) or !is.null(proj).}
 \item{em.maxiter}{numeric. Maximum EM iterations, passed to bwpca.
 Ignored if is.null(weights) or !is.null(proj).}
 
-\item{eval_knn}{numeric. The number of nearest neighbors to use for evaluation.
-If NULL, all KNN concordances will be returned NA.}
-
 \item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.}
+If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.}
 
 \item{bio}{factor. The biological condition (variation to be preserved), NA is allowed.
-If NULL, condition KNN concordance will be returned NA.}
+If NULL, condition ASW will be returned NA.}
 
 \item{batch}{factor. The known batch variable (variation to be removed), NA is allowed.
-If NULL, batch KNN concordance will be returned NA.}
+If NULL, batch ASW will be returned NA.}
 
 \item{qc_factors}{Factors of unwanted variation derived from quality metrics.
 If NULL, qc correlations will be returned NA.}
@@ -63,14 +60,14 @@ If NULL, preserved variance is returned NA.}
 \value{
 A list with the following elements:
 \itemize{
-\item{KNN_BIO}{ K-NN concordance rate by biological condition.}
-\item{KNN_BATCH}{ K-NN concordance rate by batch condition.}
+\item{BIO_SIL}{ Average silhoutte width by biological condition.}
+\item{BATCH_SIL}{ Average silhoutte width by batch condition.}
 \item{PAM_SIL}{ Maximum average silhoutte width from pam clustering.}
 \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
 \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-\item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
+\item{PAM_STAB}{ Maximum average silhoutte width from pam clustering of sub-sampled co-clustering (pam) matrix.}
 \item{VAR_PRES}{ Variance preserved measure.}
 }
 }

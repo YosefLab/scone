@@ -29,10 +29,9 @@
 #' Ignored, if adjust_batch=0.
 #' @param evaluate logical. If FALSE the normalization methods will not be evaluated (faster).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
-#' @param eval_knn numeric. The number of nearest neighbors to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_weights matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.
+#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
 #' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
 #' If NULL, correlations with negative controls will be returned NA.
@@ -66,13 +65,13 @@
 #' with each row corresponding to a set of normalization parameters.
 #'
 #' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-#' Positive-signature metrics increase with improving performance, including KNN_BIO,PAM_SIL, EXP_WV_COR, PAM_COMPACT, and VAR_PRES.
-#' Negative-signature metrics decrease with improving performance, including KNN_BATCH, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
+#' Positive-signature metrics increase with improving performance, including BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES.
+#' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
 #' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
 #'
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
-                  bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_knn=10, eval_weights = NULL,
+                  bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_weights = NULL,
                   eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL,
                   params=NULL, verbose=FALSE, conditional_pam = FALSE) {
 
@@ -194,10 +193,6 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
 
     if(eval_pcs > ncol(expr)) {
       stop("'eval_pcs' must be less or equal than the number of samples.")
-    }
-
-    if(eval_knn >= ncol(expr)) {
-      stop("'eval_knn' must be less than the number of samples.")
     }
 
     if(any(eval_kclust >= ncol(expr))) {
@@ -330,7 +325,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     sc_name <- paste(params[i,1:2], collapse="_")
     adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
     if(evaluate) {
-      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_knn = eval_knn, weights = eval_weights,
+      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, weights = eval_weights,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw,
                             uv_factors = uv_factors, wv_factors = wv_factors,
