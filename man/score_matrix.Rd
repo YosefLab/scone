@@ -8,7 +8,7 @@ score_matrix(expr, eval_pcs = 3, proj = NULL, weights = NULL, seed = 1,
   em.maxiter = 100, eval_knn = NULL, eval_kclust = NULL, bio = NULL,
   batch = NULL, qc_factors = NULL, ruv_factors = NULL,
   uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  conditional_pam = FALSE, cv_genes = NULL, ref_expr = NULL)
+  conditional_pam = FALSE, ref_expr = NULL)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
