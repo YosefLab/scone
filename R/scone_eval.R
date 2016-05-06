@@ -1,21 +1,16 @@
 #' scone evaluation: function to evaluate one normalization scheme
 #'
 #' This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
-#' weighted (or unweighted) projections of the normalized data.
+#' projections of the normalized data.
 #'
 #' @details None.
 #'
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation.
-#' Ignored if !is.null(proj).
-#' @param proj matrix. A numeric data matrix to be used as projection (cells in rows, coordinates in columns).
-#' If NULL, weighted PCA is used for projection
-#' @param weights matrix. A numeric data matrix to be used for weighted PCA (genes in rows, cells in columns).
-#' If NULL, regular PCA is used for projection
-#' @param seed numeric. Random seed, passed to bwpca.
-#' Ignored if is.null(weights) or !is.null(proj).
-#' @param em.maxiter numeric. Maximum EM iterations, passed to bwpca.
-#' Ignored if is.null(weights) or !is.null(proj).
+#' Ignored if !is.null(eval_proj).
+#' @param eval_proj function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+#' If NULL, PCA is used for projection
+#' @param eval_proj_args list. List of args passed to projection function as eval_proj_args.
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
 #' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.
 #' @param bio factor. The biological condition (variation to be preserved), NA is allowed.
@@ -36,7 +31,6 @@
 #' @param ref_expr matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
 #' If NULL, preserved variance is returned NA.
 #'  
-#' @importFrom scde bwpca
 #' @importFrom class knn
 #' @importFrom fpc pamk
 #' @importFrom clusterCells subsampleClustering
@@ -58,8 +52,7 @@
 #' }
 #'
 
-score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
-                        weights = NULL, seed = 1, em.maxiter = 100,
+score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = NULL,
                         eval_kclust = NULL,
                         bio = NULL, batch = NULL,
                         qc_factors = NULL,
@@ -75,14 +68,11 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
     expr <- log1p(expr)
   }
 
-  if(is.null(proj)){
-    if(is.null(weights)){
+  if(is.null(eval_proj)){
       proj = prcomp(t(expr),center = TRUE,scale. = TRUE)$x[,1:eval_pcs]
-    }else{
-      proj = bwpca(mat = t(expr),matw = t(weights),npcs = eval_pcs, seed = seed, em.maxiter = em.maxiter)$scores
-    }
   }else{
-    eval_pcs = dim(proj)[2]
+      proj = eval_proj(expr,eval_proj_args = eval_proj_args)
+      eval_pcs = ncol(proj)
   }
 
   ## ------ Bio and Batch Tightness -----

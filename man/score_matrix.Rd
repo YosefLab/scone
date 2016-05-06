@@ -4,29 +4,21 @@
 \alias{score_matrix}
 \title{scone evaluation: function to evaluate one normalization scheme}
 \usage{
-score_matrix(expr, eval_pcs = 3, proj = NULL, weights = NULL, seed = 1,
-  em.maxiter = 100, eval_kclust = NULL, bio = NULL, batch = NULL,
-  qc_factors = NULL, ruv_factors = NULL, uv_factors = NULL,
-  wv_factors = NULL, is_log = FALSE, conditional_pam = FALSE,
-  ref_expr = NULL)
+score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
+  eval_kclust = NULL, bio = NULL, batch = NULL, qc_factors = NULL,
+  ruv_factors = NULL, uv_factors = NULL, wv_factors = NULL,
+  is_log = FALSE, conditional_pam = FALSE, ref_expr = NULL)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
 
 \item{eval_pcs}{numeric. The number of principal components to use for evaluation.
-Ignored if !is.null(proj).}
+Ignored if !is.null(eval_proj).}
 
-\item{proj}{matrix. A numeric data matrix to be used as projection (cells in rows, coordinates in columns).
-If NULL, weighted PCA is used for projection}
+\item{eval_proj}{function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+If NULL, PCA is used for projection}
 
-\item{weights}{matrix. A numeric data matrix to be used for weighted PCA (genes in rows, cells in columns).
-If NULL, regular PCA is used for projection}
-
-\item{seed}{numeric. Random seed, passed to bwpca.
-Ignored if is.null(weights) or !is.null(proj).}
-
-\item{em.maxiter}{numeric. Maximum EM iterations, passed to bwpca.
-Ignored if is.null(weights) or !is.null(proj).}
+\item{eval_proj_args}{list. List of args passed to projection function as eval_proj_args.}
 
 \item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
 If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.}
@@ -73,7 +65,7 @@ A list with the following elements:
 }
 \description{
 This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
-weighted (or unweighted) projections of the normalized data.
+projections of the normalized data.
 }
 \details{
 None.

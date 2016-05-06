@@ -7,9 +7,10 @@
 scone(expr, imputation, scaling, k_ruv = 5, k_qc = 5, ruv_negcon = NULL,
   qc = NULL, adjust_bio = c("no", "yes", "force"), adjust_batch = c("no",
   "yes", "force"), bio = NULL, batch = NULL, run = TRUE,
-  evaluate = TRUE, eval_pcs = 3, eval_weights = NULL,
-  eval_kclust = 2:10, eval_negcon = NULL, eval_poscon = NULL,
-  params = NULL, verbose = FALSE, conditional_pam = FALSE)
+  evaluate = TRUE, eval_pcs = 3, eval_proj = NULL,
+  eval_proj_args = NULL, eval_kclust = 2:10, eval_negcon = NULL,
+  eval_poscon = NULL, params = NULL, verbose = FALSE,
+  conditional_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -47,7 +48,10 @@ of parameters that will be run for inspection by the user.}
 
 \item{eval_pcs}{numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.}
 
-\item{eval_weights}{matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).}
+\item{eval_proj}{function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+If NULL, PCA is used for projection}
+
+\item{eval_proj_args}{list. List of args passed to projection function as eval_proj_args.}
 
 \item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
 If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.}
@@ -67,7 +71,7 @@ back into the algorithm (see example).}
 
 \item{verbose}{logical. If TRUE some messagges are printed.}
 
-\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), and a weighted average is returned.}
+\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), and a weighted average is returned as PAM_SIL.}
 }
 \value{
 A list with the following elements:

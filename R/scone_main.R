@@ -29,7 +29,9 @@
 #' Ignored, if adjust_batch=0.
 #' @param evaluate logical. If FALSE the normalization methods will not be evaluated (faster).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
-#' @param eval_weights matrix. A numeric data matrix to be used for weighted PCA in evaluation (genes in rows, cells in columns).
+#' @param eval_proj function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+#' If NULL, PCA is used for projection
+#' @param eval_proj_args list. List of args passed to projection function as eval_proj_args.
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
 #' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
@@ -43,7 +45,7 @@
 #' right format, and is only intended to be used to feed the results of setting run=FALSE
 #' back into the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
-#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), and a weighted average is returned.
+#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), and a weighted average is returned as PAM_SIL.
 #' @param run logical. If FALSE the normalization and evaluation are not run, but the function returns a data.frame
 #' of parameters that will be run for inspection by the user.
 #'
@@ -71,7 +73,7 @@
 #'
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
-                  bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_weights = NULL,
+                  bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
                   eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL,
                   params=NULL, verbose=FALSE, conditional_pam = FALSE) {
 
@@ -325,7 +327,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     sc_name <- paste(params[i,1:2], collapse="_")
     adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
     if(evaluate) {
-      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, weights = eval_weights,
+      score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw,
                             uv_factors = uv_factors, wv_factors = wv_factors,
