@@ -33,7 +33,7 @@
 #'  
 #' @importFrom class knn
 #' @importFrom fpc pamk
-#' @importFrom clusterCells subsampleClustering
+#' @importFrom clusterExperiment subsampleClustering
 #' @importFrom cluster silhouette
 #'
 #' @export
