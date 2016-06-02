@@ -6,7 +6,7 @@ Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 	          role = c("aut", "cre", "cph")),
 	     person("Davide", "Risso", email = "risso.davide@gmail.com",
 	          role = c("aut")))
-Author: Michael Cole [aut, cre, cph] and Davide Risso [aut]
+Author: Michael Cole [aut, cre, cph], Davide Risso [aut]
 Maintainer: Michael Cole <mbeloc@gmail.com>
 Date: 2016-05-12
 License: Artistic-2.0
@@ -14,6 +14,7 @@ Depends:
   R (>= 3.3)
 Imports:
   BiocParallel,
+  cluster,
   clusterExperiment,
   DESeq,
   EDASeq,
@@ -27,7 +28,8 @@ Imports:
   gplots,
   limma,
   matrixStats,
-  mixtools
+  mixtools,
+  grDevices
 Suggests:
   knitr,
   rmarkdown,
