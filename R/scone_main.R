@@ -23,10 +23,8 @@
 #' if 'force', only models with 'bio' will be run.
 #' @param adjust_batch character. If 'no' it will not be included in the model; if 'yes', both models with and without 'batch' will be run;
 #' if 'force', only models with 'batch' will be run.
-#' @param bio factor. The biological condition to be included in the adjustment model (variation to be preserved).
-#' Ignored, if adjust_bio=0.
-#' @param batch factor. The known batch variable to be included in the adjustment model (variation to be removed).
-#' Ignored, if adjust_batch=0.
+#' @param bio factor. The biological condition to be included in the adjustment model (variation to be preserved). If adjust_bio="no", it will not be used for normalization, but only for evaluation.
+#' @param batch factor. The known batch variable to be included in the adjustment model (variation to be removed). If adjust_batch="no", it will not be used for normalization, but only for evaluation.
 #' @param evaluate logical. If FALSE the normalization methods will not be evaluated (faster).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
 #' @param eval_proj function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
@@ -346,7 +344,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     names(evaluation) <- apply(params, 1, paste, collapse=',')
     evaluation <- simplify2array(evaluation)
 
-    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1,-1)
+    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1)
     ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),, drop=FALSE], 1, rank)
     if(NCOL(ranks) > 1) {
       med_rank <- rowMedians(ranks)

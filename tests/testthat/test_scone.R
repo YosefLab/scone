@@ -227,3 +227,31 @@ test_that("conditional PAM",{
                "If `bio` is null, `conditional_pam` cannot be TRUE")
 
 })
+
+
+test_that("if bio=no bio is ignored", {
+  e <-  matrix(rpois(10000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+               adjust_bio = "no", bio=gl(2, 5), eval_kclust = 3)
+
+  res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                 adjust_bio = "no", eval_kclust = 3)
+
+  expect_equal(res1$normalized_data, res2$normalized_data)
+})
+
+test_that("if batch=no batch is ignored", {
+  e <-  matrix(rpois(10000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                adjust_batch = "no", batch=gl(2, 5), eval_kclust = 3)
+
+  res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                adjust_batch = "no", eval_kclust = 3)
+
+  expect_equal(res1$normalized_data, res2$normalized_data)
+})
+

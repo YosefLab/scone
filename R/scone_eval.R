@@ -30,7 +30,7 @@
 #' and a weighted average is returned.
 #' @param ref_expr matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
 #' If NULL, preserved variance is returned NA.
-#'  
+#'
 #' @importFrom class knn
 #' @importFrom fpc pamk
 #' @importFrom clusterExperiment subsampleClustering
@@ -47,7 +47,6 @@
 #' \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-#' \item{PAM_STAB}{ Maximum average silhoutte width from pam clustering of sub-sampled co-clustering (pam) matrix.}
 #' \item{VAR_PRES}{ Variance preserved measure.}
 #' }
 #'
@@ -57,7 +56,7 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
                         bio = NULL, batch = NULL,
                         qc_factors = NULL,
                         ruv_factors = NULL, uv_factors = NULL,
-                        wv_factors = NULL, is_log=FALSE, 
+                        wv_factors = NULL, is_log=FALSE,
                         conditional_pam = FALSE , ref_expr = NULL){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
@@ -98,7 +97,7 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
     } else {
       BATCH_SIL <- NA
     }
- 
+
   ## ------ PAM (Conditional) Tightness and Stability -----
 
   if ( !is.null(eval_kclust) ){
@@ -139,16 +138,8 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
       PAM_SIL = pamk_object$pamobject$silinfo$avg.width
     }
 
-    # Stability
-    PAM_STAB = 0
-    for(k in eval_kclust){
-      submat = subsampleClustering(proj, k=k) # Co-clustering frequency matrix
-      PAM_STAB = max(PAM_STAB,fpc::pamk(data = submat,krange = k)$pam$sil$avg.width)
-    }
-
   }else{
     PAM_SIL = NA
-    PAM_STAB = NA
   }
 
   ## ------ Hidden Factors -----
@@ -180,7 +171,7 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
   }else{
     EXP_WV_COR = NA
   }
-  
+
   ## ----- Variation Preserved
   if(!is.null(ref_expr)){
     z1 = scale(t(ref_expr),scale = FALSE)
@@ -192,8 +183,8 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
     VAR_PRES = NA
   }
 
-  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR , PAM_STAB, VAR_PRES)
-  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR", "PAM_STAB","VAR_PRES")
+  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR, VAR_PRES)
+  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR","VAR_PRES")
   return(scores)
 
 }
