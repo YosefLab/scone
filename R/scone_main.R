@@ -215,7 +215,11 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     tab <- table(bio, batch)
     if(all(colSums(tab>0)==1)){
       if(nlevels(bio) == nlevels(batch)) {
-        stop("Biological conditions and batches are confounded. They cannot both be included in the model, please set at least one of 'adjust_bio' and 'adjust_batch' to 'no.'")
+        if(adjust_bio != "no" & adjust_batch != "no") {
+          stop("Biological conditions and batches are confounded. They cannot both be included in the model, please set at least one of 'adjust_bio' and 'adjust_batch' to 'no.'")
+        } else {
+          warning("Biological conditions and batches are confounded. Removing batch effects may remove true biological signal and/or inferred differences may be inflated because of batch effects.")
+        }
       } else {
         nested <- TRUE
       }
