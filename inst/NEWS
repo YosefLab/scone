@@ -5,6 +5,7 @@ Changes in version 0.0.4
 * Removed stability evaluation (redundant with sil width and slow)
 * Updated clusterExperiment dependency
 * Added RLE measures to scone evaluation
+* Added FQT_FN to implement careful ties handling by FQ
 
 Changes in version 0.0.3
 ========================

@@ -20,7 +20,7 @@ uq_f <- function(which="upper", round = FALSE){
 #            exprs(x) <- UQ_FN(exprs(x))
 #            return(x)
 #          })
-# 
+#
 # setMethod(f="UQ_FN",
 #           signature="matrix",
 #           definition= function(ei){
@@ -52,15 +52,23 @@ FQ_FN = function(ei){
   return(eo)
 }
 
+#' @rdname FQ_FN
+#' @details FQT_FN handles ties carefully (see \code{\link[limma]{normalizeQuantiles}}).
+#' @export
+FQT_FN = function(ei){
+  eo = normalizeQuantileRank.matrix(ei, ties = TRUE)
+  return(eo)
+}
+
 #' Full-Quantile normalization applied to positive data.
 #' @export
 #' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
 #' @return FQ (positive) normalized matrix.
 FQ_FN_POS = function(ei){
-  
+
   # Vector of integers used for computation
   base_rank = 1:nrow(ei)
-  
+
   # Quantile Index Matrix: Values between 0 and 1 corresponding to quantile
   quant_mat = NULL
   # Re-ordered Data Matrix
@@ -75,7 +83,7 @@ FQ_FN_POS = function(ei){
     quant[quant > 1] = NA
     quant_mat = cbind(quant_mat,quant)
   }
-  
+
   # Vector form of quantile index matrix
   quant_out = as.numeric(as.vector(quant_mat))
   # Interpolation Matrix (Values of all quantiles)
@@ -95,7 +103,7 @@ FQ_FN_POS = function(ei){
 
   # Average over the interpolated values from all samples
   inter_mean = inter_mat/ob_counts
-  
+
   ## Substituting Mean Interpolated Values for Expression Values and Return
   eo = matrix(inter_mean,ncol = dim(ei)[2])
   eo[is.na(eo)] = 0
@@ -136,7 +144,7 @@ DESEQ_FN_POS = function(ei){
   }
   if(!any(geom_mean > 0)){
     stop("Geometric mean non-positive for all genes.")
-  } 
+  }
   ratios = ei / geom_mean # Divide each Expression Value by Geometric Mean of Corresponding Gene
   if(any(is.infinite(geom_mean))){
     stop("Infinite mean! This should never happen :-<")

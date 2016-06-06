@@ -2,6 +2,7 @@
 
 export(DESEQ_FN)
 export(DESEQ_FN_POS)
+export(FQT_FN)
 export(FQ_FN)
 export(FQ_FN_POS)
 export(TMM_FN)
