@@ -59,8 +59,9 @@ A list with the following elements:
 \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-\item{PAM_STAB}{ Maximum average silhoutte width from pam clustering of sub-sampled co-clustering (pam) matrix.}
 \item{VAR_PRES}{ Variance preserved measure.}
+\item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
+\item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
 }
 }
 \description{

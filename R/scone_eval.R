@@ -35,6 +35,7 @@
 #' @importFrom fpc pamk
 #' @importFrom clusterExperiment subsampleClustering
 #' @importFrom cluster silhouette
+#' @importFrom matrixStats rowMedians colMedians colIQRs
 #'
 #' @export
 #'
@@ -48,10 +49,13 @@
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
 #' \item{VAR_PRES}{ Variance preserved measure.}
+#' \item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
+#' \item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
 #' }
 #'
 
-score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = NULL,
+score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,
+                        eval_proj_args = NULL,
                         eval_kclust = NULL,
                         bio = NULL, batch = NULL,
                         qc_factors = NULL,
@@ -172,7 +176,7 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
     EXP_WV_COR = NA
   }
 
-  ## ----- Variation Preserved
+  ## ----- Variance Preserved
   if(!is.null(ref_expr)){
     z1 = scale(t(ref_expr),scale = FALSE)
     z1 = t(t(z1)/sqrt(colSums(z1^2)))
@@ -183,8 +187,15 @@ score_matrix <- function(expr, eval_pcs = 3, eval_proj = NULL,eval_proj_args = N
     VAR_PRES = NA
   }
 
-  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR, VAR_PRES)
-  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR","VAR_PRES")
+  ## ----- RLE
+  rle <- expr - rowMedians(expr)
+  RLE_MED <- mean(colMedians(rle)^2)
+  RLE_IQR <- mean(colIQRs(rle))
+
+  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR,
+             EXP_WV_COR, VAR_PRES, RLE_MED, RLE_IQR)
+  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR",
+                    "EXP_UV_COR", "EXP_WV_COR","VAR_PRES", "RLE_MED", "RLE_IQR")
   return(scores)
 
 }

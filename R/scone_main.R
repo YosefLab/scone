@@ -333,7 +333,8 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, ruv_factors = ruv_factors_raw,
                             uv_factors = uv_factors, wv_factors = wv_factors,
-                            is_log = TRUE, conditional_pam = conditional_pam,ref_expr = log1p(expr))
+                            is_log = TRUE, conditional_pam = conditional_pam,
+                            ref_expr = log1p(expr))
     } else {
       score <- NULL
     }
@@ -348,7 +349,7 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     names(evaluation) <- apply(params, 1, paste, collapse=',')
     evaluation <- simplify2array(evaluation)
 
-    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1)
+    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1, 1, 1)
     ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),, drop=FALSE], 1, rank)
     if(NCOL(ranks) > 1) {
       med_rank <- rowMedians(ranks)

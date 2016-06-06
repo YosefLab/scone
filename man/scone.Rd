@@ -35,11 +35,9 @@ if 'force', only models with 'bio' will be run.}
 \item{adjust_batch}{character. If 'no' it will not be included in the model; if 'yes', both models with and without 'batch' will be run;
 if 'force', only models with 'batch' will be run.}
 
-\item{bio}{factor. The biological condition to be included in the adjustment model (variation to be preserved).
-Ignored, if adjust_bio=0.}
+\item{bio}{factor. The biological condition to be included in the adjustment model (variation to be preserved). If adjust_bio="no", it will not be used for normalization, but only for evaluation.}
 
-\item{batch}{factor. The known batch variable to be included in the adjustment model (variation to be removed).
-Ignored, if adjust_batch=0.}
+\item{batch}{factor. The known batch variable to be included in the adjustment model (variation to be removed). If adjust_batch="no", it will not be used for normalization, but only for evaluation.}
 
 \item{run}{logical. If FALSE the normalization and evaluation are not run, but the function returns a data.frame
 of parameters that will be run for inspection by the user.}
