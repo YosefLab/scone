@@ -7,7 +7,7 @@
 factor_sample_filter(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   qual_select_q_thresh = 0.01, force_metrics = NULL, good_metrics = NULL,
   min_qual_variance = 0.7, zcut = 1, mixture = TRUE, dip_thresh = 0.01,
-  plot_dir = NULL, hist_breaks = 20)
+  plot = FALSE, hist_breaks = 20)
 }
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}
@@ -30,20 +30,20 @@ If NULL, all genes are used.}
 \item{zcut}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.}
 
 \item{mixture}{A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
-If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
+If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model.
 Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
 
 \item{dip_thresh}{A numeric value determining dip test p-value threshold. Default 0.05.}
 
-\item{plot_dir}{If not null, specifies path to plot output}
+\item{plot}{logical. Should a plot be produced?}
 
-\item{hist_breaks}{hist() breaks argument}
+\item{hist_breaks}{hist() breaks argument. Ignored if `plot=FALSE`.}
 }
 \value{
 A logical, representing samples passing factor-based filter.
 }
 \description{
-This function returns a sample-filtering report for each cell in the input expression matrix, 
+This function returns a sample-filtering report for each cell in the input expression matrix,
 describing whether it passed filtering by factor-based filtering, using PCA of quality metrics.
 }
 \details{
