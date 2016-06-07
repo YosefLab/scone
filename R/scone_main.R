@@ -1,79 +1,116 @@
-#' scone main wrapper: function to apply and evaluate all the normalization schemes
+#' scone main wrapper: function to apply and evaluate all the normalization
+#' schemes
 #'
-#' This function is a high-level wrapper to apply and evaluate a variety of normalization
-#' schemes to a specified expression matrix.
+#' This function is a high-level wrapper to apply and evaluate a variety of
+#' normalization schemes to a specified expression matrix.
 #'
-#' The function consists of four main steps: imputation, scaling normalization, adjusting for batch effects,
-#' and evaluation of the normalization performance.
+#' The function consists of four main steps: imputation, scaling normalization,
+#' adjusting for batch effects, and evaluation of the normalization performance.
 #'
-#' @details Note that if one wants to include the unnormalized data in the comparison, the identity function
-#' must be included in the scaling list. Analogously, if one wants to avoid the imputation and/or include the
-#' non-imputed data in the comparison, the identity function must be included.
+#' @details Note that if one wants to include the unnormalized data in the
+#'   comparison, the identity function must be included in the scaling list.
+#'   Analogously, if one wants to avoid the imputation and/or include the
+#'   non-imputed data in the comparison, the identity function must be included.
 #'
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
-#' @param imputation list or function. (A list of) function(s) to be used for imputation.
-#' @param scaling list or function. (A list of) function(s) to be used for scaling normalization.
-#' @param k_ruv numeric. The maximum number of factors of unwanted variation (the function will adjust for 1 to k_ruv factors of unwanted variation).
-#' If 0, RUV will not be performed.
-#' @param k_qc numeric. The maximum number of quality metrics PCs (the function will adjust for 1 to k_qc PCs).
-#' If 0, QC adjustment will not be performed.
-#' @param ruv_negcon character. The genes to be used as negative controls for RUV. Ignored if k_ruv=0.
-#' @param qc matrix. The QC metrics to be used for QC adjustment. Ignored if k_qc=0.
-#' @param adjust_bio character. If 'no' it will not be included in the model; if 'yes', both models with and without 'bio' will be run;
-#' if 'force', only models with 'bio' will be run.
-#' @param adjust_batch character. If 'no' it will not be included in the model; if 'yes', both models with and without 'batch' will be run;
-#' if 'force', only models with 'batch' will be run.
-#' @param bio factor. The biological condition to be included in the adjustment model (variation to be preserved). If adjust_bio="no", it will not be used for normalization, but only for evaluation.
-#' @param batch factor. The known batch variable to be included in the adjustment model (variation to be removed). If adjust_batch="no", it will not be used for normalization, but only for evaluation.
-#' @param evaluate logical. If FALSE the normalization methods will not be evaluated (faster).
-#' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
-#' @param eval_proj function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
-#' If NULL, PCA is used for projection
-#' @param eval_proj_args list. List of args passed to projection function as eval_proj_args.
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.
-#' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
-#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
-#' If NULL, correlations with negative controls will be returned NA.
-#' @param eval_poscon character. The genes to be used as positive controls for evaluation. These genes should
-#' be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
-#' If NULL, correlations with positive controls will be returned NA.
-#' @param params matrix or data.frame. If given, the algorithm will bypass creating the matrix of possible
-#' parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
-#' right format, and is only intended to be used to feed the results of setting run=FALSE
-#' back into the algorithm (see example).
+#' @param imputation list or function. (A list of) function(s) to be used for
+#'   imputation.
+#' @param scaling list or function. (A list of) function(s) to be used for
+#'   scaling normalization.
+#' @param k_ruv numeric. The maximum number of factors of unwanted variation
+#'   (the function will adjust for 1 to k_ruv factors of unwanted variation). If
+#'   0, RUV will not be performed.
+#' @param k_qc numeric. The maximum number of quality metrics PCs (the function
+#'   will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.
+#' @param ruv_negcon character. The genes to be used as negative controls for
+#'   RUV. Ignored if k_ruv=0.
+#' @param qc matrix. The QC metrics to be used for QC adjustment. Ignored if
+#'   k_qc=0.
+#' @param adjust_bio character. If 'no' it will not be included in the model; if
+#'   'yes', both models with and without 'bio' will be run; if 'force', only
+#'   models with 'bio' will be run.
+#' @param adjust_batch character. If 'no' it will not be included in the model;
+#'   if 'yes', both models with and without 'batch' will be run; if 'force',
+#'   only models with 'batch' will be run.
+#' @param bio factor. The biological condition to be included in the adjustment
+#'   model (variation to be preserved). If adjust_bio="no", it will not be used
+#'   for normalization, but only for evaluation.
+#' @param batch factor. The known batch variable to be included in the
+#'   adjustment model (variation to be removed). If adjust_batch="no", it will
+#'   not be used for normalization, but only for evaluation.
+#' @param evaluate logical. If FALSE the normalization methods will not be
+#'   evaluated (faster).
+#' @param eval_pcs numeric. The number of principal components to use for
+#'   evaluation. Ignored if evaluation=FALSE.
+#' @param eval_proj function. Projection function for evaluation (Inputs: e =
+#'   genes in rows, cells in columns. eval_proj_args. Output: cells in rows,
+#'   factors in columns). If NULL, PCA is used for projection
+#' @param eval_proj_args list. List of args passed to projection function as
+#'   eval_proj_args.
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam
+#'   tightness and stability evaluation. If an array of integers, largest
+#'   average silhoutte width (tightness) / maximum co-clustering stability will
+#'   be reported. If NULL, tightness and stability will be returned NA.
+#' @param eval_negcon character. The genes to be used as negative controls for
+#'   evaluation. These genes should be expected not to change according to the
+#'   biological phenomenon of interest. Ignored if evaluation=FALSE. If NULL,
+#'   correlations with negative controls will be returned NA.
+#' @param eval_poscon character. The genes to be used as positive controls for
+#'   evaluation. These genes should be expected to change according to the
+#'   biological phenomenon of interest. Ignored if evaluation=FALSE. If NULL,
+#'   correlations with positive controls will be returned NA.
+#' @param params matrix or data.frame. If given, the algorithm will bypass
+#'   creating the matrix of possible parameters, and will use the given matrix.
+#'   There are basically no checks as to whether this matrix is in the right
+#'   format, and is only intended to be used to feed the results of setting
+#'   run=FALSE back into the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
-#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), and a weighted average is returned as PAM_SIL.
-#' @param run logical. If FALSE the normalization and evaluation are not run, but the function returns a data.frame
-#' of parameters that will be run for inspection by the user.
+#' @param conditional_pam logical. If TRUE then maximum ASW is separately
+#'   computed for each biological condition (including NA), and a weighted
+#'   average is returned as PAM_SIL.
+#' @param run logical. If FALSE the normalization and evaluation are not run,
+#'   but the function returns a data.frame of parameters that will be run for
+#'   inspection by the user.
+#' @param return_norm logical. If FALSE the normalization will not be returned,
+#'   but only evaluate. This will create a much smaller object and may be useful
+#'   for large datasets and/or when many combinations are compared.
 #'
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
 #' @export
 #'
-#' @details If both \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
+#' @details If both \code{run=FALSE} the normalization and evaluation are not
+#'   run, but the function returns a matrix of parameters that will be run for
+#'   inspection by the user.
 #'
-#' @return A list with the following elements:
-#' \itemize{
-#' \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
-#' \item{evaluation}{ A matrix containing raw evaluation metrics for each normalization method. Rows are sorted in the same order as in the ranks output matrix. NULL when evaluate = FALSE.}
-#' \item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
-#' \item{params}{ A data.frame with each row corresponding to a set of normalization parameters.}
-#' }
-#' @return If \code{run=FALSE} a \code{data.frame}
-#' with each row corresponding to a set of normalization parameters.
+#' @return A list with the following elements: \itemize{ \item{normalized_data}{
+#'   A list containing the normalized data matrix, log-scaled. NULL when
+#'   evaluate = TRUE.} \item{evaluation}{ A matrix containing raw evaluation
+#'   metrics for each normalization method. Rows are sorted in the same order as
+#'   in the ranks output matrix. NULL when evaluate = FALSE.} \item{ranks}{ A
+#'   matrix containing rank-scores for each normalization, including median rank
+#'   across all scores. Rows are sorted by increasing median rank. NULL when
+#'   evaluate = FALSE.} \item{params}{ A data.frame with each row corresponding
+#'   to a set of normalization parameters.} }
+#' @return If \code{run=FALSE} a \code{data.frame} with each row corresponding
+#'   to a set of normalization parameters.
 #'
-#' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-#' Positive-signature metrics increase with improving performance, including BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES.
-#' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
-#' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
+#' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}.
+#'   Each metric is assigned a signature for conversion to rank-score:
+#'   Positive-signature metrics increase with improving performance, including
+#'   BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES. Negative-signature
+#'   metrics decrease with improving performance, including BATCH_SIL,
+#'   EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR. Rank-scores are computed so that
+#'   higer-performing methods are assigned a lower-rank.
 #'
-scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
-                  qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
-                  bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
-                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL,
-                  params=NULL, verbose=FALSE, conditional_pam = FALSE) {
+scone <- function(expr, imputation=identity, scaling=identity, k_ruv=5, k_qc=5,
+                  ruv_negcon=NULL, qc=NULL, adjust_bio=c("no", "yes", "force"),
+                  adjust_batch=c("no", "yes", "force"), bio=NULL, batch=NULL,
+                  run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
+                  eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=NULL,
+                  eval_poscon=NULL, params=NULL, verbose=FALSE,
+                  conditional_pam = FALSE, return_norm = TRUE) {
 
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -338,11 +375,20 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     } else {
       score <- NULL
     }
-    return(list(score=score, adjusted=adjusted))
+
+    if(return_norm) {
+      return(list(score=score, adjusted=adjusted))
+    } else {
+      return(list(score=score))
+    }
   })
 
-  adjusted <- lapply(outlist, function(x) x$adjusted)
-  names(adjusted) <- apply(params, 1, paste, collapse=',')
+  if(return_norm) {
+    adjusted <- lapply(outlist, function(x) x$adjusted)
+    names(adjusted) <- apply(params, 1, paste, collapse=',')
+  } else {
+    adjusted <- NULL
+  }
 
   if(evaluate) {
     evaluation <- lapply(outlist, function(x) x$score)
@@ -361,8 +407,13 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     }
 
     evaluation <- t(evaluation[,order(med_rank), drop=FALSE])
-    adjusted <- adjusted[order(med_rank)]
+
+    if(return_norm) {
+      adjusted <- adjusted[order(med_rank)]
+    }
+
     params <- params[order(med_rank),]
+
   } else {
     evaluation <- ranks <- NULL
   }
