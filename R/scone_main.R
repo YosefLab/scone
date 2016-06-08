@@ -69,7 +69,7 @@
 #' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
 #' Scores are computed so that higer-performing methods are assigned a higher scores.
 #'
-scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
+scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
                   eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL,

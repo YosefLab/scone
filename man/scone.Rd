@@ -4,13 +4,13 @@
 \alias{scone}
 \title{scone main wrapper: function to apply and evaluate all the normalization schemes}
 \usage{
-scone(expr, imputation, scaling, k_ruv = 5, k_qc = 5, ruv_negcon = NULL,
-  qc = NULL, adjust_bio = c("no", "yes", "force"), adjust_batch = c("no",
-  "yes", "force"), bio = NULL, batch = NULL, run = TRUE,
-  evaluate = TRUE, eval_pcs = 3, eval_proj = NULL,
-  eval_proj_args = NULL, eval_kclust = 2:10, eval_negcon = NULL,
-  eval_poscon = NULL, params = NULL, verbose = FALSE,
-  conditional_pam = FALSE)
+scone(expr, imputation = list(none = identity), scaling, k_ruv = 5,
+  k_qc = 5, ruv_negcon = NULL, qc = NULL, adjust_bio = c("no", "yes",
+  "force"), adjust_batch = c("no", "yes", "force"), bio = NULL,
+  batch = NULL, run = TRUE, evaluate = TRUE, eval_pcs = 3,
+  eval_proj = NULL, eval_proj_args = NULL, eval_kclust = 2:10,
+  eval_negcon = NULL, eval_poscon = NULL, params = NULL,
+  verbose = FALSE, conditional_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}

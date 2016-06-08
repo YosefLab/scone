@@ -8,6 +8,7 @@ Changes in version 0.0.4
 * Added FQT_FN to implement careful ties handling by FQ
 * Better handling of plots in sample filter functions
 * Mean score rather than median rank to evaluate normalizations
+* Default value for imputation
 
 Changes in version 0.0.3
 ========================
