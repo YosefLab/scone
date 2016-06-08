@@ -55,7 +55,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' If NULL, only hard threshold sub-criteria will be applied.
 #' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
-#' If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model.
+#' If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component normal mixture model.
 #' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
 #' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
 #' @param hard_nreads numeric. Hard (lower bound on) nreads threshold. Default 25000.
@@ -354,7 +354,7 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
 #' @param min_qual_variance numeric. Minimum proportion of selected quality variance addressed in filtering. Default 0.70
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
-#' If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model.
+#' If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component normal mixture model.
 #' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
 #' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
 #' @param plot logical. Should a plot be produced?

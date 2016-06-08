@@ -27,14 +27,14 @@
 #' @param batch factor. The known batch variable to be included in the adjustment model (variation to be removed). If adjust_batch="no", it will not be used for normalization, but only for evaluation.
 #' @param evaluate logical. If FALSE the normalization methods will not be evaluated (faster).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
-#' @param eval_proj function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+#' @param eval_proj function. Projection function for evaluation (see \code{\link{score_matrix}} for details).
 #' If NULL, PCA is used for projection
-#' @param eval_proj_args list. List of args passed to projection function as eval_proj_args.
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.
+#' @param eval_proj_args list. List passed to the eval_proj function as eval_proj_args.
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness evaluation.
+#' If an array of integers, largest average silhouette width (tightness) will be reported. If NULL, tightness will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
-#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
-#' If NULL, correlations with negative controls will be returned NA.
+#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE. 
+#' Default is ruv_negcon argument. If NULL, correlations with negative controls will be returned NA.
 #' @param eval_poscon character. The genes to be used as positive controls for evaluation. These genes should
 #' be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
 #' If NULL, correlations with positive controls will be returned NA.
@@ -52,7 +52,7 @@
 #' @import BiocParallel
 #' @export
 #'
-#' @details If both \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
+#' @details If \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
 #'
 #' @return A list with the following elements:
 #' \itemize{
@@ -65,16 +65,21 @@
 #' with each row corresponding to a set of normalization parameters.
 #'
 #' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
-#' Positive-signature metrics increase with improving performance, including BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES.
-#' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
+#' Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, EXP_WV_COR, and VAR_PRES.
+#' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RLE_MED, and RLE_IQR.
 #' Scores are computed so that higer-performing methods are assigned a higher scores.
 #'
+
 scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
                   eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL,
                   params=NULL, verbose=FALSE, conditional_pam = FALSE) {
 
+  if(is.null(eval_negcon) && !is.null(ruv_negcon)) {
+    eval_negcon = ruv_negcon
+  }
+  
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
   } else if(is.null(rownames(expr))) {
@@ -302,14 +307,11 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   }
 
   if(evaluate) {
+    
     if(verbose) message("Computing factors for evaluation...")
 
     ## generate factors
-    uv_factors <- wv_factors <- ruv_factors_raw <- NULL
-
-    if(!is.null(ruv_negcon)) {
-    ruv_factors_raw <- prcomp(t(log1p(expr[ruv_negcon,])), scale=TRUE, center=TRUE)$x
-    }
+    uv_factors <- wv_factors <- NULL
 
     if(!is.null(eval_negcon)) {
       uv_factors <- prcomp(t(log1p(expr[eval_negcon,])), scale=TRUE, center=TRUE)$x
@@ -318,6 +320,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     if(!is.null(eval_poscon)) {
       wv_factors <- prcomp(t(log1p(expr[eval_poscon,])), scale=TRUE, center=TRUE)$x
     }
+    
   }
 
   if(verbose) message("Factor adjustment and evaluation...")
@@ -331,8 +334,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     if(evaluate) {
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
-                            qc_factors = qc_pcs, ruv_factors = ruv_factors_raw,
-                            uv_factors = uv_factors, wv_factors = wv_factors,
+                            qc_factors = qc_pcs, uv_factors = uv_factors, wv_factors = wv_factors,
                             is_log = TRUE, conditional_pam = conditional_pam,
                             ref_expr = log1p(expr))
     } else {
@@ -349,7 +351,9 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     names(evaluation) <- apply(params, 1, paste, collapse=',')
     evaluation <- simplify2array(evaluation)
 
-    scores <- evaluation * c(1, -1, 1, -1, -1, -1, 1, 1, -1, -1)
+    scores <- evaluation * c(1, -1, 1,  # "BIO_SIL", "BATCH_SIL", "PAM_SIL"
+                             -1, -1, 1, # "EXP_QC_COR", "EXP_UV_COR", "EXP_WV_COR"
+                             1, -1, -1) # "VAR_PRES", "RLE_MED", "RLE_IQR"
 
     mean_score <- colMeans(scores, na.rm=TRUE)
     scores <- cbind(t(scores), mean_score)[order(mean_score, decreasing = TRUE),]
