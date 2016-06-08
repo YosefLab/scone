@@ -4,19 +4,17 @@
 \alias{metric_sample_filter}
 \title{metric-based sample filtering: function to filter single-cell RNA-Seq libraries.}
 \usage{
-metric_sample_filter(expr, nreads = NULL, ralign = NULL,
+metric_sample_filter(expr, nreads = colSums(expr), ralign = NULL,
   gene_filter = NULL, pos_controls = NULL, scale. = FALSE, glen = NULL,
   AUC_range = c(0, 6), zcut = 1, mixture = TRUE, dip_thresh = 0.05,
   hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2,
   hard_fnr = 3, suff_nreads = NULL, suff_ralign = 65,
-  suff_breadth = 0.8, suff_fnr = NULL, plot_dir = NULL,
-  hist_breaks = 10)
+  suff_breadth = 0.8, suff_fnr = NULL, plot = FALSE, hist_breaks = 10)
 }
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}
 
-\item{nreads}{A numeric vector representing number of reads in each library.
-If NULL, filtered_nreads will be returned NA.}
+\item{nreads}{A numeric vector representing number of reads in each library. Default to `colSums` of `expr`.}
 
 \item{ralign}{A numeric vector representing the proportion of reads aligned to the reference genome in each library.
 If NULL, filtered_ralign will be returned NA.}
@@ -37,7 +35,7 @@ If NULL, filtered_fnr will be returned NA.}
 If NULL, only hard threshold sub-criteria will be applied.}
 
 \item{mixture}{A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
-If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model. 
+If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component normal mixture model.
 Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
 
 \item{dip_thresh}{A numeric value determining dip test p-value threshold. Default 0.05.}
@@ -58,9 +56,9 @@ Samples deviating zcut sd's from optimal mean (in the inferior direction), have 
 
 \item{suff_fnr}{numeric. If not null, serves as an lower bound on fnr threshold.}
 
-\item{plot_dir}{If not null, specifies path to plot output}
+\item{plot}{logical. Should a plot be produced?}
 
-\item{hist_breaks}{hist() breaks argument}
+\item{hist_breaks}{hist() breaks argument. Ignored if `plot=FALSE`.}
 }
 \value{
 A list with the following elements:
@@ -72,12 +70,12 @@ A list with the following elements:
 }
 }
 \description{
-This function returns a sample-filtering report for each cell in the input expression matrix, 
+This function returns a sample-filtering report for each cell in the input expression matrix,
 describing which filtering criteria are satisfied.
 }
 \details{
-For each primary criterion (metric), a sample is evaluated based on 4 sub-criteria: 
-1) Hard (encoded) threshold 
+For each primary criterion (metric), a sample is evaluated based on 4 sub-criteria:
+1) Hard (encoded) threshold
 2) Adaptive thresholding via sd's from the mean
 3) Adaptive thresholding via mad's from the median
 4) Adaptive thresholding via sd's from the mean (after mixture modeling)

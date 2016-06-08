@@ -1,3 +1,17 @@
+Changes in version 0.0.4
+========================
+
+* Fixed a few bugs and documentation mismatches
+* Removed stability evaluation (redundant with sil width and slow)
+* Removed clusterExperiment dependency
+* Removed RUV correlation score. UV correlation now takes ruv control genes as default
+* Added RLE measures to scone evaluation
+* Added FQT_FN to implement careful ties handling by FQ
+* Better handling of plots in sample filter functions
+* Mean score rather than median rank to evaluate normalizations
+* Default value for imputation
+* Minor optimizations to evaluations
+
 Changes in version 0.0.3
 ========================
 
