@@ -33,7 +33,7 @@
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness evaluation.
 #' If an array of integers, largest average silhouette width (tightness) will be reported. If NULL, tightness will be returned NA.
 #' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
-#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE. 
+#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
 #' Default is ruv_negcon argument. If NULL, correlations with negative controls will be returned NA.
 #' @param eval_poscon character. The genes to be used as positive controls for evaluation. These genes should
 #' be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
@@ -73,13 +73,9 @@
 scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
-                  eval_kclust=2:10, eval_negcon=NULL, eval_poscon=NULL,
+                  eval_kclust=2:10, eval_negcon=ruv_negcon, eval_poscon=NULL,
                   params=NULL, verbose=FALSE, conditional_pam = FALSE) {
 
-  if(is.null(eval_negcon) && !is.null(ruv_negcon)) {
-    eval_negcon = ruv_negcon
-  }
-  
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
   } else if(is.null(rownames(expr))) {
@@ -307,7 +303,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   }
 
   if(evaluate) {
-    
+
     if(verbose) message("Computing factors for evaluation...")
 
     ## generate factors
@@ -320,7 +316,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     if(!is.null(eval_poscon)) {
       wv_factors <- prcomp(t(log1p(expr[eval_poscon,])), scale=TRUE, center=TRUE)$x
     }
-    
+
   }
 
   if(verbose) message("Factor adjustment and evaluation...")
