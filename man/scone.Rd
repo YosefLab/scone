@@ -75,8 +75,8 @@ back into the algorithm (see example).}
 A list with the following elements:
 \itemize{
 \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
-\item{evaluation}{ A matrix containing raw evaluation metrics for each normalization method. Rows are sorted in the same order as in the ranks output matrix. NULL when evaluate = FALSE.}
-\item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
+\item{metrics}{ A matrix containing raw evaluation metrics for each normalization method (see \code{\link{score_matrix}} for details). Rows are sorted in the same order as in the scores output matrix. NULL when evaluate = FALSE.}
+\item{scores}{ A matrix containing scores for each normalization, including average score. Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
 \item{params}{ A data.frame with each row corresponding to a set of normalization parameters.}
 }
 
@@ -99,9 +99,9 @@ non-imputed data in the comparison, the identity function must be included.
 If both \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
 
 
-Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
+Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
 Positive-signature metrics increase with improving performance, including BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES.
 Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
-Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
+Scores are computed so that higer-performing methods are assigned a higher scores.
 }
 

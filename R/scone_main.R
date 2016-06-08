@@ -57,17 +57,17 @@
 #' @return A list with the following elements:
 #' \itemize{
 #' \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
-#' \item{evaluation}{ A matrix containing raw evaluation metrics for each normalization method. Rows are sorted in the same order as in the ranks output matrix. NULL when evaluate = FALSE.}
-#' \item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
+#' \item{metrics}{ A matrix containing raw evaluation metrics for each normalization method (see \code{\link{score_matrix}} for details). Rows are sorted in the same order as in the scores output matrix. NULL when evaluate = FALSE.}
+#' \item{scores}{ A matrix containing scores for each normalization, including average score. Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
 #' \item{params}{ A data.frame with each row corresponding to a set of normalization parameters.}
 #' }
 #' @return If \code{run=FALSE} a \code{data.frame}
 #' with each row corresponding to a set of normalization parameters.
 #'
-#' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
+#' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
 #' Positive-signature metrics increase with improving performance, including BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES.
 #' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
-#' Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
+#' Scores are computed so that higer-performing methods are assigned a higher scores.
 #'
 scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
@@ -349,25 +349,19 @@ scone <- function(expr, imputation, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
     names(evaluation) <- apply(params, 1, paste, collapse=',')
     evaluation <- simplify2array(evaluation)
 
-    ev_for_ranks <- evaluation * c(-1, 1, -1, 1, 1, 1, -1, -1, 1, 1)
-    ranks <- apply(ev_for_ranks[apply(evaluation, 1, function(x) !all(is.na(x))),, drop=FALSE], 1, rank)
-    if(NCOL(ranks) > 1) {
-      med_rank <- rowMedians(ranks)
-      ranks <- cbind(ranks, med_rank)[order(med_rank),]
-    } else {
-      med_rank <- median(ranks)
-      ranks <- t(data.frame(c(ranks, med_rank=med_rank)))
-      rownames(ranks) <- apply(params, 1, paste, collapse=',')
-    }
+    scores <- evaluation * c(1, -1, 1, -1, -1, -1, 1, 1, -1, -1)
 
-    evaluation <- t(evaluation[,order(med_rank), drop=FALSE])
-    adjusted <- adjusted[order(med_rank)]
-    params <- params[order(med_rank),]
+    mean_score <- colMeans(scores, na.rm=TRUE)
+    scores <- cbind(t(scores), mean_score)[order(mean_score, decreasing = TRUE),]
+
+    evaluation <- t(evaluation[,order(mean_score, decreasing = TRUE), drop=FALSE])
+    adjusted <- adjusted[order(mean_score, decreasing = TRUE)]
+    params <- params[order(mean_score, decreasing = TRUE),]
   } else {
-    evaluation <- ranks <- NULL
+    evaluation <- scores <- NULL
   }
 
   if(verbose) message("Done!")
 
-  return(list(normalized_data=adjusted, evaluation=evaluation, ranks=ranks, params=params))
+  return(list(normalized_data=adjusted, metrics=evaluation, scores=scores, params=params))
 }
