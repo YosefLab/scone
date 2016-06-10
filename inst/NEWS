@@ -1,3 +1,8 @@
+Changes in version 0.0.5
+========================
+* Modified biplot to handle general coloring schemes.
+* Limit number of WV and UV factors to eval_pcs in computing WV and UV scores.
+
 Changes in version 0.0.4
 ========================
 
