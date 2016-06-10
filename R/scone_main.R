@@ -310,15 +310,15 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     
     if(verbose) message("Computing factors for evaluation...")
 
-    ## generate factors
+    ## generate factors: eval_pcs pcs per gene set
     uv_factors <- wv_factors <- NULL
 
     if(!is.null(eval_negcon)) {
-      uv_factors <- prcomp(t(log1p(expr[eval_negcon,])), scale=TRUE, center=TRUE)$x
+      uv_factors <- svd(scale(t(log1p(expr[eval_negcon,])),center = TRUE,scale = TRUE),eval_pcs,0)$u
     }
 
     if(!is.null(eval_poscon)) {
-      wv_factors <- prcomp(t(log1p(expr[eval_poscon,])), scale=TRUE, center=TRUE)$x
+      wv_factors <- svd(scale(t(log1p(expr[eval_poscon,])),center = TRUE,scale = TRUE),eval_pcs,0)$u
     }
     
   }

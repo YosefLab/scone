@@ -4,12 +4,18 @@
 \alias{biplot_colored}
 \title{Another implementation of the biplot function}
 \usage{
-biplot_colored(x, y, choices = 1:2, expand = 1, ...)
+biplot_colored(x, y, rank = TRUE, ties_method = c("max", "min", "first",
+  "last", "random"), choices = 1:2, expand = 1, ...)
 }
 \arguments{
 \item{x}{the result of a call to \code{\link[stats]{prcomp}}.}
 
-\item{y}{the rank value that should be used to color the points.}
+\item{y}{an array of values used to color the points. 
+If rank is FALSE, all values must be positive integers and less than or equal to the length of y.}
+
+\item{rank}{logical. If TRUE (default) y will be transformed by the rank() function}
+
+\item{ties_method}{character. ties.method used by the rank() function}
 
 \item{choices}{which principal components to plot. Only 2D plots are
 possible for now. Default to first two PCs.}
