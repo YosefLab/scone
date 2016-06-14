@@ -7,7 +7,7 @@
 score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
   eval_kclust = NULL, bio = NULL, batch = NULL, qc_factors = NULL,
   uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  conditional_pam = FALSE, ref_expr = NULL)
+  conditional_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -42,9 +42,6 @@ If NULL, wv correlations, EXP_WV_COR, will be returned NA.}
 
 \item{conditional_pam}{logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological condition (including NA),
 and a weighted average silhouette width is returned.}
-
-\item{ref_expr}{matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
-If NULL, preserved variance is returned NA.}
 }
 \value{
 A list with the following elements:
@@ -55,7 +52,6 @@ A list with the following elements:
 \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-\item{VAR_PRES}{ Mean correlation between matched genes in normalized and reference matrices.}
 \item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
 \item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
 }

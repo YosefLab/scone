@@ -57,7 +57,7 @@ score_matrix <- function(expr, eval_pcs = 3,
                          eval_kclust = NULL,
                          bio = NULL, batch = NULL,
                          qc_factors = NULL,uv_factors = NULL, wv_factors = NULL, 
-                         is_log=FALSE, conditional_pam = FALSE , ref_expr = NULL){
+                         is_log=FALSE, conditional_pam = FALSE){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")

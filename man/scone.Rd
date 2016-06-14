@@ -100,7 +100,7 @@ If \code{run=FALSE} the normalization and evaluation are not run, but the functi
 
 
 Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
-Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, EXP_WV_COR, and VAR_PRES.
+Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, and EXP_WV_COR.
 Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RLE_MED, and RLE_IQR.
 Scores are computed so that higer-performing methods are assigned a higher scores.
 }

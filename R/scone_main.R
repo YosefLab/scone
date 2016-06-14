@@ -50,6 +50,9 @@
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
+#' @importFrom graphics abline arrows barplot hist par plot text
+#' @importFrom stats approx as.formula binomial coefficients contr.sum cor dist dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm prcomp quantile quasibinomial sd
+#' @importFrom utils capture.output
 #' @export
 #'
 #' @details If \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
