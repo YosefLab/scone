@@ -65,7 +65,7 @@
 #' with each row corresponding to a set of normalization parameters.
 #'
 #' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
-#' Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, EXP_WV_COR, and VAR_PRES.
+#' Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, and EXP_WV_COR.
 #' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RLE_MED, and RLE_IQR.
 #' Scores are computed so that higer-performing methods are assigned a higher scores.
 #'
@@ -331,8 +331,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, uv_factors = uv_factors, wv_factors = wv_factors,
-                            is_log = TRUE, conditional_pam = conditional_pam,
-                            ref_expr = log1p(expr))
+                            is_log = TRUE, conditional_pam = conditional_pam)
     } else {
       score <- NULL
     }
@@ -349,7 +348,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
 
     scores <- evaluation * c(1, -1, 1,  # "BIO_SIL", "BATCH_SIL", "PAM_SIL"
                              -1, -1, 1, # "EXP_QC_COR", "EXP_UV_COR", "EXP_WV_COR"
-                             1, -1, -1) # "VAR_PRES", "RLE_MED", "RLE_IQR"
+                             -1, -1) # "RLE_MED", "RLE_IQR"
 
     mean_score <- colMeans(scores, na.rm=TRUE)
     scores <- cbind(t(scores), mean_score)[order(mean_score, decreasing = TRUE),]

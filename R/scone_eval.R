@@ -31,8 +31,6 @@
 #' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out prior to projection.
 #' @param conditional_pam logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological condition (including NA),
 #' and a weighted average silhouette width is returned.
-#' @param ref_expr matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
-#' If NULL, preserved variance is returned NA.
 #'
 #' @importFrom class knn
 #' @importFrom fpc pamk
@@ -49,7 +47,6 @@
 #' \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-#' \item{VAR_PRES}{ Mean correlation between matched genes in normalized and reference matrices.}
 #' \item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
 #' \item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
 #' }
@@ -169,17 +166,6 @@ score_matrix <- function(expr, eval_pcs = 3,
     EXP_WV_COR = NA
   }
 
-  ## ----- Variance Preserved
-  if(!is.null(ref_expr)){
-    
-    split_ref_expr = split(t(ref_expr), rep(1:nrow(ref_expr), each = ncol(ref_expr)))
-    split_expr = split(t(expr), rep(1:nrow(expr), each = ncol(expr)))
-    VAR_PRES = mean(mapply(function(x,y) cor(x,y),split_ref_expr,split_expr))
-    
-  }else{
-    VAR_PRES = NA
-  }
-
   ## ----- RLE Measures
   rle <- expr - rowMedians(expr)
   RLE_MED <- mean(colMedians(rle)^2)
@@ -187,9 +173,9 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, 
              EXP_QC_COR, EXP_UV_COR, EXP_WV_COR, 
-             VAR_PRES, RLE_MED, RLE_IQR)
+             RLE_MED, RLE_IQR)
   names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", 
                     "EXP_QC_COR", "EXP_UV_COR", "EXP_WV_COR",
-                    "VAR_PRES", "RLE_MED", "RLE_IQR")
+                    "RLE_MED", "RLE_IQR")
   return(scores)
 }

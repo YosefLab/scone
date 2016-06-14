@@ -372,6 +372,10 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
                                 mixture = TRUE, dip_thresh = .01,
                                 plot = FALSE, hist_breaks = 20){
 
+  if(any(is.na(qual))){
+    stop("Quality matrix contains NA values")
+  }
+  
   # Gene filter vector
   if(is.null(gene_filter)){
     gene_filter = rep(TRUE,dim(expr)[1])
