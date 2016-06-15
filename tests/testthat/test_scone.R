@@ -118,7 +118,7 @@ test_that("Test with no real method (only identity)", {
                scaling=list(a=identity, b=identity, c=identity),
                k_ruv=5, ruv_negcon=as.character(1:100), k_qc=2, qc=qc_mat,
                adjust_bio="force", bio=bio, adjust_batch="yes", batch=batch,
-               evaluate=TRUE, run=TRUE, eval_knn=5, eval_kclust=5)
+               evaluate=TRUE, run=TRUE, eval_kclust=5)
 
 })
 
@@ -159,11 +159,11 @@ test_that("Test imputation and scaling", {
                            adjust_batch="yes", batch=batch, run=TRUE,
                            evaluate=TRUE, eval_negcon=as.character(11:20),
                            eval_poscon=as.character(21:30),
-                           eval_knn=2, eval_kclust = 2, verbose=TRUE))
+                           eval_kclust = 2, verbose=TRUE))
 
-  expect_equal(rownames(res$evaluation), rownames(res$ranks))
-  expect_equal(rownames(res$evaluation), rownames(res$params))
-  expect_equal(rownames(res$evaluation), names(res$normalized_data))
+  expect_equal(rownames(res$metrics), rownames(res$scores))
+  expect_equal(rownames(res$metrics), rownames(res$params))
+  expect_equal(rownames(res$metrics), names(res$normalized_data))
 
   res2 <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -172,12 +172,12 @@ test_that("Test imputation and scaling", {
                adjust_batch="yes", batch=batch, run=TRUE,
                evaluate=FALSE, eval_negcon=as.character(11:20),
                eval_poscon=as.character(21:30),
-               eval_knn=2, eval_kclust = 2, verbose=TRUE)
+               eval_kclust = 2, verbose=TRUE)
 
   norm_ordered <- res2$normalized_data[names(res$normalized_data)]
   expect_equal(norm_ordered, res$normalized_data)
-  expect_null(res2$evaluation)
-  expect_null(res2$ranks)
+  expect_null(res2$metrics)
+  expect_null(res2$scores)
 })
 
 test_that("scone works with only one normalization",{
@@ -187,7 +187,7 @@ test_that("scone works with only one normalization",{
   res <- scone(e, imputation=list(none=identity),
                scaling=list(none=identity),
                k_ruv=0, k_qc=0, run=TRUE,
-               evaluate=TRUE, eval_knn=2, eval_kclust = 2)
+               evaluate=TRUE, eval_kclust = 2)
 
   expect_equal(res$normalized_data[[1]], log1p(e))
 })
@@ -206,7 +206,7 @@ test_that("conditional PAM",{
                adjust_batch="yes", batch=batch, run=FALSE,
                evaluate=TRUE, eval_negcon=as.character(11:20),
                eval_poscon=as.character(21:30),
-               eval_knn=2, eval_kclust = 2, conditional_pam = TRUE)
+               eval_kclust = 2, conditional_pam = TRUE)
 
   expect_error(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -214,7 +214,7 @@ test_that("conditional PAM",{
                adjust_batch="yes", batch=batch, run=FALSE,
                evaluate=TRUE, eval_negcon=as.character(11:20),
                eval_poscon=as.character(21:30),
-               eval_knn=2, eval_kclust = 6, conditional_pam = TRUE),
+               eval_kclust = 6, conditional_pam = TRUE),
                "For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
 
   expect_error(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
@@ -223,7 +223,47 @@ test_that("conditional PAM",{
                             adjust_batch="yes", batch=batch, run=FALSE,
                             evaluate=TRUE, eval_negcon=as.character(11:20),
                             eval_poscon=as.character(21:30),
-                            eval_knn=2, eval_kclust = 6, conditional_pam = TRUE),
+                            eval_kclust = 6, conditional_pam = TRUE),
                "If `bio` is null, `conditional_pam` cannot be TRUE")
 
+})
+
+
+test_that("if bio=no bio is ignored", {
+  e <-  matrix(rpois(10000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+               adjust_bio = "no", bio=gl(2, 5), eval_kclust = 3)
+
+  res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                 adjust_bio = "no", eval_kclust = 3)
+
+  expect_equal(res1$normalized_data, res2$normalized_data)
+})
+
+test_that("if batch=no batch is ignored", {
+  e <-  matrix(rpois(10000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                adjust_batch = "no", batch=gl(2, 5), eval_kclust = 3)
+
+  res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                adjust_batch = "no", eval_kclust = 3)
+
+  expect_equal(res1$normalized_data, res2$normalized_data)
+})
+
+test_that("batch and bio can be confounded if at least one of adjust_bio or adjust_batch is no", {
+  e <-  matrix(rpois(10000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  expect_warning(scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                adjust_batch = "no", batch=gl(2, 5), bio=gl(2, 5), eval_kclust = 3),
+                "Biological conditions and batches are confounded.")
+
+  expect_warning(scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
+                       adjust_bio = "no", batch=gl(2, 5), bio=gl(2, 5), eval_kclust = 3),
+                 "Biological conditions and batches are confounded.")
 })

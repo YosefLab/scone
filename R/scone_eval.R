@@ -1,68 +1,63 @@
 #' scone evaluation: function to evaluate one normalization scheme
 #'
 #' This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
-#' weighted (or unweighted) projections of the normalized data.
+#' projections of the normalized data, correlations, and RLE metrics.
 #'
-#' @details None.
-#'
+#' @details The eval_proj function argument must have 2 inputs: 
+#' \itemize{
+#' \item{e}{ matrix. log-transformed expression (genes in rows, cells in columns).}
+#' \item{eval_proj_args}{ list. additional function arguments, e.g. prior data weights.}
+#' }
+#' and it must output a matrix representation of the original data (cells in rows, factors in columns).
+#' 
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation.
-#' Ignored if !is.null(proj).
-#' @param proj matrix. A numeric data matrix to be used as projection (cells in rows, coordinates in columns).
-#' If NULL, weighted PCA is used for projection
-#' @param weights matrix. A numeric data matrix to be used for weighted PCA (genes in rows, cells in columns).
-#' If NULL, regular PCA is used for projection
-#' @param seed numeric. Random seed, passed to bwpca.
-#' Ignored if is.null(weights) or !is.null(proj).
-#' @param em.maxiter numeric. Maximum EM iterations, passed to bwpca.
-#' Ignored if is.null(weights) or !is.null(proj).
-#' @param eval_knn numeric. The number of nearest neighbors to use for evaluation.
-#' If NULL, all KNN concordances will be returned NA.
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-#' If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering compactness (stability) will be reported. If NULL, tightness and stability will be returned NA.
-#' @param bio factor. The biological condition (variation to be preserved), NA is allowed.
-#' If NULL, condition KNN concordance will be returned NA.
-#' @param batch factor. The known batch variable (variation to be removed), NA is allowed.
-#' If NULL, batch KNN concordance will be returned NA.
+#' Ignored if !is.null(eval_proj).
+#' @param eval_proj function. Projection function for evaluation (see details).
+#' If NULL, PCA is used for projection
+#' @param eval_proj_args list. List of arguments passed to projection function as eval_proj_args (see details).
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness (PAM_SIL) evaluation.
+#' If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL. If NULL, PAM_SIL will be returned NA.
+#' @param bio factor. A known biological condition (variation to be preserved), NA is allowed.
+#' If NULL, condition ASW, BIO_SIL, will be returned NA.
+#' @param batch factor. A known batch variable (variation to be removed), NA is allowed.
+#' If NULL, batch ASW, BATCH_SIL, will be returned NA.
 #' @param qc_factors Factors of unwanted variation derived from quality metrics.
-#' If NULL, qc correlations will be returned NA.
-#' @param ruv_factors Factors of unwanted variation derived from negative control genes (adjustable set).
-#' If NULL, ruv correlations will be returned NA.
-#' @param uv_factors Factors of unwanted variation derived from negative control genes (un-adjustable set).
-#' If NULL, uv correlations will be returned NA.
-#' @param wv_factors Factors of wanted variation derived from positive control genes (un-adjustable set).
-#' If NULL, wv correlations will be returned NA.
-#' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out.
-#' @param conditional_pam logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
-#' and a weighted average is returned.
+#' If NULL, qc correlations, EXP_QC_COR, will be returned NA.
+#' @param uv_factors Factors of unwanted variation derived from negative control genes (evaluation set).
+#' If NULL, uv correlations, EXP_UV_COR, will be returned NA.
+#' @param wv_factors Factors of wanted variation derived from positive control genes (evaluation set).
+#' If NULL, wv correlations, EXP_WV_COR, will be returned NA.
+#' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out prior to projection.
+#' @param conditional_pam logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological condition (including NA),
+#' and a weighted average silhouette width is returned.
 #'
-#' @importFrom scde bwpca
 #' @importFrom class knn
 #' @importFrom fpc pamk
-#' @importFrom clusterCells subsampleClustering
+#' @importFrom cluster silhouette
+#' @importFrom matrixStats rowMedians colMedians colIQRs
 #'
 #' @export
 #'
 #' @return A list with the following elements:
 #' \itemize{
-#' \item{KNN_BIO}{ K-NN concordance rate by biological condition.}
-#' \item{KNN_BATCH}{ K-NN concordance rate by batch condition.}
-#' \item{PAM_SIL}{ Maximum average silhoutte width from pam clustering.}
+#' \item{BIO_SIL}{ Average silhouette width by biological condition.}
+#' \item{BATCH_SIL}{ Average silhouette width by batch condition.}
+#' \item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see conditional_pam argument).}
 #' \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
-#' \item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-#' \item{PAM_COMPACT}{ Compactness measure of sub-sampled (pam) co-clustering matrix's "block-diagonal-ness". Approximate isoperimetric quotient of non-clustering region.}
+#' \item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
+#' \item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
 #' }
 #'
 
-score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
-                        weights = NULL, seed = 1, em.maxiter = 100,
-                        eval_knn = NULL, eval_kclust = NULL,
-                        bio = NULL, batch = NULL,
-                        qc_factors = NULL,
-                        ruv_factors = NULL, uv_factors = NULL,
-                        wv_factors = NULL, is_log=FALSE, conditional_pam = FALSE ){
+score_matrix <- function(expr, eval_pcs = 3, 
+                         eval_proj = NULL, eval_proj_args = NULL,
+                         eval_kclust = NULL,
+                         bio = NULL, batch = NULL,
+                         qc_factors = NULL,uv_factors = NULL, wv_factors = NULL, 
+                         is_log=FALSE, conditional_pam = FALSE){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")
@@ -72,56 +67,42 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
     expr <- log1p(expr)
   }
 
-  if(is.null(proj)){
-    if(is.null(weights)){
-      proj = prcomp(t(expr),center = TRUE,scale. = TRUE)$x[,1:eval_pcs]
-    }else{
-      proj = bwpca(mat = t(expr),matw = t(weights),npcs = eval_pcs, seed = seed, em.maxiter = em.maxiter)$scores
-    }
+  if(is.null(eval_proj)){
+      proj = svd(scale(t(expr),center = TRUE,scale = TRUE),eval_pcs,0)$u
   }else{
-    eval_pcs = dim(proj)[2]
+      proj = eval_proj(expr,eval_proj_args = eval_proj_args)
+      eval_pcs = ncol(proj)
   }
 
-  ## ------ K-nearest neighbors (including self!) -----
-
-  if( !is.null(eval_knn)  ){
+  ## ------ Bio and Batch Tightness -----
 
     if( !is.null(bio) ) {
       if(!all(is.na(bio))) {
-        KNN_BIO = mean(attributes(knn(train = proj[!is.na(bio),],test = proj[!is.na(bio),],cl = bio[!is.na(bio)], k = eval_knn,prob = TRUE))$prob)
+        BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),dist(proj[!is.na(bio),])))$avg.width
       } else {
-        KNN_BIO = NA
+        BIO_SIL = NA
         warning("bio is all NA!")
       }
     } else {
-      KNN_BIO = NA
+      BIO_SIL = NA
     }
 
-    # K-NN Batch
     if(!is.null(batch)) {
       if(!all(is.na(batch))) {
-        KNN_BATCH <- mean(attributes(knn(train = proj[!is.na(batch),],test = proj[!is.na(batch),],cl = batch[!is.na(batch)], k = eval_knn,prob = TRUE))$prob)
+        BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),dist(proj[!is.na(batch),])))$avg.width
       } else{
-        KNN_BATCH <- NA
+        BATCH_SIL <- NA
         warning("batch is all NA!")
       }
     } else {
-      KNN_BATCH <- NA
+      BATCH_SIL <- NA
     }
 
-  } else {
-
-    KNN_BIO = NA
-    KNN_BATCH = NA
-
-  }
-
-  ## ------ PAM Tightness and Stability -----
+  ## ------ PAM Tightness -----
 
   if ( !is.null(eval_kclust) ){
-
-    # Tightness
-
+    
+    # "Conditional" PAM
     if(conditional_pam){
 
       PAM_SIL = 0
@@ -149,50 +130,26 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
           stop("Number of clusters 'k' must be smaller than unclassified bio set size")
         }
       }
-
+      
       PAM_SIL = PAM_SIL/length(bio)
+      
+    # Traditional PAM
     }else{
       pamk_object = pamk(proj,krange = eval_kclust)
       PAM_SIL = pamk_object$pamobject$silinfo$avg.width
     }
 
-    # Stability
-
-    PAM_COMPACT = 0
-    for(k in eval_kclust){
-
-      submat = subsampleClustering(proj, k=k) # Co-clustering frequency matrix
-      subhc = hclust(dist(submat)) # Re-order rows and columns using hclust
-      submat = submat[subhc$order,subhc$order]
-
-      submat_shifted = 2*submat - 1
-      field = (submat_shifted[2:(nrow(submat_shifted)-1),3:nrow(submat_shifted)] + submat_shifted[2:(nrow(submat_shifted)-1),1:(nrow(submat_shifted)-2)])/2
-      spin = submat_shifted[2:(nrow(submat_shifted)-1),2:(nrow(submat_shifted)-1)]
-      perim_len = mean(1/2-field*spin/2) # Approximate fraction of elements on the perimeter
-      isoper = (mean(1-submat)/(perim_len^2))/length(submat) # Approximate isoperimetric quotient of non-clustering (0) region.
-      PAM_COMPACT = max(PAM_COMPACT,isoper) # Maximum compactness across all choices of resampling scheme.
-
-    }
-
   }else{
     PAM_SIL = NA
-    PAM_COMPACT = NA
   }
 
-  ## ------ Hidden Factors -----
+  ## ------ Correlation with Factors -----
 
   # Max cor with quality factors.
   if(!is.null(qc_factors)){
     EXP_QC_COR = max(cor(proj,qc_factors,method = "spearman")^2)
   }else{
     EXP_QC_COR = NA
-  }
-
-  # Max cor with RUV factors.
-  if(!is.null(ruv_factors)){
-    EXP_RUV_COR = max(cor(proj,ruv_factors,method = "spearman")^2)
-  }else{
-    EXP_RUV_COR = NA
   }
 
   # Max cor with UV factors.
@@ -209,8 +166,16 @@ score_matrix <- function(expr, eval_pcs = 3, proj = NULL,
     EXP_WV_COR = NA
   }
 
-  scores = c(KNN_BIO, KNN_BATCH, PAM_SIL, EXP_QC_COR, EXP_RUV_COR, EXP_UV_COR, EXP_WV_COR , PAM_COMPACT)
-  names(scores) = c("KNN_BIO", "KNN_BATCH", "PAM_SIL", "EXP_QC_COR", "EXP_RUV_COR", "EXP_UV_COR", "EXP_WV_COR", "PAM_COMPACT")
-  return(scores)
+  ## ----- RLE Measures
+  rle <- expr - rowMedians(expr)
+  RLE_MED <- mean(colMedians(rle)^2)
+  RLE_IQR <- mean(colIQRs(rle))
 
+  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, 
+             EXP_QC_COR, EXP_UV_COR, EXP_WV_COR, 
+             RLE_MED, RLE_IQR)
+  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", 
+                    "EXP_QC_COR", "EXP_UV_COR", "EXP_WV_COR",
+                    "RLE_MED", "RLE_IQR")
+  return(scores)
 }
