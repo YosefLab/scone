@@ -4,7 +4,7 @@
 
 ### Single-Cell Overview of Normalized Expression data ###
 
-scone is a package to compare and rank the performance of different normalization schemes in real single-cell RNA-seq datasets.
+SCONE (Single-Cell Overview of Normalized Expression), a package for single-cell RNA-seq data quality control (QC) and normalization. This data-driven framework uses summaries of expression data to assess the efficacy of normalization workflows.
 
 ### To Install ###
 
