@@ -254,7 +254,8 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
 
       is_bad = rep(FALSE,dim(expr)[2])
 
-      par(mfcol = c(criterion_count,2))
+      op <- par(mfcol = c(criterion_count,2))
+      on.exit(par(op))
 
       if(!is.null(nreads)){
         is_bad = filtered_nreads
@@ -417,8 +418,9 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   num_qual_pcs = which(csum > min_qual_variance)[1]
 
   if(plot){
+    op <- par(mfrow = c(2,1))
+    on.exit(par(op))
     for (i in 1:num_qual_pcs){
-      par(mfrow = c(2,1))
       hist(qpc$x[,i],breaks = hist_breaks, main = paste0("Distribution of Quality PC ",i), xlab = paste0("Qual PC",i))
       barplot(abs(qpc$rotation[,i]),col = c("red","green")[1 + (qpc$rotation[,i] > 0)], cex.names = .25,horiz = T, las=1, main = "Loadings")
     }
