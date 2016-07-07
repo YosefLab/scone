@@ -65,9 +65,9 @@
 #'   format, and is only intended to be used to feed the results of setting
 #'   run=FALSE back into the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
-#' @param conditional_pam logical. If TRUE then maximum ASW is separately
-#'   computed for each biological condition (including NA), and a weighted
-#'   average is returned as PAM_SIL.
+#' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
+#'   separately computed for each biological-cross-batch condition (accepting
+#'   NAs), and a weighted average is returned as PAM_SIL.
 #' @param run logical. If FALSE the normalization and evaluation are not run,
 #'   but the function returns a data.frame of parameters that will be run for
 #'   inspection by the user.
@@ -120,7 +120,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
                   run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
                   eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=ruv_negcon,
                   eval_poscon=NULL, params=NULL, verbose=FALSE,
-                  conditional_pam = FALSE, return_norm = c("no", "in_memory", "hdf5")) {
+                  stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5")) {
 
   return_norm <- match.arg(return_norm)
 
@@ -248,11 +248,13 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
       stop("'eval_kclust' must be less than the number of samples.")
     }
 
-    if(conditional_pam) {
-      if(is.null(bio)) {
-        stop("If `bio` is null, `conditional_pam` cannot be TRUE.")
-      } else if(max(eval_kclust) >= min(table(bio))) {
-        stop("For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
+    if(stratified_pam) {
+      if(is.null(bio) & is.null(batch)){
+        stop("For stratified_pam, bio and/or batch must be specified")
+      }
+      biobatch = as.factor(paste(bio,batch,sep = "_"))
+      if(max(eval_kclust) >= min(table(biobatch))) {
+        stop("For stratified_pam, max 'eval_kclust' must be smaller than bio-cross-batch stratum size")
       }
     }
   }
@@ -379,7 +381,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, uv_factors = uv_factors, wv_factors = wv_factors,
-                            is_log = TRUE, conditional_pam = conditional_pam)
+                            is_log = TRUE, stratified_pam = stratified_pam)
     } else {
       score <- NULL
     }

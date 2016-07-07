@@ -1,33 +1,40 @@
+Changes in version 0.0.6
+========================
+
+* Fixed bug when using plot functionality of filtering functions.
+* "Conditional" pam replaced with "Stratified" pam, clustering each bio-cross-batch condition separately, rather than simply each bio condition.
+
 Changes in version 0.0.5
 ========================
+
 * Modified biplot to handle general coloring schemes.
 * Limit number of WV and UV factors to eval_pcs in computing WV and UV scores.
-* Updated depencencies.
+* Updated dependencies.
 * Added error-handling to sample filter.
-* Removed var preserved measure do to length of running time.
+* Removed “var preserved” measure do to length of running time.
 
 Changes in version 0.0.4
 ========================
 
-* Fixed a few bugs and documentation mismatches
-* Removed stability evaluation (redundant with sil width and slow)
-* Removed clusterExperiment dependency
-* Removed RUV correlation score. UV correlation now takes ruv control genes as default
-* Added RLE measures to scone evaluation
-* Added FQT_FN to implement careful ties handling by FQ
-* Better handling of plots in sample filter functions
-* Mean score rather than median rank to evaluate normalizations
-* Default value for imputation
-* Minor optimizations to evaluations
+* Fixed a few bugs and documentation mismatches.
+* Removed stability evaluation (redundant with sil width and slow).
+* Removed clusterExperiment dependency.
+* Removed RUV correlation score. UV correlation now takes ruv control genes as default.
+* Added RLE measures to scone evaluation.
+* Added FQT_FN to implement careful ties handling by FQ.
+* Better handling of plots in sample filter functions.
+* Mean score rather than median rank to evaluate normalizations.
+* Default value for imputation.
+* Minor optimizations to evaluation functions.
 
 Changes in version 0.0.3
 ========================
 
-* Fixed various bugs
-* Added compactness measure for stability evaluation
-* Compute RUV factors only when needed
-* Fixed Github issues #11, #12, #13, #14, #21, #28
-* zinb now works for non-integer whole numbers
-* Updated tests
-* Added documentation for datasets
-* Added biplot_colored function
+* Fixed various bugs.
+* Added “compactness” measure for stability evaluation.
+* Compute RUV factors only when needed.
+* Fixed Github issues #11, #12, #13, #14, #21, #28.
+* zinb now works for non-integer whole numbers.
+* Updated tests.
+* Added documentation for datasets.
+* Added biplot_colored function.
