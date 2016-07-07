@@ -6,8 +6,8 @@
 \usage{
 score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
   eval_kclust = NULL, bio = NULL, batch = NULL, qc_factors = NULL,
-  ruv_factors = NULL, uv_factors = NULL, wv_factors = NULL,
-  is_log = FALSE, conditional_pam = FALSE, ref_expr = NULL)
+  uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
+  conditional_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -15,60 +15,57 @@ score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
 \item{eval_pcs}{numeric. The number of principal components to use for evaluation.
 Ignored if !is.null(eval_proj).}
 
-\item{eval_proj}{function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+\item{eval_proj}{function. Projection function for evaluation (see details).
 If NULL, PCA is used for projection}
 
-\item{eval_proj_args}{list. List of args passed to projection function as eval_proj_args.}
+\item{eval_proj_args}{list. List of arguments passed to projection function as eval_proj_args (see details).}
 
-\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.}
+\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness (PAM_SIL) evaluation.
+If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL. If NULL, PAM_SIL will be returned NA.}
 
-\item{bio}{factor. The biological condition (variation to be preserved), NA is allowed.
-If NULL, condition ASW will be returned NA.}
+\item{bio}{factor. A known biological condition (variation to be preserved), NA is allowed.
+If NULL, condition ASW, BIO_SIL, will be returned NA.}
 
-\item{batch}{factor. The known batch variable (variation to be removed), NA is allowed.
-If NULL, batch ASW will be returned NA.}
+\item{batch}{factor. A known batch variable (variation to be removed), NA is allowed.
+If NULL, batch ASW, BATCH_SIL, will be returned NA.}
 
 \item{qc_factors}{Factors of unwanted variation derived from quality metrics.
-If NULL, qc correlations will be returned NA.}
+If NULL, qc correlations, EXP_QC_COR, will be returned NA.}
 
-\item{ruv_factors}{Factors of unwanted variation derived from negative control genes (adjustable set).
-If NULL, ruv correlations will be returned NA.}
+\item{uv_factors}{Factors of unwanted variation derived from negative control genes (evaluation set).
+If NULL, uv correlations, EXP_UV_COR, will be returned NA.}
 
-\item{uv_factors}{Factors of unwanted variation derived from negative control genes (un-adjustable set).
-If NULL, uv correlations will be returned NA.}
+\item{wv_factors}{Factors of wanted variation derived from positive control genes (evaluation set).
+If NULL, wv correlations, EXP_WV_COR, will be returned NA.}
 
-\item{wv_factors}{Factors of wanted variation derived from positive control genes (un-adjustable set).
-If NULL, wv correlations will be returned NA.}
+\item{is_log}{logical. If TRUE the expr matrix is already logged and log transformation will not be carried out prior to projection.}
 
-\item{is_log}{logical. If TRUE the expr matrix is already logged and log transformation will not be carried out.}
-
-\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA),
-and a weighted average is returned.}
-
-\item{ref_expr}{matrix. A reference (log-) expression data matrix for calculating preserved variance (genes in rows, cells in columns).
-If NULL, preserved variance is returned NA.}
+\item{conditional_pam}{logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological condition (including NA),
+and a weighted average silhouette width is returned.}
 }
 \value{
 A list with the following elements:
 \itemize{
-\item{BIO_SIL}{ Average silhoutte width by biological condition.}
-\item{BATCH_SIL}{ Average silhoutte width by batch condition.}
-\item{PAM_SIL}{ Maximum average silhoutte width from pam clustering.}
+\item{BIO_SIL}{ Average silhouette width by biological condition.}
+\item{BATCH_SIL}{ Average silhouette width by batch condition.}
+\item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see conditional_pam argument).}
 \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
-\item{EXP_RUV_COR}{ Maximum squared spearman correlation between pcs and active uv factors.}
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
-\item{VAR_PRES}{ Variance preserved measure.}
 \item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
 \item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
 }
 }
 \description{
 This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
-projections of the normalized data.
+projections of the normalized data, correlations, and RLE metrics.
 }
 \details{
-None.
+The eval_proj function argument must have 2 inputs: 
+\itemize{
+\item{e}{ matrix. log-transformed expression (genes in rows, cells in columns).}
+\item{eval_proj_args}{ list. additional function arguments, e.g. prior data weights.}
+}
+and it must output a matrix representation of the original data (cells in rows, factors in columns).
 }
 

@@ -35,7 +35,7 @@ If NULL, filtered_fnr will be returned NA.}
 If NULL, only hard threshold sub-criteria will be applied.}
 
 \item{mixture}{A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
-If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model.
+If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component normal mixture model.
 Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
 
 \item{dip_thresh}{A numeric value determining dip test p-value threshold. Default 0.05.}

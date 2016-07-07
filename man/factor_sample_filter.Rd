@@ -30,7 +30,7 @@ If NULL, all genes are used.}
 \item{zcut}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.}
 
 \item{mixture}{A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
-If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model.
+If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component normal mixture model.
 Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.}
 
 \item{dip_thresh}{A numeric value determining dip test p-value threshold. Default 0.05.}

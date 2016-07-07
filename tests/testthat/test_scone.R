@@ -161,9 +161,9 @@ test_that("Test imputation and scaling", {
                            eval_poscon=as.character(21:30),
                            eval_kclust = 2, verbose=TRUE))
 
-  expect_equal(rownames(res$evaluation), rownames(res$ranks))
-  expect_equal(rownames(res$evaluation), rownames(res$params))
-  expect_equal(rownames(res$evaluation), names(res$normalized_data))
+  expect_equal(rownames(res$metrics), rownames(res$scores))
+  expect_equal(rownames(res$metrics), rownames(res$params))
+  expect_equal(rownames(res$metrics), names(res$normalized_data))
 
   res2 <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -176,8 +176,8 @@ test_that("Test imputation and scaling", {
 
   norm_ordered <- res2$normalized_data[names(res$normalized_data)]
   expect_equal(norm_ordered, res$normalized_data)
-  expect_null(res2$evaluation)
-  expect_null(res2$ranks)
+  expect_null(res2$metrics)
+  expect_null(res2$scores)
 })
 
 test_that("scone works with only one normalization",{

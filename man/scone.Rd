@@ -4,13 +4,13 @@
 \alias{scone}
 \title{scone main wrapper: function to apply and evaluate all the normalization schemes}
 \usage{
-scone(expr, imputation, scaling, k_ruv = 5, k_qc = 5, ruv_negcon = NULL,
-  qc = NULL, adjust_bio = c("no", "yes", "force"), adjust_batch = c("no",
-  "yes", "force"), bio = NULL, batch = NULL, run = TRUE,
-  evaluate = TRUE, eval_pcs = 3, eval_proj = NULL,
-  eval_proj_args = NULL, eval_kclust = 2:10, eval_negcon = NULL,
-  eval_poscon = NULL, params = NULL, verbose = FALSE,
-  conditional_pam = FALSE)
+scone(expr, imputation = list(none = identity), scaling, k_ruv = 5,
+  k_qc = 5, ruv_negcon = NULL, qc = NULL, adjust_bio = c("no", "yes",
+  "force"), adjust_batch = c("no", "yes", "force"), bio = NULL,
+  batch = NULL, run = TRUE, evaluate = TRUE, eval_pcs = 3,
+  eval_proj = NULL, eval_proj_args = NULL, eval_kclust = 2:10,
+  eval_negcon = ruv_negcon, eval_poscon = NULL, params = NULL,
+  verbose = FALSE, conditional_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -46,17 +46,17 @@ of parameters that will be run for inspection by the user.}
 
 \item{eval_pcs}{numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.}
 
-\item{eval_proj}{function. Projection function for evaluation (Inputs: e = genes in rows, cells in columns. eval_proj_args. Output: cells in rows, factors in columns).
+\item{eval_proj}{function. Projection function for evaluation (see \code{\link{score_matrix}} for details).
 If NULL, PCA is used for projection}
 
-\item{eval_proj_args}{list. List of args passed to projection function as eval_proj_args.}
+\item{eval_proj_args}{list. List passed to the eval_proj function as eval_proj_args.}
 
-\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness and stability evaluation.
-If an array of integers, largest average silhoutte width (tightness) / maximum co-clustering stability will be reported. If NULL, tightness and stability will be returned NA.}
+\item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness evaluation.
+If an array of integers, largest average silhouette width (tightness) will be reported. If NULL, tightness will be returned NA.}
 
 \item{eval_negcon}{character. The genes to be used as negative controls for evaluation. These genes should
 be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
-If NULL, correlations with negative controls will be returned NA.}
+Default is ruv_negcon argument. If NULL, correlations with negative controls will be returned NA.}
 
 \item{eval_poscon}{character. The genes to be used as positive controls for evaluation. These genes should
 be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
@@ -75,8 +75,8 @@ back into the algorithm (see example).}
 A list with the following elements:
 \itemize{
 \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
-\item{evaluation}{ A matrix containing raw evaluation metrics for each normalization method. Rows are sorted in the same order as in the ranks output matrix. NULL when evaluate = FALSE.}
-\item{ranks}{ A matrix containing rank-scores for each normalization, including median rank across all scores. Rows are sorted by increasing median rank. NULL when evaluate = FALSE.}
+\item{metrics}{ A matrix containing raw evaluation metrics for each normalization method (see \code{\link{score_matrix}} for details). Rows are sorted in the same order as in the scores output matrix. NULL when evaluate = FALSE.}
+\item{scores}{ A matrix containing scores for each normalization, including average score. Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
 \item{params}{ A data.frame with each row corresponding to a set of normalization parameters.}
 }
 
@@ -96,12 +96,12 @@ must be included in the scaling list. Analogously, if one wants to avoid the imp
 non-imputed data in the comparison, the identity function must be included.
 
 
-If both \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
+If \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
 
 
-Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to rank-score:
-Positive-signature metrics increase with improving performance, including BIO_SIL,PAM_SIL, EXP_WV_COR, PAM_STAB, and VAR_PRES.
-Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_RUV_COR, and EXP_UV_COR.
-Rank-scores are computed so that higer-performing methods are assigned a lower-rank.
+Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
+Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, and EXP_WV_COR.
+Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RLE_MED, and RLE_IQR.
+Scores are computed so that higer-performing methods are assigned a higher scores.
 }
 

@@ -55,7 +55,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' If NULL, only hard threshold sub-criteria will be applied.
 #' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
-#' If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component nomal mixture model.
+#' If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component normal mixture model.
 #' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
 #' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
 #' @param hard_nreads numeric. Hard (lower bound on) nreads threshold. Default 25000.
@@ -254,7 +254,8 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
 
       is_bad = rep(FALSE,dim(expr)[2])
 
-      par(mfcol = c(criterion_count,2))
+      op <- par(mfcol = c(criterion_count,2))
+      on.exit(par(op))
 
       if(!is.null(nreads)){
         is_bad = filtered_nreads
@@ -354,7 +355,7 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
 #' @param min_qual_variance numeric. Minimum proportion of selected quality variance addressed in filtering. Default 0.70
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (quality score).
-#' If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component nomal mixture model.
+#' If true, a dip test will be applied to each quality score. If a metric is multimodal, it is fit to a two-component normal mixture model.
 #' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
 #' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
 #' @param plot logical. Should a plot be produced?
@@ -372,6 +373,10 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
                                 mixture = TRUE, dip_thresh = .01,
                                 plot = FALSE, hist_breaks = 20){
 
+  if(any(is.na(qual))){
+    stop("Quality matrix contains NA values")
+  }
+  
   # Gene filter vector
   if(is.null(gene_filter)){
     gene_filter = rep(TRUE,dim(expr)[1])
@@ -413,8 +418,9 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   num_qual_pcs = which(csum > min_qual_variance)[1]
 
   if(plot){
+    op <- par(mfrow = c(2,1))
+    on.exit(par(op))
     for (i in 1:num_qual_pcs){
-      par(mfrow = c(2,1))
       hist(qpc$x[,i],breaks = hist_breaks, main = paste0("Distribution of Quality PC ",i), xlab = paste0("Qual PC",i))
       barplot(abs(qpc$rotation[,i]),col = c("red","green")[1 + (qpc$rotation[,i] > 0)], cex.names = .25,horiz = T, las=1, main = "Loadings")
     }
