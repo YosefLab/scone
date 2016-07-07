@@ -118,7 +118,7 @@ score_matrix <- function(expr, eval_pcs = 3,
           # Despite krange excluding nc = 1, if asw is negative, nc = 1 will be selected
           if(is.null(pamk_object$pamobject$silinfo$avg.width) ){
             if (!1 %in% eval_kclust) {
-              pamk_object$pamobject$silinfo$avg.width = max(pamk_object$crit[-1])
+              pamk_object$pamobject$silinfo$avg.width = max(pamk_object$crit[1:max(eval_kclust) %in% eval_kclust])
             }else{
               stop("nc = 1 was selected by Duda-Hart, exclude 1 from eval_kclust.")
             }
