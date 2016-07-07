@@ -71,13 +71,18 @@
 #' @param run logical. If FALSE the normalization and evaluation are not run,
 #'   but the function returns a data.frame of parameters that will be run for
 #'   inspection by the user.
-#' @param return_norm logical. If FALSE the normalization will not be returned,
-#'   but only evaluate. This will create a much smaller object and may be useful
-#'   for large datasets and/or when many combinations are compared.
+#' @param return_norm character. If "no" the normalized values will not be
+#'   returned. This will create a much smaller object and may be useful for
+#'   large datasets and/or when many combinations are compared. If "in_memory"
+#'   the normalized values will be returned as part of the output. If "hdf5"
+#'   they will be written on file using the \code{rhdf5} package.
 #'
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
+#' @imporFrom pryr mem_used
+#' @importFrom gdata humanReadable
+#'
 #' @export
 #'
 #' @details If both \code{run=FALSE} the normalization and evaluation are not
@@ -110,7 +115,9 @@ scone <- function(expr, imputation=identity, scaling=identity, k_ruv=5, k_qc=5,
                   run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
                   eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=NULL,
                   eval_poscon=NULL, params=NULL, verbose=FALSE,
-                  conditional_pam = FALSE, return_norm = TRUE) {
+                  conditional_pam = FALSE, return_norm = c("no", "in_memory", "hdf5")) {
+
+  return_norm <- match.arg(return_norm)
 
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -313,7 +320,7 @@ scone <- function(expr, imputation=identity, scaling=identity, k_ruv=5, k_qc=5,
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
 
-  imputed <- lapply(1:length(im_params), function(i) imputation[[i]](expr))
+  imputed <- lapply(seq_along(im_params), function(i) imputation[[i]](expr))
   names(imputed) <- im_params
   # output: a list of imputed matrices
 
@@ -321,7 +328,7 @@ scone <- function(expr, imputation=identity, scaling=identity, k_ruv=5, k_qc=5,
   if(verbose) message("Scaling step...")
   sc_params <- unique(params[,1:2])
 
-  scaled <- bplapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
+  scaled <- bplapply(seq_len(NROW(sc_params)), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices
 
@@ -359,7 +366,7 @@ scone <- function(expr, imputation=identity, scaling=identity, k_ruv=5, k_qc=5,
 
   if(verbose) message("Factor adjustment and evaluation...")
 
-  outlist <- bplapply(1:nrow(params), function(i) {
+  outlist <- bplapply(seq_len(NROW(params)), function(i) {
     parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
@@ -376,9 +383,13 @@ scone <- function(expr, imputation=identity, scaling=identity, k_ruv=5, k_qc=5,
       score <- NULL
     }
 
-    if(return_norm) {
+    if(verbose) message(paste0("Processed: ", rownames(params)[i], "\n", "Mem used: ", gdata::humanReadable(pryr::mem_used())))
+    if(return_norm == "in_memory") {
       return(list(score=score, adjusted=adjusted))
     } else {
+      if(return_norm == "hdf5") {
+        ## write on file
+      }
       return(list(score=score))
     }
   })
