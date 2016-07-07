@@ -10,7 +10,7 @@ scone(expr, imputation = list(none = identity), scaling, k_ruv = 5,
   batch = NULL, run = TRUE, evaluate = TRUE, eval_pcs = 3,
   eval_proj = NULL, eval_proj_args = NULL, eval_kclust = 2:10,
   eval_negcon = ruv_negcon, eval_poscon = NULL, params = NULL,
-  verbose = FALSE, conditional_pam = FALSE)
+  verbose = FALSE, stratified_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -69,7 +69,7 @@ back into the algorithm (see example).}
 
 \item{verbose}{logical. If TRUE some messagges are printed.}
 
-\item{conditional_pam}{logical. If TRUE then maximum ASW is separately computed for each biological condition (including NA), and a weighted average is returned as PAM_SIL.}
+\item{stratified_pam}{logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological-cross-batch condition (accepting NAs), and a weighted average is returned as PAM_SIL.}
 }
 \value{
 A list with the following elements:

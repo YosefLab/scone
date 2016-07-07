@@ -29,7 +29,7 @@
 #' @param wv_factors Factors of wanted variation derived from positive control genes (evaluation set).
 #' If NULL, wv correlations, EXP_WV_COR, will be returned NA.
 #' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out prior to projection.
-#' @param conditional_pam logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological condition (including NA),
+#' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological-cross-batch condition (accepting NAs),
 #' and a weighted average silhouette width is returned.
 #'
 #' @importFrom class knn
@@ -43,7 +43,7 @@
 #' \itemize{
 #' \item{BIO_SIL}{ Average silhouette width by biological condition.}
 #' \item{BATCH_SIL}{ Average silhouette width by batch condition.}
-#' \item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see conditional_pam argument).}
+#' \item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see stratified_pam argument).}
 #' \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
 #' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 #' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
@@ -57,7 +57,7 @@ score_matrix <- function(expr, eval_pcs = 3,
                          eval_kclust = NULL,
                          bio = NULL, batch = NULL,
                          qc_factors = NULL,uv_factors = NULL, wv_factors = NULL, 
-                         is_log=FALSE, conditional_pam = FALSE){
+                         is_log=FALSE, stratified_pam = FALSE){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")
@@ -102,36 +102,35 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   if ( !is.null(eval_kclust) ){
     
-    # "Conditional" PAM
-    if(conditional_pam){
+    # "Stratified" PAM
+    if(stratified_pam){
 
+      biobatch = as.factor(paste(bio,batch,sep = "_"))
       PAM_SIL = 0
 
-      # Max Average Sil Width per Biological Condition
-      for (cond in levels(bio)){
-        is_cond = which(bio == cond)
+      # Max Average Sil Width per bio-cross-batch Condition
+      for (cond in levels(biobatch)){
+        is_cond = which(biobatch == cond)
         cond_w = length(is_cond)
         if(cond_w > max(eval_kclust)){
           pamk_object = pamk(proj[is_cond,],krange = eval_kclust)
+          
+          # Despite krange excluding nc = 1, if asw is negative, nc = 1 will be selected
+          if(is.null(pamk_object$pamobject$silinfo$avg.width) ){
+            if (!1 %in% eval_kclust) {
+              pamk_object$pamobject$silinfo$avg.width = max(pamk_object$crit[-1])
+            }else{
+              stop("nc = 1 was selected by Duda-Hart, exclude 1 from eval_kclust.")
+            }
+          }
+  
           PAM_SIL = PAM_SIL + cond_w*pamk_object$pamobject$silinfo$avg.width
         }else{
-          stop("Number of clusters 'k' must be smaller than bio class size")
+          stop(paste("Number of clusters 'k' must be smaller than bio-cross-batch stratum size:",
+                paste(levels(biobatch),table(biobatch), sep = " = ",collapse = ", ")))
         }
       }
-
-      # Max Average Sil Width for Unclassified Condition
-      is_na = is.na(bio)
-      if (any(is_na)){
-        cond_w = sum(is_na)
-        if(cond_w > max(eval_kclust)){
-          pamk_object = pamk(proj[is_na,],krange = eval_kclust)
-          PAM_SIL = PAM_SIL + cond_w*pamk_object$pamobject$silinfo$avg.width
-        }else{
-          stop("Number of clusters 'k' must be smaller than unclassified bio set size")
-        }
-      }
-      
-      PAM_SIL = PAM_SIL/length(bio)
+      PAM_SIL = PAM_SIL/length(biobatch)
       
     # Traditional PAM
     }else{

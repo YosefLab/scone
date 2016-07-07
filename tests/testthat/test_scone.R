@@ -202,11 +202,10 @@ test_that("conditional PAM",{
 
   res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-               k_ruv=0, k_qc=0, adjust_bio="yes", bio=bio,
-               adjust_batch="yes", batch=batch, run=FALSE,
+               k_ruv=0, k_qc=0, adjust_bio="yes", bio=bio, run=FALSE,
                evaluate=TRUE, eval_negcon=as.character(11:20),
                eval_poscon=as.character(21:30),
-               eval_kclust = 2, conditional_pam = TRUE)
+               eval_kclust = 2, stratified_pam = TRUE)
 
   expect_error(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -214,17 +213,16 @@ test_that("conditional PAM",{
                adjust_batch="yes", batch=batch, run=FALSE,
                evaluate=TRUE, eval_negcon=as.character(11:20),
                eval_poscon=as.character(21:30),
-               eval_kclust = 6, conditional_pam = TRUE),
-               "For conditional_pam, max 'eval_kclust' must be smaller than min bio class size")
+               eval_kclust = 6, stratified_pam = TRUE),
+               "For stratified_pam, max 'eval_kclust' must be smaller than bio-cross-batch stratum size")
 
   expect_error(res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
                             scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-                            k_ruv=0, k_qc=0,
-                            adjust_batch="yes", batch=batch, run=FALSE,
-                            evaluate=TRUE, eval_negcon=as.character(11:20),
+                            k_ruv=0, k_qc=0, run = FALSE,
+                            evaluate = TRUE, eval_negcon=as.character(11:20),
                             eval_poscon=as.character(21:30),
-                            eval_kclust = 6, conditional_pam = TRUE),
-               "If `bio` is null, `conditional_pam` cannot be TRUE")
+                            eval_kclust = 6, stratified_pam = TRUE),
+               "For stratified_pam, bio and/or batch must be specified")
 
 })
 
