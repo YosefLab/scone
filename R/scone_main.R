@@ -82,8 +82,6 @@
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
-#' @importFrom pryr mem_used
-#' @importFrom gdata humanReadable
 #' @importFrom graphics abline arrows barplot hist par plot text
 #' @importFrom stats approx as.formula binomial coefficients contr.sum cor dist
 #'   dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm
@@ -404,7 +402,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
       score <- NULL
     }
 
-    if(verbose) message(paste0("Processed: ", rownames(params)[i], "\n", "Mem used: ", gdata::humanReadable(pryr::mem_used())))
+    if(verbose) message(paste0("Processed: ", rownames(params)[i]))
     if(return_norm == "in_memory") {
       return(list(score=score, adjusted=adjusted))
     } else {
