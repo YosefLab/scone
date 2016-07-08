@@ -76,6 +76,8 @@
 #'   large datasets and/or when many combinations are compared. If "in_memory"
 #'   the normalized values will be returned as part of the output. If "hdf5"
 #'   they will be written on file using the \code{rhdf5} package.
+#' @param hdf5file character. If \code{return_norm="hdf5"}, the name of the file
+#'   onto which to save the normalized matrices.
 #'
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
@@ -87,6 +89,7 @@
 #'   dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm
 #'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
+#' @importFrom rhdf5 h5createFile h5write
 #' @export
 #'
 #' @details If \code{run=FALSE} the normalization and evaluation are not run,
@@ -114,15 +117,30 @@
 #'   RLE_MED, and RLE_IQR. Scores are computed so that higer-performing methods
 #'   are assigned a higher scores.
 #'
+#' @details If \code{return_norm="hdf5"}, the normalized matrices will be
+#'   written to the \code{hdf5file} file. This must be a string specifying (a
+#'   path to) a new file. If the file already exists, it will return error.
+#'
 scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5,
                   ruv_negcon=NULL, qc=NULL, adjust_bio=c("no", "yes", "force"),
                   adjust_batch=c("no", "yes", "force"), bio=NULL, batch=NULL,
                   run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
                   eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=ruv_negcon,
                   eval_poscon=NULL, params=NULL, verbose=FALSE,
-                  stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5")) {
+                  stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
+                  hdf5file) {
 
   return_norm <- match.arg(return_norm)
+
+  if(return_norm == "hdf5") {
+    if(missing(hdf5file)) {
+      stop("If `return_norm='hdf5'`, `hdf5file` must be specified.")
+    } else {
+      stopifnot(h5createFile(hdf5file))
+      h5write(rownames(expr), hdf5file, "genes")
+      h5write(colnames(expr), hdf5file, "samples")
+    }
+  }
 
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -391,7 +409,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
       return(list(score=score, adjusted=adjusted))
     } else {
       if(return_norm == "hdf5") {
-        ## write on file
+        h5write(adjusted, hdf5file, rownames(params)[i])
       }
       return(list(score=score))
     }
