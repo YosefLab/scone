@@ -1,32 +1,53 @@
 #' Fit Logistic Regression Model of FNR against set of positive control (ubiquitously expressed) genes
 #'
-#' @details logit(Probability of False Negative) ~ a + b*(mean log10p1 expression) .
+#' @details logit(Probability of False Negative) ~ a + b*(median log-expression) .
 #'
 #' @param expr matrix The data matrix in transcript-proportional units (genes in rows, cells in columns).
 #' @param pos_controls A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
+#' User must provide at least 2 positive control genes.
 #' @param fn_tresh Inclusive threshold for negative detection. Default 0.01.
+#' fn_tresh must be non-negative.
 #'
-#' @return A list of logistic regression coefficients corresponding to glm fits in each sample. If a fit did not converge, the result reported is NA.
+#' @return A matrix of logistic regression coefficients corresponding to glm fits in each sample (a and b in columns 1 and 2 respectively). If the a & b fit does not converge, b is set to zero and only a is estimated.
+#'
+#' @importFrom boot logit
+#' @importFrom matrixStats rowMedians
 #'
 simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 
-  # Mean log10p1 expression
-  mu_obs = rowMeans(log10(expr[pos_controls,]+1))
-
-  # Drop-outs
-  drop_outs = 0 + (expr[pos_controls,] <= fn_tresh)
+  stopifnot(!any(is.na(pos_controls)))
+  
+  if (sum(pos_controls) < 2){
+    stop("User must provide at least 2 positive control genes")
+  }
+  
+  if (fn_tresh < 0){
+    stop("fn_tresh must be non-negative")
+  }
+  
+  pos_expr = expr[pos_controls,]  # Selecting positive-control genes
+  is_drop = pos_expr <= fn_tresh  # Identify false negatives
+  pos_expr[is_drop] = NA          # Set false negatives to NA
+  drop_outs = 0 + is_drop         # Numeric drop-out state
+  drop_rate = colMeans(drop_outs) # Total drop-out rate per sample
+    
+  # Median log-expression in positive observations
+  mu_obs = log(rowMedians(pos_expr,na.rm = TRUE))
+  if(any(is.na(mu_obs))){
+    stop("Median log-expression in positive observations NA for some positive control gene/s")
+  }
 
   # Logistic Regression Model of FNR
-  ref.glms = list()
-  for (si in 1:dim(drop_outs)[2]){
+  logistic_coef = matrix(0,ncol(drop_outs),2)
+  for (si in seq_len(ncol(drop_outs))){
     fit = suppressWarnings(glm(cbind(drop_outs[,si],1 - drop_outs[,si]) ~ mu_obs,family=binomial(logit)))
     if(fit$converged){
-      ref.glms[[si]] = fit$coefficients
+      logistic_coef[si,] = fit$coefficients
     } else {
-      ref.glms[[si]] = NA
+      logistic_coef[si,1] = logit(drop_rate[si])
     }
   }
-  return(ref.glms)
+  return(logistic_coef)
 }
 
 #' metric-based sample filtering: function to filter single-cell RNA-Seq libraries.
@@ -51,7 +72,7 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' If NULL, filtered_fnr will be returned NA.
 #' @param scale. logical. Will expression be scaled by total expression for FNR computation? Default = FALSE
 #' @param glen Gene lengths for gene-length normalization (normalized data used in FNR computation).
-#' @param AUC_range An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)
+#' @param AUC_range An array of two values, representing range over which FNR AUC will be computed (log(expr_units)). Default c(0,15)
 #' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 #' If NULL, only hard threshold sub-criteria will be applied.
 #' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
@@ -61,11 +82,11 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #' @param hard_nreads numeric. Hard (lower bound on) nreads threshold. Default 25000.
 #' @param hard_ralign numeric. Hard (lower bound on) ralign threshold. Default 15.
 #' @param hard_breadth numeric. Hard (lower bound on) breadth threshold. Default 0.2.
-#' @param hard_fnr numeric. Hard (upper bound on) fnr threshold. Default 3.
-#' @param suff_nreads numeric. If not null, serves as an upper bound on nreads threshold.
-#' @param suff_ralign numeric. If not null, serves as an upper bound on ralign threshold.  Default 65.
-#' @param suff_breadth numeric. If not null, serves as an upper bound on breadth threshold.  Default 0.8.
-#' @param suff_fnr numeric. If not null, serves as an lower bound on fnr threshold.
+#' @param hard_auc numeric. Hard (upper bound on) fnr auc threshold. Default 10.
+#' @param suff_nreads numeric. If not null, serves as an overriding upper bound on nreads threshold.
+#' @param suff_ralign numeric. If not null, serves as an overriding upper bound on ralign threshold.
+#' @param suff_breadth numeric. If not null, serves as an overriding upper bound on breadth threshold.
+#' @param suff_auc numeric. If not null, serves as an overriding lower bound on fnr auc threshold.
 #' @param plot logical. Should a plot be produced?
 #' @param hist_breaks hist() breaks argument. Ignored if `plot=FALSE`.
 #'
@@ -79,15 +100,16 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #'
 #'@importFrom mixtools normalmixEM
 #'@importFrom diptest dip.test
+#'@importFrom boot inv.logit
 #'@export
 #'
 #'
 metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
                                 gene_filter = NULL, pos_controls = NULL,scale. = FALSE,glen = NULL,
-                                AUC_range = c(0,6), zcut = 1,
+                                AUC_range = c(0,15), zcut = 1,
                                 mixture = TRUE, dip_thresh = 0.05,
-                                hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2, hard_fnr = 3,
-                                suff_nreads = NULL, suff_ralign = 65, suff_breadth = 0.8, suff_fnr = NULL,
+                                hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2, hard_auc = 10,
+                                suff_nreads = NULL, suff_ralign = NULL, suff_breadth = NULL, suff_auc = NULL,
                                 plot = FALSE, hist_breaks = 10){
 
   criterion_count = 0
@@ -210,17 +232,17 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
     }
 
     # Compute FNR AUC
-    ref.glms = simple_FNR_params(expr = nexpr, pos_controls = pos_controls)
+    logistic_coef = simple_FNR_params(expr = nexpr, pos_controls = pos_controls)
     AUC = NULL
     for (si in 1:dim(expr)[2]){
-      if(!any(is.na(ref.glms[[si]]))){
-        AUC[si] = log(exp(ref.glms[[si]][1] + ref.glms[[si]][2] * AUC_range[2]) + 1)/ref.glms[[si]][2] - log(exp(ref.glms[[si]][1] + ref.glms[[si]][2] * AUC_range[1]) + 1)/ref.glms[[si]][2]
+      if(logistic_coef[si,2] != 0){
+        AUC[si] = log(exp(logistic_coef[si,1] + logistic_coef[si,2] * AUC_range[2]) + 1)/logistic_coef[si,2] - log(exp(logistic_coef[si,1] + logistic_coef[si,2] * AUC_range[1]) + 1)/logistic_coef[si,2]
       } else {
-        stop("glm fit did not converge")
+        AUC[si] = inv.logit(logistic_coef[si,1])*(AUC_range[2] - AUC_range[1])
       }
     }
 
-    AUC_CUTOFF = hard_fnr
+    AUC_CUTOFF = hard_auc
 
     if (!is.null(zcut)){
 
@@ -239,8 +261,8 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
         }
       }
 
-      if(!is.null(suff_fnr)){
-        AUC_CUTOFF = max(AUC_CUTOFF,suff_fnr)
+      if(!is.null(suff_auc)){
+        AUC_CUTOFF = max(AUC_CUTOFF,suff_auc)
       }
     }
     filtered_fnr = AUC > AUC_CUTOFF
@@ -305,7 +327,7 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
         }else{
           hist(AUC, main = paste0("auc: Thresh = ",signif(AUC_CUTOFF,3)," , Rm = ",sum(filtered_fnr)," , Tot_Rm = ",sum(is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
         }
-        abline(v = hard_fnr, col = "yellow", lty = 1)
+        abline(v = hard_auc, col = "yellow", lty = 1)
         abline(v = AUC_CUTOFF, col = "blue", lty = 2)
       }
 
@@ -321,13 +343,6 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
       if(!is.null(pos_controls)){
         hist(AUC[!is_bad],  main = paste0("auc: Tot = ",sum(!is_bad)), xlab = "FNR AUC", breaks = hist_breaks)
       }
-
-      # v = rbind(filtered_nreads,filtered_ralign,filtered_breadth,filtered_fnr)
-      # rownames(v) = c("nreads","ralign","breadth","fnr")
-      # v = na.omit(v)
-      # m = v %*% t(v)
-      #
-      # barplot(m, beside = TRUE, legend.text = TRUE)
   }
 
   return(list(filtered_nreads = filtered_nreads,
