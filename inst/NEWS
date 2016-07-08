@@ -1,8 +1,10 @@
-Changes in version 0.0.6
+Changes in version 0.0.6 (2016-07-07)
 ========================
 
 * Fixed bug when using plot functionality of filtering functions.
 * "Conditional" pam replaced with "Stratified" pam, clustering each bio-cross-batch condition separately, rather than simply each bio condition.
+* Added option to write normalized matrices to HDF5 file.
+* Added wrapper function get_normalized() to retrieve normalized data.
 
 Changes in version 0.0.5
 ========================
