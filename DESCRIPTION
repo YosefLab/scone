@@ -13,22 +13,25 @@ License: Artistic-2.0
 Depends:
   R (>= 3.3)
 Imports:
+  aroma.light,
   BiocParallel,
+  class,
   cluster,
   DESeq,
-  EDASeq,
-  MASS,
-  RUVSeq,
-  aroma.light,
-  class,
   diptest,
+  EDASeq,
   edgeR,
   fpc,
+  gdata,
   gplots,
+  grDevices,
   limma,
+  MASS,
   matrixStats,
   mixtools,
-  grDevices
+  pryr,
+  rhdf5,
+  RUVSeq
 Suggests:
   knitr,
   rmarkdown,
