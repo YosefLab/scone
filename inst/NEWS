@@ -13,7 +13,7 @@ Changes in version 0.0.5
 * Limit number of WV and UV factors to eval_pcs in computing WV and UV scores.
 * Updated dependencies.
 * Added error-handling to sample filter.
-* Removed “var preserved” measure do to length of running time.
+* Removed var preserved measure due to length of running time.
 
 Changes in version 0.0.4
 ========================
