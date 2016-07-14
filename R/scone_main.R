@@ -87,7 +87,7 @@
 #'   dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm
 #'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
-#' @importFrom rhdf5 h5createFile h5write
+#' @importFrom rhdf5 h5createFile h5write.default h5write
 #' @export
 #'
 #' @details If \code{run=FALSE} the normalization and evaluation are not run,
