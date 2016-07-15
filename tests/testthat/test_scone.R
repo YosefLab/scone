@@ -8,12 +8,12 @@ test_that("Test with no real method (only identity)", {
 
   # one combination
   res <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
-               evaluate=FALSE, run=TRUE)
+               evaluate=FALSE, run=TRUE, return_norm = "in_memory")
   expect_equal(res$normalized_data[[1]], log1p(e))
 
   # add more imputations
   res <- scone(e, imputation=list(a=identity, b=identity), scaling=identity,
-               k_ruv=0, k_qc=0, evaluate=FALSE, run=TRUE)
+               k_ruv=0, k_qc=0, evaluate=FALSE, run=TRUE, return_norm = "in_memory")
   expect_equal(res$normalized_data[[1]], log1p(e))
   expect_equal(res$normalized_data[[2]], log1p(e))
 
@@ -159,7 +159,8 @@ test_that("Test imputation and scaling", {
                            adjust_batch="yes", batch=batch, run=TRUE,
                            evaluate=TRUE, eval_negcon=as.character(11:20),
                            eval_poscon=as.character(21:30),
-                           eval_kclust = 2, verbose=TRUE))
+                           eval_kclust = 2, verbose=FALSE,
+                           return_norm = "in_memory"))
 
   expect_equal(rownames(res$metrics), rownames(res$scores))
   expect_equal(rownames(res$metrics), rownames(res$params))
@@ -172,7 +173,7 @@ test_that("Test imputation and scaling", {
                adjust_batch="yes", batch=batch, run=TRUE,
                evaluate=FALSE, eval_negcon=as.character(11:20),
                eval_poscon=as.character(21:30),
-               eval_kclust = 2, verbose=TRUE)
+               eval_kclust = 2, verbose=FALSE, return_norm = "in_memory")
 
   norm_ordered <- res2$normalized_data[names(res$normalized_data)]
   expect_equal(norm_ordered, res$normalized_data)
@@ -187,7 +188,7 @@ test_that("scone works with only one normalization",{
   res <- scone(e, imputation=list(none=identity),
                scaling=list(none=identity),
                k_ruv=0, k_qc=0, run=TRUE,
-               evaluate=TRUE, eval_kclust = 2)
+               evaluate=TRUE, eval_kclust = 2, return_norm = "in_memory")
 
   expect_equal(res$normalized_data[[1]], log1p(e))
 })
@@ -232,10 +233,12 @@ test_that("if bio=no bio is ignored", {
   rownames(e) <- as.character(1:nrow(e))
 
   res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
-               adjust_bio = "no", bio=gl(2, 5), eval_kclust = 3)
+               adjust_bio = "no", bio=gl(2, 5), eval_kclust = 3,
+               return_norm = "in_memory")
 
   res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
-                 adjust_bio = "no", eval_kclust = 3)
+                 adjust_bio = "no", eval_kclust = 3,
+                return_norm = "in_memory")
 
   expect_equal(res1$normalized_data, res2$normalized_data)
 })
@@ -245,10 +248,12 @@ test_that("if batch=no batch is ignored", {
   rownames(e) <- as.character(1:nrow(e))
 
   res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
-                adjust_batch = "no", batch=gl(2, 5), eval_kclust = 3)
+                adjust_batch = "no", batch=gl(2, 5), eval_kclust = 3,
+                return_norm = "in_memory")
 
   res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0,
-                adjust_batch = "no", eval_kclust = 3)
+                adjust_batch = "no", eval_kclust = 3,
+                return_norm = "in_memory")
 
   expect_equal(res1$normalized_data, res2$normalized_data)
 })

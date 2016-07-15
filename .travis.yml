@@ -38,5 +38,5 @@ bioc_packages:
   - BiocCheck
 
 after_success:
-  - bash <(curl -s https://codecov.io/bash)
+  - Rscript -e 'covr::coveralls()'
   - R CMD BiocCheck .

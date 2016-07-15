@@ -1,83 +1,147 @@
-#' scone main wrapper: function to apply and evaluate all the normalization schemes
+#' scone main wrapper: function to apply and evaluate all the normalization
+#' schemes
 #'
-#' This function is a high-level wrapper to apply and evaluate a variety of normalization
-#' schemes to a specified expression matrix.
+#' This function is a high-level wrapper to apply and evaluate a variety of
+#' normalization schemes to a specified expression matrix.
 #'
-#' The function consists of four main steps: imputation, scaling normalization, adjusting for batch effects,
-#' and evaluation of the normalization performance.
+#' The function consists of four main steps: imputation, scaling normalization,
+#' adjusting for batch effects, and evaluation of the normalization performance.
 #'
-#' @details Note that if one wants to include the unnormalized data in the comparison, the identity function
-#' must be included in the scaling list. Analogously, if one wants to avoid the imputation and/or include the
-#' non-imputed data in the comparison, the identity function must be included.
+#' @details Note that if one wants to include the unnormalized data in the
+#'   comparison, the identity function must be included in the scaling list.
+#'   Analogously, if one wants to avoid the imputation and/or include the
+#'   non-imputed data in the comparison, the identity function must be included.
 #'
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
-#' @param imputation list or function. (A list of) function(s) to be used for imputation.
-#' @param scaling list or function. (A list of) function(s) to be used for scaling normalization.
-#' @param k_ruv numeric. The maximum number of factors of unwanted variation (the function will adjust for 1 to k_ruv factors of unwanted variation).
-#' If 0, RUV will not be performed.
-#' @param k_qc numeric. The maximum number of quality metrics PCs (the function will adjust for 1 to k_qc PCs).
-#' If 0, QC adjustment will not be performed.
-#' @param ruv_negcon character. The genes to be used as negative controls for RUV. Ignored if k_ruv=0.
-#' @param qc matrix. The QC metrics to be used for QC adjustment. Ignored if k_qc=0.
-#' @param adjust_bio character. If 'no' it will not be included in the model; if 'yes', both models with and without 'bio' will be run;
-#' if 'force', only models with 'bio' will be run.
-#' @param adjust_batch character. If 'no' it will not be included in the model; if 'yes', both models with and without 'batch' will be run;
-#' if 'force', only models with 'batch' will be run.
-#' @param bio factor. The biological condition to be included in the adjustment model (variation to be preserved). If adjust_bio="no", it will not be used for normalization, but only for evaluation.
-#' @param batch factor. The known batch variable to be included in the adjustment model (variation to be removed). If adjust_batch="no", it will not be used for normalization, but only for evaluation.
-#' @param evaluate logical. If FALSE the normalization methods will not be evaluated (faster).
-#' @param eval_pcs numeric. The number of principal components to use for evaluation. Ignored if evaluation=FALSE.
-#' @param eval_proj function. Projection function for evaluation (see \code{\link{score_matrix}} for details).
-#' If NULL, PCA is used for projection
-#' @param eval_proj_args list. List passed to the eval_proj function as eval_proj_args.
-#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness evaluation.
-#' If an array of integers, largest average silhouette width (tightness) will be reported. If NULL, tightness will be returned NA.
-#' @param eval_negcon character. The genes to be used as negative controls for evaluation. These genes should
-#' be expected not to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
-#' Default is ruv_negcon argument. If NULL, correlations with negative controls will be returned NA.
-#' @param eval_poscon character. The genes to be used as positive controls for evaluation. These genes should
-#' be expected to change according to the biological phenomenon of interest. Ignored if evaluation=FALSE.
-#' If NULL, correlations with positive controls will be returned NA.
-#' @param params matrix or data.frame. If given, the algorithm will bypass creating the matrix of possible
-#' parameters, and will use the given matrix. There are basically no checks as to whether this matrix is in the
-#' right format, and is only intended to be used to feed the results of setting run=FALSE
-#' back into the algorithm (see example).
+#' @param imputation list or function. (A list of) function(s) to be used for
+#'   imputation.
+#' @param scaling list or function. (A list of) function(s) to be used for
+#'   scaling normalization.
+#' @param k_ruv numeric. The maximum number of factors of unwanted variation
+#'   (the function will adjust for 1 to k_ruv factors of unwanted variation). If
+#'   0, RUV will not be performed.
+#' @param k_qc numeric. The maximum number of quality metrics PCs (the function
+#'   will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.
+#' @param ruv_negcon character. The genes to be used as negative controls for
+#'   RUV. Ignored if k_ruv=0.
+#' @param qc matrix. The QC metrics to be used for QC adjustment. Ignored if
+#'   k_qc=0.
+#' @param adjust_bio character. If 'no' it will not be included in the model; if
+#'   'yes', both models with and without 'bio' will be run; if 'force', only
+#'   models with 'bio' will be run.
+#' @param adjust_batch character. If 'no' it will not be included in the model;
+#'   if 'yes', both models with and without 'batch' will be run; if 'force',
+#'   only models with 'batch' will be run.
+#' @param bio factor. The biological condition to be included in the adjustment
+#'   model (variation to be preserved). If adjust_bio="no", it will not be used
+#'   for normalization, but only for evaluation.
+#' @param batch factor. The known batch variable to be included in the
+#'   adjustment model (variation to be removed). If adjust_batch="no", it will
+#'   not be used for normalization, but only for evaluation.
+#' @param evaluate logical. If FALSE the normalization methods will not be
+#'   evaluated (faster).
+#' @param eval_pcs numeric. The number of principal components to use for
+#'   evaluation. Ignored if evaluation=FALSE.
+#' @param eval_proj function. Projection function for evaluation  (see
+#'   \code{\link{score_matrix}} for details). If NULL, PCA is used for
+#'   projection.
+#' @param eval_proj_args list. List of args passed to projection function as
+#'   eval_proj_args.
+#' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam
+#'   tightness evaluation. If an array of integers, largest average silhouette
+#'   width (tightness) will be reported. If NULL, tightness will be returned NA.
+#' @param eval_negcon character. The genes to be used as negative controls for
+#'   evaluation. These genes should be expected not to change according to the
+#'   biological phenomenon of interest. Ignored if evaluation=FALSE. Default is
+#'   ruv_negcon argument. If NULL, correlations with negative controls will be
+#'   returned NA.
+#' @param eval_poscon character. The genes to be used as positive controls for
+#'   evaluation. These genes should be expected to change according to the
+#'   biological phenomenon of interest. Ignored if evaluation=FALSE. If NULL,
+#'   correlations with positive controls will be returned NA.
+#' @param params matrix or data.frame. If given, the algorithm will bypass
+#'   creating the matrix of possible parameters, and will use the given matrix.
+#'   There are basically no checks as to whether this matrix is in the right
+#'   format, and is only intended to be used to feed the results of setting
+#'   run=FALSE back into the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
-#' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological-cross-batch condition (accepting NAs), and a weighted average is returned as PAM_SIL.
-#' @param run logical. If FALSE the normalization and evaluation are not run, but the function returns a data.frame
-#' of parameters that will be run for inspection by the user.
+#' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
+#'   separately computed for each biological-cross-batch condition (accepting
+#'   NAs), and a weighted average is returned as PAM_SIL.
+#' @param run logical. If FALSE the normalization and evaluation are not run,
+#'   but the function returns a data.frame of parameters that will be run for
+#'   inspection by the user.
+#' @param return_norm character. If "no" the normalized values will not be
+#'   returned. This will create a much smaller object and may be useful for
+#'   large datasets and/or when many combinations are compared. If "in_memory"
+#'   the normalized values will be returned as part of the output. If "hdf5"
+#'   they will be written on file using the \code{rhdf5} package.
+#' @param hdf5file character. If \code{return_norm="hdf5"}, the name of the file
+#'   onto which to save the normalized matrices.
 #'
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
 #' @importFrom graphics abline arrows barplot hist par plot text
-#' @importFrom stats approx as.formula binomial coefficients contr.sum cor dist dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm prcomp quantile quasibinomial sd
+#' @importFrom stats approx as.formula binomial coefficients contr.sum cor dist
+#'   dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm
+#'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
+#' @importFrom rhdf5 h5createFile h5write.default h5write
 #' @export
 #'
-#' @details If \code{run=FALSE} the normalization and evaluation are not run, but the function returns a matrix of parameters that will be run for inspection by the user.
+#' @details If \code{run=FALSE} the normalization and evaluation are not run,
+#'   but the function returns a matrix of parameters that will be run for
+#'   inspection by the user.
 #'
-#' @return A list with the following elements:
-#' \itemize{
-#' \item{normalized_data}{ A list containing the normalized data matrix, log-scaled. NULL when evaluate = TRUE.}
-#' \item{metrics}{ A matrix containing raw evaluation metrics for each normalization method (see \code{\link{score_matrix}} for details). Rows are sorted in the same order as in the scores output matrix. NULL when evaluate = FALSE.}
-#' \item{scores}{ A matrix containing scores for each normalization, including average score. Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
-#' \item{params}{ A data.frame with each row corresponding to a set of normalization parameters.}
-#' }
-#' @return If \code{run=FALSE} a \code{data.frame}
-#' with each row corresponding to a set of normalization parameters.
+#' @return A list with the following elements: \itemize{ \item{normalized_data}{
+#'   A list containing the normalized data matrix, log-scaled. NULL when
+#'   \code{return_norm} is not "in_memory".} \item{metrics}{ A matrix containing
+#'   raw evaluation metrics for each normalization method (see
+#'   \code{\link{score_matrix}} for details). Rows are sorted in the same order
+#'   as in the scores output matrix. NULL when evaluate = FALSE.} \item{scores}{
+#'   A matrix containing scores for each normalization, including average score.
+#'   Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
+#'   \item{params}{ A data.frame with each row corresponding to a set of
+#'   normalization parameters.} }
+#' @return If \code{run=FALSE} a \code{data.frame} with each row corresponding
+#'   to a set of normalization parameters.
 #'
-#' @details Evaluation metrics are defined in \code{\link[scone]{score_matrix}}. Each metric is assigned a signature for conversion to scores:
-#' Positive-signature metrics increase with improving performance, including BIO_SIL, PAM_SIL, and EXP_WV_COR.
-#' Negative-signature metrics decrease with improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RLE_MED, and RLE_IQR.
-#' Scores are computed so that higer-performing methods are assigned a higher scores.
+#' @details Evaluation metrics are defined in \code{\link{score_matrix}}.
+#'   Each metric is assigned a signature for conversion to scores:
+#'   Positive-signature metrics increase with improving performance, including
+#'   BIO_SIL, PAM_SIL, and EXP_WV_COR. Negative-signature metrics decrease with
+#'   improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR,
+#'   RLE_MED, and RLE_IQR. Scores are computed so that higer-performing methods
+#'   are assigned a higher scores.
 #'
+#' @details If \code{return_norm="hdf5"}, the normalized matrices will be
+#'   written to the \code{hdf5file} file. This must be a string specifying (a
+#'   path to) a new file. If the file already exists, it will return error.
+#'
+scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5,
+                  ruv_negcon=NULL, qc=NULL, adjust_bio=c("no", "yes", "force"),
+                  adjust_batch=c("no", "yes", "force"), bio=NULL, batch=NULL,
+                  run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
+                  eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=ruv_negcon,
+                  eval_poscon=NULL, params=NULL, verbose=FALSE,
+                  stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
+                  hdf5file) {
 
-scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
-                  qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
-                  bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
-                  eval_kclust=2:10, eval_negcon=ruv_negcon, eval_poscon=NULL,
-                  params=NULL, verbose=FALSE, stratified_pam = FALSE) {
+  return_norm <- match.arg(return_norm)
+
+  if(return_norm == "hdf5") {
+    if(missing(hdf5file)) {
+      stop("If `return_norm='hdf5'`, `hdf5file` must be specified.")
+    } else {
+      if(BiocParallel::bpnworkers(BiocParallel::registered()[[1]]) > 1) {
+        stop("At the moment, `return_norm='hdf5'` does not support multicores.")
+      }
+      stopifnot(h5createFile(hdf5file))
+      h5write(rownames(expr), hdf5file, "genes")
+      h5write(colnames(expr), hdf5file, "samples")
+    }
+  }
 
   if(!is.matrix(expr)) {
     stop("'expr' must be a matrix.")
@@ -282,7 +346,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
 
-  imputed <- lapply(1:length(im_params), function(i) imputation[[i]](expr))
+  imputed <- lapply(seq_along(im_params), function(i) imputation[[i]](expr))
   names(imputed) <- im_params
   # output: a list of imputed matrices
 
@@ -290,7 +354,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   if(verbose) message("Scaling step...")
   sc_params <- unique(params[,1:2])
 
-  scaled <- bplapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
+  scaled <- bplapply(seq_len(NROW(sc_params)), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices
 
@@ -326,7 +390,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
 
   if(verbose) message("Factor adjustment and evaluation...")
 
-  outlist <- bplapply(1:nrow(params), function(i) {
+  outlist <- bplapply(seq_len(NROW(params)), function(i) {
     parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
@@ -340,11 +404,24 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     } else {
       score <- NULL
     }
-    return(list(score=score, adjusted=adjusted))
+
+    if(verbose) message(paste0("Processed: ", rownames(params)[i]))
+    if(return_norm == "in_memory") {
+      return(list(score=score, adjusted=adjusted))
+    } else {
+      if(return_norm == "hdf5") {
+        h5write(adjusted, hdf5file, rownames(params)[i])
+      }
+      return(list(score=score))
+    }
   })
 
-  adjusted <- lapply(outlist, function(x) x$adjusted)
-  names(adjusted) <- apply(params, 1, paste, collapse=',')
+  if(return_norm == "in_memory") {
+    adjusted <- lapply(outlist, function(x) x$adjusted)
+    names(adjusted) <- apply(params, 1, paste, collapse=',')
+  } else {
+    adjusted <- NULL
+  }
 
   if(evaluate) {
     evaluation <- lapply(outlist, function(x) x$score)
@@ -359,7 +436,11 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     scores <- cbind(t(scores), mean_score)[order(mean_score, decreasing = TRUE),]
 
     evaluation <- t(evaluation[,order(mean_score, decreasing = TRUE), drop=FALSE])
-    adjusted <- adjusted[order(mean_score, decreasing = TRUE)]
+
+    if(return_norm == "in_memory") {
+      adjusted <- adjusted[order(mean_score, decreasing = TRUE)]
+    }
+
     params <- params[order(mean_score, decreasing = TRUE),]
   } else {
     evaluation <- scores <- NULL
@@ -368,4 +449,33 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   if(verbose) message("Done!")
 
   return(list(normalized_data=adjusted, metrics=evaluation, scores=scores, params=params))
+}
+
+#' Retrieve normalized matrix
+#'
+#' Given a string representing a normalization scheme and an HDF5 file created by
+#' scone, it will return a matrix of normalized counts (in log scale).
+#'
+#' @details The string must be of of the row.names of the \code{params}
+#'   component of the scone output.
+#'
+#' @param normalization character. A string identifying the normalization scheme
+#'   to be retrieved.
+#' @param hdf5file character. The name of the file in which the data have been
+#'   stored.
+#'
+#' @return A matrix of normalized counts in log-scale.
+#'
+#' @importFrom rhdf5 h5ls h5read
+#' @export
+get_normalized <- function(normalization, hdf5file) {
+
+  if(!normalization %in% h5ls(hdf5file)$name) {
+    stop(paste0(normalization, " does not match any object in ", hdf5file))
+  } else {
+    retval <- h5read(hdf5file, normalization)
+    rownames(retval) <- h5read(hdf5file, "genes")
+    colnames(retval) <- h5read(hdf5file, "samples")
+    return(retval)
+  }
 }

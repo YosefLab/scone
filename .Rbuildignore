@@ -29,6 +29,8 @@ README[.]md
 ^[.]devel
 ^[.]test
 ^[.]check
+.Rhistory
+R/.Rhistory
 
 #----------------------------
 # Temp scripts
