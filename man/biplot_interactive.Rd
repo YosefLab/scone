@@ -21,9 +21,11 @@ Since this is based on the shiny gadget feature, it will not work in
   See \code{biplot_colored} for more details on the internals.
 }
 \examples{
+\dontrun{
 mat <- matrix(rnorm(1000), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 
 biplot_interactive(mat, mat[,1])
+}
 }
 

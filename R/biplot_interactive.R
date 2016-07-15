@@ -11,15 +11,17 @@
 #' @param scores a numeric vector used to color the points.
 #'
 #' @importFrom miniUI gadgetTitleBar miniContentPanel miniPage gadgetTitleBar
-#' @importFrom shiny plotOutput renderPlot observeEvent brushedPoints runGadget verbatimTextOutput
+#' @importFrom shiny plotOutput renderPlot observeEvent brushedPoints runGadget verbatimTextOutput stopApp renderText
 #'
 #' @export
 #'
 #' @examples
+#' \dontrun{
 #' mat <- matrix(rnorm(1000), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #'
 #' biplot_interactive(mat, mat[,1])
+#' }
 biplot_interactive <- function(data, scores) {
 
   data <- as.data.frame(data)
