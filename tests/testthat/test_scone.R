@@ -270,3 +270,25 @@ test_that("batch and bio can be confounded if at least one of adjust_bio or adju
                        adjust_bio = "no", batch=gl(2, 5), bio=gl(2, 5), eval_kclust = 3),
                  "Biological conditions and batches are confounded.")
 })
+
+test_that("batch and bio can contain NA", {
+  e <-  matrix(rpois(10000, lambda = 5), ncol=10)
+  rownames(e) <- as.character(1:nrow(e))
+
+  batch <- gl(2, 5)
+  bio <- gl(5, 2)
+
+  res1 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0, evaluate = TRUE,
+               adjust_batch = "no", batch=batch, bio=bio, eval_kclust = 3)
+
+  batch[1] <- NA
+  bio[2] <- NA
+
+  res2 <- scone(e, imputation=identity, scaling=identity, k_ruv=0, k_qc=0, evaluate = TRUE,
+        adjust_batch = "no", batch=batch, bio=bio, eval_kclust = 3)
+
+  expect_true(!is.na(res2$metrics[,"BIO_SIL"]))
+  expect_true(!is.na(res2$metrics[,"BATCH_SIL"]))
+  expect_false(all(res1$metrics[,"BIO_SIL"] == res2$metrics[,"BIO_SIL"]))
+  expect_false(all(res1$metrics[,"BATCH_SIL"] == res2$metrics[,"BATCH_SIL"]))
+})

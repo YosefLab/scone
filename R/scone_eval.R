@@ -79,7 +79,8 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   if( !is.null(bio) ) {
     if(!all(is.na(bio))) {
-      BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),dd[!is.na(bio),]))$avg.width
+      BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),
+                                            dd[!is.na(bio), !is.na(bio)]))$avg.width
     } else {
       BIO_SIL = NA
       warning("bio is all NA!")
@@ -90,7 +91,8 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   if(!is.null(batch)) {
     if(!all(is.na(batch))) {
-      BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),dd[!is.na(batch),]))$avg.width
+      BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),
+                                               dd[!is.na(batch),!is.na(batch)]))$avg.width
     } else{
       BATCH_SIL <- NA
       warning("batch is all NA!")
