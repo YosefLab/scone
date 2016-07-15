@@ -2,7 +2,7 @@
 
 [![Project Status: WIP - Initial development is in progress, but there has not yet been a stable, usable release suitable for the public.](http://www.repostatus.org/badges/latest/wip.svg)](http://www.repostatus.org/#wip)
 [![Build Status](https://travis-ci.org/YosefLab/scone.svg?branch=master)](https://travis-ci.org/YosefLab/scone)
-
+[![Coverage](https://codecov.io/gh/YosefLab/scone/branch/master/graph/badge.svg)](https://codecov.io/gh/YosefLab/scone)
 ### Single-Cell Overview of Normalized Expression data ###
 
 SCONE (Single-Cell Overview of Normalized Expression), a package for single-cell RNA-seq data quality control (QC) and normalization. This data-driven framework uses summaries of expression data to assess the efficacy of normalization workflows.
