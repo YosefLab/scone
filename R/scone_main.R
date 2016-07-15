@@ -134,6 +134,9 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
     if(missing(hdf5file)) {
       stop("If `return_norm='hdf5'`, `hdf5file` must be specified.")
     } else {
+      if(BiocParallel::bpnworkers(BiocParallel::registered()[[1]]) > 1) {
+        stop("At the moment, `return_norm='hdf5'` does not support multicores.")
+      }
       stopifnot(h5createFile(hdf5file))
       h5write(rownames(expr), hdf5file, "genes")
       h5write(colnames(expr), hdf5file, "samples")
