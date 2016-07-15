@@ -4,7 +4,7 @@
 \alias{biplot_interactive}
 \title{Interactive biplot}
 \usage{
-biplot_interactive(data, scores)
+biplot_interactive(data, scores, ...)
 }
 \arguments{
 \item{data}{a data.frame containing the data to be plotted.}
