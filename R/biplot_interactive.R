@@ -22,7 +22,7 @@
 #'
 #' biplot_interactive(mat, mat[,1])
 #' }
-biplot_interactive <- function(data, scores) {
+biplot_interactive <- function(data, scores, ...) {
 
   data <- as.data.frame(data)
   scores <- as.numeric(scores)
@@ -46,7 +46,7 @@ biplot_interactive <- function(data, scores) {
     # Render the plot
     output$plot1 <- renderPlot({
       # Biplot
-      biplot_colored(pc_obj, y = scores)
+      biplot_colored(pc_obj, y = scores, ...)
     })
 
     data_out <- cbind(data, bp_obj)
