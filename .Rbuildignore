@@ -34,3 +34,5 @@ README[.]md
 # Temp scripts
 #----------------------------
 ^old_scripts/*
+^.*\.Rproj$
+^\.Rproj\.user$
