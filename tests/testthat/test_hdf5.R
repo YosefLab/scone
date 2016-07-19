@@ -12,7 +12,7 @@ test_that("hd5 checks", {
   batch <- as.factor(rep(1:2, 5))
 
   # factorial
-  expect_error(scone(e, imputation=list(none=identity, zinb=impute_zinb),
+  expect_error(scone(e, imputation=list(none=impute_null, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
                adjust_bio="force", bio=bio, adjust_batch="yes", batch=batch,
@@ -21,7 +21,7 @@ test_that("hd5 checks", {
 
   BiocParallel::register(bpparam("MulticoreParam"))
 
-  expect_error(scone(e, imputation=list(none=identity, zinb=impute_zinb),
+  expect_error(scone(e, imputation=list(none=impute_null, zinb=impute_zinb),
                      scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                      k_ruv=3, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
                      adjust_bio="force", bio=bio, adjust_batch="yes", batch=batch,
@@ -40,7 +40,7 @@ test_that("return_norm in memory", {
   batch <- as.factor(rep(1:2, 5))
 
   # factorial
-  res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
+  res <- scone(e, imputation=list(none=impute_null, zinb=impute_zinb),
                      scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                      k_ruv=3, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
                      adjust_bio="force", bio=bio, adjust_batch="yes", batch=batch,
@@ -58,7 +58,7 @@ test_that("do not return_norm", {
   batch <- as.factor(rep(1:2, 5))
 
   # factorial
-  res <- scone(e, imputation=list(none=identity, zinb=impute_zinb),
+  res <- scone(e, imputation=list(none=impute_null, zinb=impute_zinb),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, ruv_negcon=as.character(1:100), qc=qc_mat,
                adjust_bio="force", bio=bio, adjust_batch="yes", batch=batch,

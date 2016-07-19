@@ -61,7 +61,7 @@ This function evaluates an expression matrix using SCONE criteria, producing a n
 projections of the normalized data, correlations, and RLE metrics.
 }
 \details{
-The eval_proj function argument must have 2 inputs: 
+The eval_proj function argument must have 2 inputs:
 \itemize{
 \item{e}{ matrix. log-transformed expression (genes in rows, cells in columns).}
 \item{eval_proj_args}{ list. additional function arguments, e.g. prior data weights.}
