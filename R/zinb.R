@@ -158,9 +158,10 @@ loglik_small <- function(parms, Y, Y1, X, W, kx, kw, offsetx, offsetw, linkobj) 
 #' @export
 #'
 #' @param expression the data matrix (genes in rows, cells in columns)
-#'
+#' @param impute_args arguments for imputation (not used)
+#' 
 #' @return the imputed expression matrix.
-impute_zinb <- function(expression) {
+impute_zinb <- function(expression, impute_args) {
   pars <- estimate_zinb(expression)
   w <- pars$p_z
   imputed <- expression * w + pars$mu * (1 - w)

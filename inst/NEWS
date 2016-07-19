@@ -1,6 +1,9 @@
 Changes in version 0.0.6
 ========================
 
+* Added option for restoring zeroes after scaling step.
+* New argument format for imputation via impute_args.
+* Simplified ziber fnr estimation function - requires control genes.
 * Fixed bug when using plot functionality of filtering functions.
 * "Conditional" pam replaced with "Stratified" pam, clustering each bio-cross-batch condition separately, rather than simply each bio condition.
 * Simple FNR for filtering is now based on medians of natural log expression in "expressing" cells / robust to convergence issues.

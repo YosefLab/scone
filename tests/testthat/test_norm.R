@@ -7,7 +7,7 @@ test_that("Upper-quartile normalization works the same as in the EDASeq package"
   rownames(e) <- as.character(1:nrow(e))
 
   # UQ + RUV
-  res <- scone(e, imputation=identity, scaling=UQ_FN, k_ruv=5, k_qc=0,
+  res <- scone(e, imputation=impute_null, scaling=UQ_FN, k_ruv=5, k_qc=0,
                evaluate=FALSE, run=TRUE, ruv_negcon=as.character(1:100))
 
   uq <- EDASeq::betweenLaneNormalization(e, which="upper", round=FALSE)
@@ -21,7 +21,7 @@ test_that("Upper-quartile normalization works the same as in the EDASeq package"
   # UQ + QC
   qc_mat <- matrix(rnorm(20), nrow=10)
 
-  res <- scone(e, imputation=identity, scaling=UQ_FN, k_ruv=0, k_qc=2,
+  res <- scone(e, imputation=impute_null, scaling=UQ_FN, k_ruv=0, k_qc=2,
                evaluate=FALSE, run=TRUE, qc=qc_mat)
 
   pca_qc <- prcomp(qc_mat, center=TRUE, scale=TRUE)

@@ -12,6 +12,8 @@
 #'
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
 #' @param imputation list or function. (A list of) function(s) to be used for imputation.
+#' @param impute_args arguments for imputation functions.
+#' @param rezero Restore zeroes following scaling step? Default FALSE.
 #' @param scaling list or function. (A list of) function(s) to be used for scaling normalization.
 #' @param k_ruv numeric. The maximum number of factors of unwanted variation (the function will adjust for 1 to k_ruv factors of unwanted variation).
 #' If 0, RUV will not be performed.
@@ -73,7 +75,7 @@
 #' Scores are computed so that higer-performing methods are assigned a higher scores.
 #'
 
-scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
+scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL, rezero = FALSE, scaling, k_ruv=5, k_qc=5, ruv_negcon=NULL,
                   qc=NULL, adjust_bio=c("no", "yes", "force"), adjust_batch=c("no", "yes", "force"),
                   bio=NULL, batch=NULL, run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,eval_proj_args = NULL,
                   eval_kclust=2:10, eval_negcon=ruv_negcon, eval_poscon=NULL,
@@ -282,7 +284,7 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
 
-  imputed <- lapply(1:length(im_params), function(i) imputation[[i]](expr))
+  imputed <- lapply(1:length(im_params), function(i) imputation[[i]](expr,impute_args))
   names(imputed) <- im_params
   # output: a list of imputed matrices
 
@@ -291,6 +293,11 @@ scone <- function(expr, imputation=list(none=identity), scaling, k_ruv=5, k_qc=5
   sc_params <- unique(params[,1:2])
 
   scaled <- bplapply(1:nrow(sc_params), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
+  if(rezero){
+    if(verbose) message("Re-zero step...")
+    toz = expr <= 0
+    scaled <- lapply(scaled,function(x) x - x*toz)
+  }
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices
 
