@@ -1,4 +1,5 @@
-Changes in version 0.0.6
+
+Changes in version 0.0.6 (2016-07-07)
 ========================
 
 * Added option for restoring zeroes after scaling step.
@@ -7,7 +8,10 @@ Changes in version 0.0.6
 * Fixed bug when using plot functionality of filtering functions.
 * "Conditional" pam replaced with "Stratified" pam, clustering each bio-cross-batch condition separately, rather than simply each bio condition.
 * Simple FNR for filtering is now based on medians of natural log expression in "expressing" cells / robust to convergence issues.
-* Removed all sufficient thresholds for metric sample filter. 
+* Removed all sufficient thresholds for metric sample filter.
+* Added option to write normalized matrices to HDF5 file.
+* Added wrapper function get_normalized() to retrieve normalized data.
+* New biplot_interactive function to explore the results.
 
 Changes in version 0.0.5
 ========================
@@ -16,7 +20,7 @@ Changes in version 0.0.5
 * Limit number of WV and UV factors to eval_pcs in computing WV and UV scores.
 * Updated dependencies.
 * Added error-handling to sample filter.
-* Removed “var preserved” measure do to length of running time.
+* Removed var preserved measure due to length of running time.
 
 Changes in version 0.0.4
 ========================

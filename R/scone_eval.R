@@ -3,13 +3,13 @@
 #' This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
 #' projections of the normalized data, correlations, and RLE metrics.
 #'
-#' @details The eval_proj function argument must have 2 inputs: 
+#' @details The eval_proj function argument must have 2 inputs:
 #' \itemize{
 #' \item{e}{ matrix. log-transformed expression (genes in rows, cells in columns).}
 #' \item{eval_proj_args}{ list. additional function arguments, e.g. prior data weights.}
 #' }
 #' and it must output a matrix representation of the original data (cells in rows, factors in columns).
-#' 
+#'
 #' @param expr matrix. The data matrix (genes in rows, cells in columns).
 #' @param eval_pcs numeric. The number of principal components to use for evaluation.
 #' Ignored if !is.null(eval_proj).
@@ -52,11 +52,11 @@
 #' }
 #'
 
-score_matrix <- function(expr, eval_pcs = 3, 
+score_matrix <- function(expr, eval_pcs = 3,
                          eval_proj = NULL, eval_proj_args = NULL,
                          eval_kclust = NULL,
                          bio = NULL, batch = NULL,
-                         qc_factors = NULL,uv_factors = NULL, wv_factors = NULL, 
+                         qc_factors = NULL,uv_factors = NULL, wv_factors = NULL,
                          is_log=FALSE, stratified_pam = FALSE){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
@@ -75,33 +75,36 @@ score_matrix <- function(expr, eval_pcs = 3,
   }
 
   ## ------ Bio and Batch Tightness -----
+  dd <- as.matrix(dist(proj))
 
-    if( !is.null(bio) ) {
-      if(!all(is.na(bio))) {
-        BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),dist(proj[!is.na(bio),])))$avg.width
-      } else {
-        BIO_SIL = NA
-        warning("bio is all NA!")
-      }
+  if( !is.null(bio) ) {
+    if(!all(is.na(bio))) {
+      BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),
+                                            dd[!is.na(bio), !is.na(bio)]))$avg.width
     } else {
       BIO_SIL = NA
+      warning("bio is all NA!")
     }
+  } else {
+    BIO_SIL = NA
+  }
 
-    if(!is.null(batch)) {
-      if(!all(is.na(batch))) {
-        BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),dist(proj[!is.na(batch),])))$avg.width
-      } else{
-        BATCH_SIL <- NA
-        warning("batch is all NA!")
-      }
-    } else {
+  if(!is.null(batch)) {
+    if(!all(is.na(batch))) {
+      BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),
+                                               dd[!is.na(batch),!is.na(batch)]))$avg.width
+    } else{
       BATCH_SIL <- NA
+      warning("batch is all NA!")
     }
+  } else {
+    BATCH_SIL <- NA
+  }
 
   ## ------ PAM Tightness -----
 
   if ( !is.null(eval_kclust) ){
-    
+
     # "Stratified" PAM
     if(stratified_pam){
 
@@ -114,7 +117,7 @@ score_matrix <- function(expr, eval_pcs = 3,
         cond_w = length(is_cond)
         if(cond_w > max(eval_kclust)){
           pamk_object = pamk(proj[is_cond,],krange = eval_kclust)
-          
+
           # Despite krange excluding nc = 1, if asw is negative, nc = 1 will be selected
           if(is.null(pamk_object$pamobject$silinfo$avg.width) ){
             if (!1 %in% eval_kclust) {
@@ -123,7 +126,7 @@ score_matrix <- function(expr, eval_pcs = 3,
               stop("nc = 1 was selected by Duda-Hart, exclude 1 from eval_kclust.")
             }
           }
-  
+
           PAM_SIL = PAM_SIL + cond_w*pamk_object$pamobject$silinfo$avg.width
         }else{
           stop(paste("Number of clusters 'k' must be smaller than bio-cross-batch stratum size:",
@@ -131,7 +134,7 @@ score_matrix <- function(expr, eval_pcs = 3,
         }
       }
       PAM_SIL = PAM_SIL/length(biobatch)
-      
+
     # Traditional PAM
     }else{
       pamk_object = pamk(proj,krange = eval_kclust)
@@ -170,10 +173,10 @@ score_matrix <- function(expr, eval_pcs = 3,
   RLE_MED <- mean(colMedians(rle)^2)
   RLE_IQR <- mean(colIQRs(rle))
 
-  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL, 
-             EXP_QC_COR, EXP_UV_COR, EXP_WV_COR, 
+  scores = c(BIO_SIL, BATCH_SIL, PAM_SIL,
+             EXP_QC_COR, EXP_UV_COR, EXP_WV_COR,
              RLE_MED, RLE_IQR)
-  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL", 
+  names(scores) = c("BIO_SIL", "BATCH_SIL", "PAM_SIL",
                     "EXP_QC_COR", "EXP_UV_COR", "EXP_WV_COR",
                     "RLE_MED", "RLE_IQR")
   return(scores)
