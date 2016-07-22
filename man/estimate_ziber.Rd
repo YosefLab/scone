@@ -17,8 +17,7 @@ estimate_ziber(x, fp_tresh = 0, gfeatM = NULL, bulk_model = FALSE,
 \item{bulk_model}{logical. Use median log-expression of gene in detected fraction as sole gene-level feature. Default FALSE.
 Ignored if gfeatM is specified.}
 
-\item{pos_controls}{logical. TRUE for all genes that are known to be expressed in all cells. 
-If specified, then drop-out characteristic is fit only once to control genes.}
+\item{pos_controls}{logical. TRUE for all genes that are known to be expressed in all cells.}
 
 \item{em_tol}{numeric. Convergence treshold on log-likelihood.}
 

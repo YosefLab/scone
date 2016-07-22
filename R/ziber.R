@@ -15,7 +15,9 @@ likfn = function(Z,X,Beta){
 #' @param Beta gene-level sample coefficients.
 #'
 pzfn = function(Y,W,Alpha,X,Beta){
-  return(likfn(Y,W,Alpha)*likfn(1,X,Beta)/(likfn(Y,W,Alpha)*likfn(1,X,Beta) + (Y == 0)*likfn(0,X,Beta)))
+  matA = likfn(1,X,Beta)
+  matB = matA*likfn(Y,W,Alpha)
+  return(matB/(matB + (Y == 0)*(1-matA)))
 }
 
 #' Parameter estimation of zero-inflated bernoulli model
@@ -34,7 +36,6 @@ pzfn = function(Y,W,Alpha,X,Beta){
 #' @param bulk_model logical. Use median log-expression of gene in detected fraction as sole gene-level feature. Default FALSE.
 #' Ignored if gfeatM is specified.
 #' @param pos_controls logical. TRUE for all genes that are known to be expressed in all cells. 
-#' If specified, then drop-out characteristic is fit only once to control genes.
 #' @param em_tol numeric. Convergence treshold on log-likelihood.
 #' @param maxiter numeric. The maximum number of iterations. Default 100.
 #' @param verbose logical. Whether or not to print the value of the likelihood at each iteration.
@@ -53,10 +54,10 @@ pzfn = function(Y,W,Alpha,X,Beta){
 #' \item{loglik}{ the log-likelihood}
 #' \item{convergence}{ 0 if the algorithm converged and 1 if maxiter was reached}
 #' }
+
 estimate_ziber = function(x, fp_tresh = 0, 
                           gfeatM = NULL, bulk_model = FALSE, 
-                          pos_controls = NULL,  
-                        
+                          pos_controls = NULL,
                           em_tol = 0.01, maxiter = 100,
                           verbose = FALSE){
   
@@ -85,18 +86,22 @@ estimate_ziber = function(x, fp_tresh = 0,
   # Initialize Z
   Z = pzfn(Y,W,Alpha,X,Beta)
   
-  # If control genes are supplied, fit W once using control genes
-  if(!is.null(pos_controls)){
-    cY = Y[,pos_controls]
-    cAlpha = Alpha[,pos_controls]
-    for (i in 1:dim(Z)[1]){
-      W[i,] = glm(cbind(cY[i,],1-cY[i,]) ~ 0 + t(cAlpha),quasibinomial)$coefficients
-    } 
-    Beta[,pos_controls] = NA
-    Z[,pos_controls] = 1
+  if(is.null(pos_controls)){
+    stop("Must supply positive controls genes to fit FNR characteristic")
   }
     
-  EL2 = sum(na.omit(as.vector(Z*log(likfn(Y,W,Alpha))))) + sum(na.omit(as.vector(Z*log(likfn(1,X,Beta))))) + sum(na.omit(as.vector((1-Z)*log(likfn(0,X,Beta)))))
+  # Fit W once using control genes
+  
+  cY = Y[,pos_controls]
+  cAlpha = Alpha[,pos_controls]
+  for (i in 1:dim(Z)[1]){
+    W[i,] = glm(cbind(cY[i,],1-cY[i,]) ~ 0 + t(cAlpha),quasibinomial)$coefficients
+  } 
+  Beta[,pos_controls] = NA
+  Z[,pos_controls] = 1
+  
+  matA = likfn(1,X,Beta)
+  EL2 = sum(Z*log(likfn(Y,W,Alpha)),na.rm = TRUE) + sum(Z*log( matA ),na.rm = TRUE) + sum((1-Z)*log(1- matA ),na.rm = TRUE)
   
   if(verbose){print(EL2)}
   
@@ -107,33 +112,14 @@ estimate_ziber = function(x, fp_tresh = 0,
     
     EL1 = EL2
     
-    if(is.null(pos_controls)){
-      
-      # Update Beta
-      Beta = t(matrix(log(colMeans(Z)/(1-colMeans(Z)))))
-      
-      # Update Z
-      Z = pzfn(Y,W,Alpha,X,Beta)
-      
-      # Update W
-      for (i in 1:dim(Z)[1]){
-        W[i,] = glm(cbind(Y[i,],(1-Y[i,])*Z[i,]) ~ 0 + t(Alpha),quasibinomial)$coefficients
-      }
+    # Update Beta
+    cmz = colMeans(Z[,!pos_controls])
+    Beta[,!pos_controls] = t(matrix(log(cmz) - log(1-cmz)))
+    # Update Z
+    Z[,!pos_controls] = pzfn(Y[,!pos_controls],W,Alpha[,!pos_controls],X,Beta[,!pos_controls])
     
-      # Update Z
-      Z = pzfn(Y,W,Alpha,X,Beta)
-      
-    }else{
-            
-      # Update Beta
-      Beta[,!pos_controls] = t(matrix(log(colMeans(Z[,!pos_controls])/(1-colMeans(Z[,!pos_controls])))))
-      
-      # Update Z
-      Z[,!pos_controls] = pzfn(Y[,!pos_controls],W,Alpha[,!pos_controls],X,Beta[,!pos_controls])
-      
-    }
-    
-    EL2 = sum(na.omit(as.vector(Z*log(likfn(Y,W,Alpha))))) + sum(na.omit(as.vector(Z*log(likfn(1,X,Beta))))) + sum(na.omit(as.vector((1-Z)*log(likfn(0,X,Beta)))))
+    matA = likfn(1,X,Beta)
+    EL2 = sum(Z*log(likfn(Y,W,Alpha)),na.rm = TRUE) + sum(Z*log( matA ),na.rm = TRUE) + sum((1-Z)*log(1- matA ),na.rm = TRUE)
     if(verbose){print(EL2)}
     niter = niter + 1
     if(niter >= maxiter){
@@ -147,23 +133,40 @@ estimate_ziber = function(x, fp_tresh = 0,
               expected_state = t(Z), loglik = EL2, convergence = 0))
 }
 
-#' Imputation of zero abundance based on zero-inflated bernoulli model
+#' Imputation of zero abundance based on general zero-inflated model
 #' 
-#' This function is used to impute the data, by weighting the observed detection failure by their
-#' probability of coming from the zero-inflation part of the distribution. Median positive expression
-#' is used as the sole gene-level determinant of drop-out, and the data is replaced with this expression value.
+#' This function is used to impute the data, weighted by probability of 
+#' data coming from the zero-inflation part of the distribution.
 #'
 #' @details The imputation is carried out with the following formula:
-#' y_{ij}* =  y_{ij} * Pr( No Drop | D_{ij}) + pos_median_{i} * Pr( Drop | D_{ij}).
+#' y_{ij}* =  y_{ij} * Pr( No Drop | y_{ij}) + mu_{i} * Pr( Drop | y_{ij}).
+#' 
+#' impute_args must contain two elements: 
+#' 1) p_nodrop  = posterior probability of data not having resulted from drop-out  (genes in rows, cells in columns)
+#' 2) mu  = expected expression of dropped data (genes in rows, cells in columns)
 #'  
 #' @export
 #' 
 #' @param expression the data matrix (genes in rows, cells in columns)
+#' @param impute_args arguments for imputation (see details)
 #' 
 #' @return the imputed expression matrix.
-impute_ziber_simp <- function(expression) {
-  pars <- estimate_ziber(expression,bulk_model = TRUE)
-  w <- pars$p_nodrop
-  imputed <- expression * w + exp(pars$Alpha[1,]) * (1 - w)
+#' 
+
+impute_expectation <- function(expression,impute_args) {
+  imputed <- expression * impute_args$p_nodrop + impute_args$mu * (1 - impute_args$p_nodrop)
   return(imputed)
+}
+
+#' Null or no-op imputation
+#' @export
+#' 
+#' @param expression the data matrix (genes in rows, cells in columns)
+#' @param impute_args arguments for imputation (not used)
+#' 
+#' @return the imputed expression matrix.
+#' 
+
+impute_null <- function(expression,impute_args) {
+  return(expression)
 }

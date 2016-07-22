@@ -4,10 +4,12 @@
 \alias{impute_zinb}
 \title{Imputation of zero counts based on zero-inflated negative binomial model}
 \usage{
-impute_zinb(expression)
+impute_zinb(expression, impute_args)
 }
 \arguments{
 \item{expression}{the data matrix (genes in rows, cells in columns)}
+
+\item{impute_args}{arguments for imputation (not used)}
 }
 \value{
 the imputed expression matrix.

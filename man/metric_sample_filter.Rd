@@ -6,10 +6,10 @@
 \usage{
 metric_sample_filter(expr, nreads = colSums(expr), ralign = NULL,
   gene_filter = NULL, pos_controls = NULL, scale. = FALSE, glen = NULL,
-  AUC_range = c(0, 6), zcut = 1, mixture = TRUE, dip_thresh = 0.05,
+  AUC_range = c(0, 15), zcut = 1, mixture = TRUE, dip_thresh = 0.05,
   hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2,
-  hard_fnr = 3, suff_nreads = NULL, suff_ralign = 65,
-  suff_breadth = 0.8, suff_fnr = NULL, plot = FALSE, hist_breaks = 10)
+  hard_auc = 10, suff_nreads = NULL, suff_ralign = NULL,
+  suff_breadth = NULL, suff_auc = NULL, plot = FALSE, hist_breaks = 10)
 }
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}
@@ -29,7 +29,7 @@ If NULL, filtered_fnr will be returned NA.}
 
 \item{glen}{Gene lengths for gene-length normalization (normalized data used in FNR computation).}
 
-\item{AUC_range}{An array of two values, representing range over which FNR AUC will be computed (log10(expr_units + 1)). Default c(0,6)}
+\item{AUC_range}{An array of two values, representing range over which FNR AUC will be computed (log(expr_units)). Default c(0,15)}
 
 \item{zcut}{A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
 If NULL, only hard threshold sub-criteria will be applied.}
@@ -46,15 +46,15 @@ Samples deviating zcut sd's from optimal mean (in the inferior direction), have 
 
 \item{hard_breadth}{numeric. Hard (lower bound on) breadth threshold. Default 0.2.}
 
-\item{hard_fnr}{numeric. Hard (upper bound on) fnr threshold. Default 3.}
+\item{hard_auc}{numeric. Hard (upper bound on) fnr auc threshold. Default 10.}
 
-\item{suff_nreads}{numeric. If not null, serves as an upper bound on nreads threshold.}
+\item{suff_nreads}{numeric. If not null, serves as an overriding upper bound on nreads threshold.}
 
-\item{suff_ralign}{numeric. If not null, serves as an upper bound on ralign threshold.  Default 65.}
+\item{suff_ralign}{numeric. If not null, serves as an overriding upper bound on ralign threshold.}
 
-\item{suff_breadth}{numeric. If not null, serves as an upper bound on breadth threshold.  Default 0.8.}
+\item{suff_breadth}{numeric. If not null, serves as an overriding upper bound on breadth threshold.}
 
-\item{suff_fnr}{numeric. If not null, serves as an lower bound on fnr threshold.}
+\item{suff_auc}{numeric. If not null, serves as an overriding lower bound on fnr auc threshold.}
 
 \item{plot}{logical. Should a plot be produced?}
 

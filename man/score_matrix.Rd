@@ -7,7 +7,7 @@
 score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
   eval_kclust = NULL, bio = NULL, batch = NULL, qc_factors = NULL,
   uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  conditional_pam = FALSE)
+  stratified_pam = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
@@ -40,7 +40,7 @@ If NULL, wv correlations, EXP_WV_COR, will be returned NA.}
 
 \item{is_log}{logical. If TRUE the expr matrix is already logged and log transformation will not be carried out prior to projection.}
 
-\item{conditional_pam}{logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological condition (including NA),
+\item{stratified_pam}{logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological-cross-batch condition (accepting NAs),
 and a weighted average silhouette width is returned.}
 }
 \value{
@@ -48,7 +48,7 @@ A list with the following elements:
 \itemize{
 \item{BIO_SIL}{ Average silhouette width by biological condition.}
 \item{BATCH_SIL}{ Average silhouette width by batch condition.}
-\item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see conditional_pam argument).}
+\item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see stratified_pam argument).}
 \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
 \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
 \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
@@ -61,7 +61,7 @@ This function evaluates an expression matrix using SCONE criteria, producing a n
 projections of the normalized data, correlations, and RLE metrics.
 }
 \details{
-The eval_proj function argument must have 2 inputs: 
+The eval_proj function argument must have 2 inputs:
 \itemize{
 \item{e}{ matrix. log-transformed expression (genes in rows, cells in columns).}
 \item{eval_proj_args}{ list. additional function arguments, e.g. prior data weights.}

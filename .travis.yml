@@ -14,7 +14,7 @@ language: r
 cache: packages
 
 # R versions to be tested on
-r: 
+r:
   - bioc-release
   - bioc-devel
 
