@@ -121,7 +121,8 @@
 #'   written to the \code{hdf5file} file. This must be a string specifying (a
 #'   path to) a new file. If the file already exists, it will return error.
 #'
-scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL, rezero = FALSE, scaling, k_ruv=5, k_qc=5,
+scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
+                  rezero = FALSE, scaling, k_ruv=5, k_qc=5,
                   ruv_negcon=NULL, qc=NULL, adjust_bio=c("no", "yes", "force"),
                   adjust_batch=c("no", "yes", "force"), bio=NULL, batch=NULL,
                   run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
