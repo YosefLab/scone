@@ -1,14 +1,20 @@
-#' Fit Logistic Regression Model of FNR against set of positive control (ubiquitously expressed) genes
+#' Fit Logistic Regression Model of FNR against set of positive control
+#' (ubiquitously expressed) genes
 #'
-#' @details logit(Probability of False Negative) ~ a + b*(median log-expression) .
+#' @details logit(Probability of False Negative) ~ a + b*(median log-expression)
+#'   .
 #'
-#' @param expr matrix The data matrix in transcript-proportional units (genes in rows, cells in columns).
-#' @param pos_controls A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
-#' User must provide at least 2 positive control genes.
+#' @param expr matrix The data matrix in transcript-proportional units (genes in
+#'   rows, cells in columns).
+#' @param pos_controls A logical, numeric, or character vector indicating
+#'   positive control genes that will be used to compute false-negative rate
+#'   characteristics. User must provide at least 2 positive control genes.
 #' @param fn_tresh Inclusive threshold for negative detection. Default 0.01.
-#' fn_tresh must be non-negative.
+#'   fn_tresh must be non-negative.
 #'
-#' @return A matrix of logistic regression coefficients corresponding to glm fits in each sample (a and b in columns 1 and 2 respectively). If the a & b fit does not converge, b is set to zero and only a is estimated.
+#' @return A matrix of logistic regression coefficients corresponding to glm
+#'   fits in each sample (a and b in columns 1 and 2 respectively). If the a & b
+#'   fit does not converge, b is set to zero and only a is estimated.
 #'
 #' @importFrom boot logit
 #' @importFrom matrixStats rowMedians
@@ -16,21 +22,29 @@
 simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 
   stopifnot(!any(is.na(pos_controls)))
-  
-  if (sum(pos_controls) < 2){
-    stop("User must provide at least 2 positive control genes")
+
+  if (is.logical(pos_controls)){
+    if(length(pos_controls) != NROW(expr)) {
+      stop("If pos_controls is logical, it should have one element per gene.")
+    } else if(sum(pos_controls) < 2) {
+      stop("User must provide at least 2 positive control genes.")
+    }
+  } else {
+    if(length(pos_controls) < 2) {
+      stop("User must provide at least 2 positive control genes.")
+    }
   }
-  
+
   if (fn_tresh < 0){
     stop("fn_tresh must be non-negative")
   }
-  
+
   pos_expr = expr[pos_controls,]  # Selecting positive-control genes
   is_drop = pos_expr <= fn_tresh  # Identify false negatives
   pos_expr[is_drop] = NA          # Set false negatives to NA
   drop_outs = 0 + is_drop         # Numeric drop-out state
   drop_rate = colMeans(drop_outs) # Total drop-out rate per sample
-    
+
   # Median log-expression in positive observations
   mu_obs = log(rowMedians(pos_expr,na.rm = TRUE))
   if(any(is.na(mu_obs))){
@@ -50,53 +64,69 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
   return(logistic_coef)
 }
 
-#' metric-based sample filtering: function to filter single-cell RNA-Seq libraries.
+#'metric-based sample filtering: function to filter single-cell RNA-Seq
+#'libraries.
 #'
-#' This function returns a sample-filtering report for each cell in the input expression matrix,
-#' describing which filtering criteria are satisfied.
+#'This function returns a sample-filtering report for each cell in the input
+#'expression matrix, describing which filtering criteria are satisfied.
 #'
-#' @details For each primary criterion (metric), a sample is evaluated based on 4 sub-criteria:
-#' 1) Hard (encoded) threshold
-#' 2) Adaptive thresholding via sd's from the mean
-#' 3) Adaptive thresholding via mad's from the median
-#' 4) Adaptive thresholding via sd's from the mean (after mixture modeling)
-#' A sample must pass all sub-criteria to pass the primary criterion.
+#'@details For each primary criterion (metric), a sample is evaluated based on 4
+#'  sub-criteria: 1) Hard (encoded) threshold 2) Adaptive thresholding via sd's
+#'  from the mean 3) Adaptive thresholding via mad's from the median 4) Adaptive
+#'  thresholding via sd's from the mean (after mixture modeling) A sample must
+#'  pass all sub-criteria to pass the primary criterion.
 #'
-#' @param expr matrix The data matrix (genes in rows, cells in columns).
-#' @param nreads A numeric vector representing number of reads in each library. Default to `colSums` of `expr`.
-#' @param ralign A numeric vector representing the proportion of reads aligned to the reference genome in each library.
-#' If NULL, filtered_ralign will be returned NA.
-#' @param gene_filter A logical vector indexing genes that will be used to compute library transcriptome breadth.
-#' If NULL, filtered_breadth will be returned NA.
-#' @param pos_controls A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
-#' If NULL, filtered_fnr will be returned NA.
-#' @param scale. logical. Will expression be scaled by total expression for FNR computation? Default = FALSE
-#' @param glen Gene lengths for gene-length normalization (normalized data used in FNR computation).
-#' @param AUC_range An array of two values, representing range over which FNR AUC will be computed (log(expr_units)). Default c(0,15)
-#' @param zcut A numeric value determining threshold Z-score for sd, mad, and mixture sub-criteria. Default 1.
-#' If NULL, only hard threshold sub-criteria will be applied.
-#' @param mixture A logical value determining whether mixture modeling sub-criterion will be applied per primary criterion (metric).
-#' If true, a dip test will be applied to each metric. If a metric is multimodal, it is fit to a two-component normal mixture model.
-#' Samples deviating zcut sd's from optimal mean (in the inferior direction), have failed this sub-criterion.
-#' @param dip_thresh A numeric value determining dip test p-value threshold. Default 0.05.
-#' @param hard_nreads numeric. Hard (lower bound on) nreads threshold. Default 25000.
-#' @param hard_ralign numeric. Hard (lower bound on) ralign threshold. Default 15.
-#' @param hard_breadth numeric. Hard (lower bound on) breadth threshold. Default 0.2.
-#' @param hard_auc numeric. Hard (upper bound on) fnr auc threshold. Default 10.
-#' @param suff_nreads numeric. If not null, serves as an overriding upper bound on nreads threshold.
-#' @param suff_ralign numeric. If not null, serves as an overriding upper bound on ralign threshold.
-#' @param suff_breadth numeric. If not null, serves as an overriding upper bound on breadth threshold.
-#' @param suff_auc numeric. If not null, serves as an overriding lower bound on fnr auc threshold.
-#' @param plot logical. Should a plot be produced?
-#' @param hist_breaks hist() breaks argument. Ignored if `plot=FALSE`.
+#'@param expr matrix The data matrix (genes in rows, cells in columns).
+#'@param nreads A numeric vector representing number of reads in each library.
+#'  Default to `colSums` of `expr`.
+#'@param ralign A numeric vector representing the proportion of reads aligned to
+#'  the reference genome in each library. If NULL, filtered_ralign will be
+#'  returned NA.
+#'@param gene_filter A logical vector indexing genes that will be used to
+#'  compute library transcriptome breadth. If NULL, filtered_breadth will be
+#'  returned NA.
+#'@param pos_controls A logical, numeric, or character vector indicating
+#'  positive control genes that will be used to compute false-negative rate
+#'  characteristics. If NULL, filtered_fnr will be returned NA.
+#'@param scale. logical. Will expression be scaled by total expression for FNR
+#'  computation? Default = FALSE
+#'@param glen Gene lengths for gene-length normalization (normalized data used
+#'  in FNR computation).
+#'@param AUC_range An array of two values, representing range over which FNR AUC
+#'  will be computed (log(expr_units)). Default c(0,15)
+#'@param zcut A numeric value determining threshold Z-score for sd, mad, and
+#'  mixture sub-criteria. Default 1. If NULL, only hard threshold sub-criteria
+#'  will be applied.
+#'@param mixture A logical value determining whether mixture modeling
+#'  sub-criterion will be applied per primary criterion (metric). If true, a dip
+#'  test will be applied to each metric. If a metric is multimodal, it is fit to
+#'  a two-component normal mixture model. Samples deviating zcut sd's from
+#'  optimal mean (in the inferior direction), have failed this sub-criterion.
+#'@param dip_thresh A numeric value determining dip test p-value threshold.
+#'  Default 0.05.
+#'@param hard_nreads numeric. Hard (lower bound on) nreads threshold. Default
+#'  25000.
+#'@param hard_ralign numeric. Hard (lower bound on) ralign threshold. Default
+#'  15.
+#'@param hard_breadth numeric. Hard (lower bound on) breadth threshold. Default
+#'  0.2.
+#'@param hard_auc numeric. Hard (upper bound on) fnr auc threshold. Default 10.
+#'@param suff_nreads numeric. If not null, serves as an overriding upper bound
+#'  on nreads threshold.
+#'@param suff_ralign numeric. If not null, serves as an overriding upper bound
+#'  on ralign threshold.
+#'@param suff_breadth numeric. If not null, serves as an overriding upper bound
+#'  on breadth threshold.
+#'@param suff_auc numeric. If not null, serves as an overriding lower bound on
+#'  fnr auc threshold.
+#'@param plot logical. Should a plot be produced?
+#'@param hist_breaks hist() breaks argument. Ignored if `plot=FALSE`.
 #'
-#' @return A list with the following elements:
-#' \itemize{
-#' \item{filtered_nreads}{ Logical. Sample has too few reads.}
-#' \item{filtered_ralign}{ Logical. Sample has too few reads aligned.}
-#' \item{filtered_breadth}{ Logical. Samples has too few genes detected (low breadth).}
-#' \item{filtered_fnr}{ Logical. Sample has a high FNR AUC.}
-#' }
+#'@return A list with the following elements: \itemize{ \item{filtered_nreads}{
+#'  Logical. Sample has too few reads.} \item{filtered_ralign}{ Logical. Sample
+#'  has too few reads aligned.} \item{filtered_breadth}{ Logical. Samples has
+#'  too few genes detected (low breadth).} \item{filtered_fnr}{ Logical. Sample
+#'  has a high FNR AUC.} }
 #'
 #'@importFrom mixtools normalmixEM
 #'@importFrom diptest dip.test
@@ -391,7 +421,7 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   if(any(is.na(qual))){
     stop("Quality matrix contains NA values")
   }
-  
+
   # Gene filter vector
   if(is.null(gene_filter)){
     gene_filter = rep(TRUE,dim(expr)[1])
