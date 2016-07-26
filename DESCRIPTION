@@ -23,7 +23,6 @@ Imports:
   edgeR,
   fpc,
   gplots,
-  grDevices,
   limma,
   MASS,
   matrixStats,
