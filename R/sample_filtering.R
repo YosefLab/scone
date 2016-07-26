@@ -1,14 +1,20 @@
-#' Fit Logistic Regression Model of FNR against set of positive control (ubiquitously expressed) genes
+#' Fit Logistic Regression Model of FNR against set of positive control
+#' (ubiquitously expressed) genes
 #'
-#' @details logit(Probability of False Negative) ~ a + b*(median log-expression) .
+#' @details logit(Probability of False Negative) ~ a + b*(median log-expression)
+#'   .
 #'
-#' @param expr matrix The data matrix in transcript-proportional units (genes in rows, cells in columns).
-#' @param pos_controls A logical vector indexing positive control genes that will be used to compute false-negative rate characteristics.
-#' User must provide at least 2 positive control genes.
+#' @param expr matrix The data matrix in transcript-proportional units (genes in
+#'   rows, cells in columns).
+#' @param pos_controls A logical, numeric, or character vector indicating
+#'   positive control genes that will be used to compute false-negative rate
+#'   characteristics. User must provide at least 2 positive control genes.
 #' @param fn_tresh Inclusive threshold for negative detection. Default 0.01.
-#' fn_tresh must be non-negative.
+#'   fn_tresh must be non-negative.
 #'
-#' @return A matrix of logistic regression coefficients corresponding to glm fits in each sample (a and b in columns 1 and 2 respectively). If the a & b fit does not converge, b is set to zero and only a is estimated.
+#' @return A matrix of logistic regression coefficients corresponding to glm
+#'   fits in each sample (a and b in columns 1 and 2 respectively). If the a & b
+#'   fit does not converge, b is set to zero and only a is estimated.
 #'
 #' @importFrom boot logit
 #' @importFrom matrixStats rowMedians
@@ -16,21 +22,29 @@
 simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 
   stopifnot(!any(is.na(pos_controls)))
-  
-  if (sum(pos_controls) < 2){
-    stop("User must provide at least 2 positive control genes")
+
+  if (is.logical(pos_control)){
+    if(length(pos_control) != NROW(expr)) {
+      stop("If pos_control is logical, it should have one element per gene.")
+    } else if(sum(pos_controls) < 2) {
+      stop("User must provide at least 2 positive control genes.")
+    }
+  } else {
+    if(length(pos_control) < 2) {
+      stop("User must provide at least 2 positive control genes.")
+    }
   }
-  
+
   if (fn_tresh < 0){
     stop("fn_tresh must be non-negative")
   }
-  
+
   pos_expr = expr[pos_controls,]  # Selecting positive-control genes
   is_drop = pos_expr <= fn_tresh  # Identify false negatives
   pos_expr[is_drop] = NA          # Set false negatives to NA
   drop_outs = 0 + is_drop         # Numeric drop-out state
   drop_rate = colMeans(drop_outs) # Total drop-out rate per sample
-    
+
   # Median log-expression in positive observations
   mu_obs = log(rowMedians(pos_expr,na.rm = TRUE))
   if(any(is.na(mu_obs))){
@@ -391,7 +405,7 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   if(any(is.na(qual))){
     stop("Quality matrix contains NA values")
   }
-  
+
   # Gene filter vector
   if(is.null(gene_filter)){
     gene_filter = rep(TRUE,dim(expr)[1])

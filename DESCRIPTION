@@ -1,5 +1,5 @@
 Package: scone
-Version: 0.0.6
+Version: 0.0.7
 Title: Single Cell Overview of Normalized Expression data
 Description: scone is a package to compare and rank the performance of different normalization schemes in real single-cell RNA-seq datasets.
 Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
