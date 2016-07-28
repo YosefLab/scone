@@ -66,10 +66,12 @@
 #'   Default 13.
 #'
 #' @export
+#' @importFrom grDevices dev.off pdf
+#' @importFrom graphics legend lines points
+#' @importFrom utils head sessionInfo write.table
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom boot inv.logit
 #' @importFrom hexbin plot hexbin
-#' @import shiny
 #'
 #' @details "ADD DESCRIPTION"
 #'
@@ -102,6 +104,10 @@ scone_easybake <- function(expr, qc,
   printf <- function(...) cat(sprintf(...))
   set.seed(seed)
   
+  if(is.null(expr)){stop("expr must be specified")}
+  if(is.null(qc)){stop("qc must be specified")}
+  if(is.null(negcon)){stop("negcon must be specified")}
+  
   if(!is.matrix(expr)){stop("expr must be a matrix")}
   if(!is.data.frame(qc)){stop("qc must be a data frame")}
   
@@ -133,7 +139,7 @@ scone_easybake <- function(expr, qc,
   pdf(paste0(misc_dir,"/filter_report.pdf"))
   mfilt = metric_sample_filter(expr, mixture = TRUE, plot = TRUE, hist_breaks = 100,
                                zcut = 4, ###Make argument###
-                               pos_controls = rownames(ct) %in% small_negcon,
+                               pos_controls = rownames(expr) %in% small_negcon,
                                gene_filter = init.gf.vec,
                                nreads = qc$NREADS,ralign = qc$RALIGN) ###Make argument###
   dev.off()
@@ -154,10 +160,8 @@ scone_easybake <- function(expr, qc,
   
     # Implement gene filter
     expr = expr[final.gf.vec,]
-    if(!is.null(negcon)){
-      negcon = negcon[negcon %in% rownames(expr)]
-      if(verbose > 0){printf("Data Filtering Module: Kept only %d negative control genes\n", length(negcon))}
-    }
+    negcon = negcon[negcon %in% rownames(expr)]
+    if(verbose > 0){printf("Data Filtering Module: Kept only %d negative control genes\n", length(negcon))}
     if(!is.null(eval_poscon)){
       eval_poscon = eval_poscon[eval_poscon %in% rownames(expr)]
       if(verbose > 0){printf("Data Filtering Module: Kept only %d positive control genes\n", length(eval_poscon))}
@@ -170,7 +174,7 @@ scone_easybake <- function(expr, qc,
   if(verbose > 0){printf("False-Negative Rate Inference Module: Estimating posterior expression probability...\n")}
   fnr_out = estimate_ziber(x = expr, 
                            bulk_model = TRUE, ###Make argument###
-                           pos_controls = rownames(expr) %in% hk,
+                           pos_controls = rownames(expr) %in% negcon,
                            verbose = (verbose > 1), 
                            maxiter = fnr_maxiter)
   if(fnr_out$convergence == 1){printf("False-Negative Rate Inference Module: WARNING - EM did not converge. Try increasing fnr_max_iter\n")}

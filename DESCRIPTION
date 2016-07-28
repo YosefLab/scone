@@ -29,13 +29,11 @@ Imports:
   MASS,
   matrixStats,
   mixtools,
-  grDevices,
   RColorBrewer,
   boot,
   shiny,
   miniUI,
   rhdf5,
-  shiny,
   RUVSeq
 Suggests:
   knitr,

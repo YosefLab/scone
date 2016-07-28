@@ -10,6 +10,8 @@ biplot_interactive(data, scores, ...)
 \item{data}{a data.frame containing the data to be plotted.}
 
 \item{scores}{a numeric vector used to color the points.}
+
+\item{...}{additional arguments passed to biplot_colored().}
 }
 \description{
 This is a wrapper around \code{\link{biplot_colored}}, which creates a shiny
