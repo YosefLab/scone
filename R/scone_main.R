@@ -270,7 +270,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
       stop("'eval_kclust' must be less than the number of samples.")
     }
 
-    if(stratified_pam) {
+    if(!is.null(eval_kclust) & stratified_pam) {
       if(is.null(bio) & is.null(batch)){
         stop("For stratified_pam, bio and/or batch must be specified")
       }

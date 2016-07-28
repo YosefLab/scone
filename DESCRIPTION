@@ -35,6 +35,7 @@ Imports:
   shiny,
   miniUI,
   rhdf5,
+  shiny,
   RUVSeq
 Suggests:
   knitr,
