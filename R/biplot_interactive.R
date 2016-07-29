@@ -9,7 +9,7 @@
 #'
 #' @param data a data.frame containing the data to be plotted.
 #' @param scores a numeric vector used to color the points.
-#' @param ... additional arguments passed to biplot_colored().
+#' @param ... passed to \code{\link{biplot_colored}}.
 #'
 #' @importFrom miniUI gadgetTitleBar miniContentPanel miniPage gadgetTitleBar
 #' @importFrom shiny plotOutput renderPlot observeEvent brushedPoints runGadget verbatimTextOutput stopApp renderText

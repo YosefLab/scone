@@ -11,7 +11,7 @@ biplot_interactive(data, scores, ...)
 
 \item{scores}{a numeric vector used to color the points.}
 
-\item{...}{additional arguments passed to biplot_colored().}
+\item{...}{passed to \code{\link{biplot_colored}}.}
 }
 \description{
 This is a wrapper around \code{\link{biplot_colored}}, which creates a shiny

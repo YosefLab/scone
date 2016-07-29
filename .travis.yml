@@ -38,5 +38,5 @@ bioc_packages:
   - BiocCheck
 
 after_success:
-  - Rscript -e 'covr::coveralls()'
+  - Rscript -e 'library(covr); codecov()'
   - R CMD BiocCheck .
