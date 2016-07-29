@@ -280,6 +280,10 @@ scone_easybake <- function(expr, qc,
   is_screened = ((params$imputation_method == "expect") & (params$scaling_method %in% c("detect"))) |
     ((params$adjust_biology == "bio") & (params$adjust_batch != "batch"))
   
+  if(norm_rezero){
+    is_screened = is_screened | ((params$imputation_method == "expect") & (params$scaling_method %in% c("none")))
+  }
+  
   params = params[!is_screened,]
   
   if(verbose > 0){print(params)}
