@@ -365,7 +365,7 @@ scone_easybake <- function(expr, qc,
   nom_noms = rownames(params_select)
   count = 0
   for(nom in nom_noms){
-    if(verbose > 0){printf(paste0("Normalization Module:\tfor\t",nom,"\n"))}
+    if(verbose > 0){printf(paste0("Normalization Module:\t(",count,")\t",nom,"\n"))}
     nom_dir = paste0(misc_dir,"/N",count,"_",gsub(",","_",nom))
     if (!file.exists(nom_dir)) {
       dir.create(nom_dir)

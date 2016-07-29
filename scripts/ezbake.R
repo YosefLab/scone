@@ -272,4 +272,5 @@ scone_easybake(expr = expr, qc = qc, bio = bio, batch = batch,
                eval_dim = eval_dim, eval_expr_expl = eval_expr_expl, eval_poscon = eval_poscon,
                eval_max_kclust = eval_max_kclust, eval_stratified_pam = eval_stratified_pam,
                report_num = report_num)
+
 q(save="no")
