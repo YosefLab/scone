@@ -79,8 +79,13 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   if( !is.null(bio) ) {
     if(!all(is.na(bio))) {
-      BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),
-                                            dd[!is.na(bio), !is.na(bio)]))$avg.width
+      if(length(unique(bio)) > 1) {
+        BIO_SIL = summary(cluster::silhouette(as.numeric(na.omit(bio)),
+                                              dd[!is.na(bio), !is.na(bio)]))$avg.width
+      } else {
+        BIO_SIL = NA
+        warning("after exclusion of samples, only one bio remains, BATCH_BIO is undefined")
+      }
     } else {
       BIO_SIL = NA
       warning("bio is all NA!")
@@ -91,8 +96,13 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   if(!is.null(batch)) {
     if(!all(is.na(batch))) {
-      BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),
-                                               dd[!is.na(batch),!is.na(batch)]))$avg.width
+      if(length(unique(batch)) > 1) {
+        BATCH_SIL <- summary(cluster::silhouette(as.numeric(na.omit(batch)),
+                                                 dd[!is.na(batch),!is.na(batch)]))$avg.width
+      } else {
+        BATCH_SIL <- NA
+        warning("after exclusion of samples, only one batch remains, BATCH_SIL is undefined")
+      }
     } else{
       BATCH_SIL <- NA
       warning("batch is all NA!")
@@ -100,7 +110,7 @@ score_matrix <- function(expr, eval_pcs = 3,
   } else {
     BATCH_SIL <- NA
   }
-
+stop("finally here")
   ## ------ PAM Tightness -----
 
   if ( !is.null(eval_kclust) ){
