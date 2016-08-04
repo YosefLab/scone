@@ -305,7 +305,16 @@ scone_easybake <- function(expr, qc,
     if(verbose > 0){printf("Normalization Module: No PAM-based evaluation\n")}
   }else{
     if(eval_stratified_pam){
-      uplim = min(min(table(bio,batch))-1,eval_max_kclust)
+      if(!is.null(bio) && !is.null(batch)) {
+        temp_lim = min(table(bio,batch))
+      } else if(is.null(batch) && is.null(bio)) {
+        temp_lim = ncol(expr)
+      } else if (!is.null(bio)) { #one of them is not null and the other is
+        temp_lim = min(table(bio))
+      } else {
+        temp_lim = min(table(batch))
+      }
+      uplim = min(temp_lim-1,eval_max_kclust)
     }else{
       uplim = min(ncol(expr)-1,eval_max_kclust)
     }
