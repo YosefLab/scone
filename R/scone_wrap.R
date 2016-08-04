@@ -149,8 +149,12 @@ scone_easybake <- function(expr, qc,
   # Implement sample filter
   expr = expr[,mfilt]
   qc = qc[mfilt,]
-  batch = droplevels(batch[mfilt])
-  bio = droplevels(bio[mfilt])
+  if(!is.null(batch)) {
+    batch = droplevels(batch[mfilt])
+  }
+  if(!is.null(bio)) {
+    bio = droplevels(bio[mfilt])
+  }
 
   if(filt_genes){
     thresh_fail = quantile(expr[expr > 0], 0.2) ###Make argument###
