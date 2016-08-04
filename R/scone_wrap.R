@@ -19,7 +19,10 @@
 #'   Default getwd().
 #' @param seed numeric. Random seed. 
 #'   Default 112233.
-#'   
+#'
+#' @param filt_cells logical. Should cells be filtered? Set to FALSE if low quality cells have already been excluded. If cells are not filtered, then initial gene filtering (the one that is done prior to cell filtering) is disabled as it becomes redundant with the gene filtering that is done after cell filtering.
+#'   Default TRUE.
+#'      
 #' @param filt_genes logical. Should genes be filtered post-sample filtering?
 #'   Default TRUE.
 #'   
@@ -65,6 +68,9 @@
 #' @param report_num numeric. Number of top methods to report.
 #'   Default 13.
 #'
+#' @param out_rda logical. If TRUE, a sconeResults.Rda file with the object that the scone function returns is saved in the out_dir (may be very large for large datasets, but useful for post-processing)
+#'   Default FALSE.
+#'   
 #' @export
 #' @importFrom grDevices dev.off pdf
 #' @importFrom graphics legend lines points
@@ -95,7 +101,7 @@ scone_easybake <- function(expr, qc,
                   eval_dim=NULL, eval_expr_expl=0.1,
                   eval_poscon=NULL, eval_max_kclust = 10, eval_stratified_pam = TRUE,
                   
-                  report_num = 13) {
+                  report_num = 13, out_rda = FALSE) {
 
   # Require qc or default (colSums() and colSums(>0))
   verbose = match.arg(verbose)
@@ -340,7 +346,8 @@ scone_easybake <- function(expr, qc,
 
   # Generate Scores and Ranking
   if(verbose > 0){printf("Normalization Module: Scoring Normalizations...\n")}
-  print(system.time(res <- scone(expr, imputation = imputation, impute_args = impute_args,
+  tic = proc.time()
+  res <- scone(expr, imputation = imputation, impute_args = impute_args,
                                  scaling=scaling,
                                  k_qc=norm_k_max, k_ruv = norm_k_max,
                                  qc=qcmat, ruv_negcon = negcon,
@@ -349,8 +356,15 @@ scone_easybake <- function(expr, qc,
 
                                  run=TRUE, params = params, verbose = (verbose > 1),
                                  eval_poscon = eval_poscon, eval_kclust = eval_kclust, 
-                                 stratified_pam = eval_stratified_pam ,rezero = norm_rezero)))
-
+                                 stratified_pam = eval_stratified_pam ,rezero = norm_rezero)
+  toc = proc.time()
+  if(verbose > 0) {
+    printf("Normalization Module: Scoring Normalizations Done!...\n")
+    printf("time elapsed (seconds):\n")
+    print(toc-tic)
+  }
+  
+  
   # Generate SCONE Report
   if(verbose > 0){printf("Normalization Module: Producing main report...\n")}
   pdf(paste0(out_dir,"/scone_report.pdf"),width = 6,height = 6)
@@ -368,7 +382,8 @@ scone_easybake <- function(expr, qc,
   # Recomputing top methods
   params_select = head(res$params,n = report_num)
   if(verbose > 0){printf("Normalization Module: Re-computing top normalizations...\n")}
-  print(system.time(res_select <- scone(expr, imputation = imputation, impute_args = impute_args,
+  tic = proc.time()
+  res_select <- scone(expr, imputation = imputation, impute_args = impute_args,
                                  scaling=scaling,
                                  k_qc=norm_k_max, k_ruv = norm_k_max,
                                  qc=qcmat, ruv_negcon = negcon,
@@ -377,18 +392,34 @@ scone_easybake <- function(expr, qc,
                                  
                                  run=TRUE, return_norm = "in_memory", params = params_select, verbose = (verbose > 1),
                                  eval_poscon = eval_poscon, eval_kclust = eval_kclust, 
-                                 stratified_pam = eval_stratified_pam ,rezero = norm_rezero)))
+                                 stratified_pam = eval_stratified_pam ,rezero = norm_rezero)
+  toc = proc.time()
+  if(verbose > 0) {
+    printf("Normalization Module: Recomputing top methods done!...\n")
+    printf("time elapsed (seconds):\n")
+    print(toc-tic)
+  }
   
-  if(verbose > 0){printf("Normalization Module: Writing top normalization to file...\n")}
+  if(out_rda) {
+    if(verbose > 0){printf("Normalization Module: Writing sconeResults.Rda file of scone's returned object...\n")}
+    save(file=file.path(out_dir, "sconeResults.Rda"), res_select)
+  }
+  
+  if(verbose > 0){
+    printf("Normalization Module: (Trumpets): the selected method is... %s!\n", rownames(res_select$scores)[1])
+    printf("Normalization Module: Writing top normalization to file...\n")
+  }
   
   normle = res_select$normalized_data[[1]]
   write.table(x = normle,row.names = TRUE,col.names = TRUE,quote = FALSE,sep = "\t",eol = "\n",file = paste0(out_dir,"/best_scone.txt"))
   
   if(verbose > 0){printf("Normalization Module: Producing normalization-specific reports...\n")}
   
-  nom_noms = rownames(params_select)
-  count = 0
-  for(nom in nom_noms){
+  write.table(x = res_select$scores, row.names = TRUE, col.names = TRUE, quote = FALSE, sep = "\t", eol = "\n", file = file.path(out_dir,"/normalization_scores.txt"))
+  
+  for(count in seq_along(rownames(res_select$scores))) {
+    nom = rownames(res_select$scores)[count]
+    
     if(verbose > 0){printf(paste0("Normalization Module:\t(",count,")\t",nom,"\n"))}
     nom_dir = paste0(misc_dir,"/N",count,"_",gsub(",","_",nom))
     if (!file.exists(nom_dir)) {
@@ -415,7 +446,7 @@ scone_easybake <- function(expr, qc,
       plot(prcomp(t(normle ))$x, col = cc[bio], pch =16)
       dev.off()
     }
-    count <- count+1
+
   }
   
   if(verbose > 0){printf("Normalization Module: COMPLETE\n")}
