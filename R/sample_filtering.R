@@ -18,6 +18,7 @@
 #'
 #' @importFrom boot logit
 #' @importFrom matrixStats rowMedians
+#' @export
 #'
 simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 
