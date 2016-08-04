@@ -228,7 +228,8 @@ scone_easybake <- function(expr, qc,
   
   qcmat = as.matrix(qc)
   
-  BiocParallel::register(BiocParallel::SerialParam()) ###Make argument###
+  #Allow non-serial (can register serial from outside for debug)
+  #BiocParallel::register(BiocParallel::SerialParam()) ###Make argument###
   
   # Imputation arguments
   norm_impute = match.arg(norm_impute)
