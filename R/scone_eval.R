@@ -110,7 +110,7 @@ score_matrix <- function(expr, eval_pcs = 3,
   } else {
     BATCH_SIL <- NA
   }
-stop("finally here")
+
   ## ------ PAM Tightness -----
 
   if ( !is.null(eval_kclust) ){
