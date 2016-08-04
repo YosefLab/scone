@@ -81,7 +81,7 @@
 scone_easybake <- function(expr, qc,
                   bio=NULL, batch=NULL, negcon=NULL,
                   verbose=c("0","1","2"), out_dir=getwd(), seed = 112233,
-                  
+                  filt_cells=TRUE,
                   filt_genes=TRUE,
                   
                   fnr_maxiter=1000,
@@ -123,39 +123,47 @@ scone_easybake <- function(expr, qc,
   }
   
   ## ------ Data Filtering Module ------
-  
-  # Initial Gene Filtering: Select "common" transcripts.
-  thresh_fail = quantile(expr[expr > 0], 0.2) ###Make argument###
-  num_fail = 10 ###Make argument###
-  init.gf.vec = rowSums(expr > thresh_fail) > num_fail
-  if(verbose > 0){printf("Data Filtering Module: Initial filter - Kept only %d genes expressed in more than %.2f units in more than %d cells, excluded %d genes\n", sum(init.gf.vec), thresh_fail, num_fail, sum(!init.gf.vec))}
-  
-  # Initial-Filtering Negative Controls
-  small_negcon = intersect(negcon,rownames(expr)[init.gf.vec])
-  if(verbose > 0){printf("Data Filtering Module: %d negative control genes to be used for sample filtering\n", length(small_negcon))}
-  
-  # Metric-based Filtering and Report
-  if(verbose > 0){printf("Data Filtering Module: Filtering samples\n")}
-  pdf(paste0(misc_dir,"/filter_report.pdf"))
-  mfilt = metric_sample_filter(expr, mixture = TRUE, plot = TRUE, hist_breaks = 100,
-                               zcut = 4, ###Make argument###
-                               pos_controls = rownames(expr) %in% small_negcon,
-                               gene_filter = init.gf.vec,
-                               nreads = qc$NREADS,ralign = qc$RALIGN) ###Make argument###
-  dev.off()
-  mfilt = !apply(simplify2array(mfilt[!is.na(mfilt)]),1,any)
-  if(verbose > 0){printf("Data Filtering Module: %d samples to be used in downstream analysis, excluded %d samples\n", sum(mfilt),  sum(!mfilt))}
-  
-  # Implement sample filter
-  expr = expr[,mfilt]
-  qc = qc[mfilt,]
-  if(!is.null(batch)) {
-    batch = droplevels(batch[mfilt])
+  if(filt_cells) {
+    #Note that there's no need to do the initial gene filtering if
+    #there's no cell filtering - it becomes redundant with the final gene filtering
+    #(and even makes the final gene filtering stricter than intended because we then do gene filter twice on the same set of cells - increasing the quantile between the first and second iteration)
+    
+    # Initial Gene Filtering: Select "common" transcripts.
+    thresh_fail = quantile(expr[expr > 0], 0.2) ###Make argument###
+    num_fail = 10 ###Make argument###
+    init.gf.vec = rowSums(expr > thresh_fail) > num_fail
+    if(verbose > 0){printf("Data Filtering Module: Initial filter - Kept only %d genes expressed in more than %.2f units in more than %d cells, excluded %d genes\n", sum(init.gf.vec), thresh_fail, num_fail, sum(!init.gf.vec))}
+    
+    # Initial-Filtering Negative Controls
+    small_negcon = intersect(negcon,rownames(expr)[init.gf.vec])
+    if(verbose > 0){printf("Data Filtering Module: %d negative control genes to be used for sample filtering\n", length(small_negcon))}
+    
+    # Metric-based Filtering and Report
+    if(verbose > 0){printf("Data Filtering Module: Filtering samples\n")}
+    
+    pdf(paste0(misc_dir,"/filter_report.pdf"))
+    mfilt = metric_sample_filter(expr, mixture = TRUE, plot = TRUE, hist_breaks = 100,
+                                 zcut = 4, ###Make argument###
+                                 pos_controls = rownames(expr) %in% small_negcon,
+                                 gene_filter = init.gf.vec,
+                                 nreads = qc$NREADS,ralign = qc$RALIGN) ###Make argument###
+    dev.off()
+    mfilt = !apply(simplify2array(mfilt[!is.na(mfilt)]),1,any)
+    if(verbose > 0){printf("Data Filtering Module: %d samples to be used in downstream analysis, excluded %d samples\n", sum(mfilt),  sum(!mfilt))}
+    
+    # Implement sample filter
+    expr = expr[,mfilt]
+    qc = qc[mfilt,]
+    if(!is.null(batch)) {
+      batch = droplevels(batch[mfilt])
+    }
+    if(!is.null(bio)) {
+      bio = droplevels(bio[mfilt])
+    }
+  } else {
+    if(verbose > 0){printf("Data Filtering Module: Skipping cell filter...\n")}
   }
-  if(!is.null(bio)) {
-    bio = droplevels(bio[mfilt])
-  }
-
+  
   if(filt_genes){
     thresh_fail = quantile(expr[expr > 0], 0.2) ###Make argument###
     num_fail = 10 ###Make argument###
@@ -170,8 +178,10 @@ scone_easybake <- function(expr, qc,
       eval_poscon = eval_poscon[eval_poscon %in% rownames(expr)]
       if(verbose > 0){printf("Data Filtering Module: Kept only %d positive control genes\n", length(eval_poscon))}
     }
+  } else {
+    if(verbose > 0){printf("Data Filtering Module: Skipping gene filter...\n")}
   }
-  
+
   if(verbose > 0){printf("Data Filtering Module: COMPLETE\n\n")}
   ## ------ False-Negative Rate Inference Module ------
   
