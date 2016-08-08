@@ -9,7 +9,7 @@ Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 Author: Michael Cole [aut, cre, cph], Davide Risso [aut, cph]
 Maintainer: Michael Cole <mbeloc@gmail.com>
 Date: 2016-07-22
-License: Artistic-2.0
+License: file LICENSE
 Depends:
   R (>= 3.3)
 Imports:
