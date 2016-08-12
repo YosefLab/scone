@@ -228,7 +228,10 @@ scone_easybake <- function(expr, qc,
     sAUC = AUC[oAUC]
     sbatch = batch[oAUC]
     barplot(sAUC[order(sbatch)], col=cc[sbatch][order(sbatch)], border=cc[sbatch][order(sbatch)], main="FNR AUC, colored by batch", ylim = c(0,2*max(AUC)))
-    legend("topleft", legend=levels(sbatch), fill=cc, cex=0.4)
+    if(fnr_out$convergence != 1) {
+      #this line throws an exception if not converged: "'legend' is of length 0"
+      legend("topleft", legend=levels(sbatch), fill=cc, cex=0.4)
+    }
   }else{
     barplot(sort(AUC), col="black", border="black", main="FNR AUC",ylim = c(0,2*max(AUC)))
   }
