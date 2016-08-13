@@ -370,7 +370,14 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
   failing <- simplify2array(failing)
   if(any(failing)) {
     idx <- which(failing)
-    stop(paste(names(scaled)[idx], "returned at least one NA value. Consider removing it from the comparison."))
+    failed_names = names(scaled)[idx]
+    warning(paste(failed_names, "returned at least one NA value. Consider removing it from the comparison.\n", 
+                  "In the meantime it will be removed anyhow"))
+    
+    remove_params = paste(params$imputation_method, params$scaling_method, sep="_") %in% failed_names
+    params <- params[!remove_params,]
+    
+    scaled = scaled[!failing]
   }
 
   if(verbose) message("Computing RUV factors...")
