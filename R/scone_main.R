@@ -412,6 +412,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
     sc_name <- paste(params[i,1:2], collapse="_")
     adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
     if(evaluate) {
+      #cat(sprintf("scoring matrix: I am in method: %s", sc_name)) #debug message
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, uv_factors = uv_factors, wv_factors = wv_factors,

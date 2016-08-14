@@ -62,14 +62,25 @@ score_matrix <- function(expr, eval_pcs = 3,
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")
   }
+  
+  #The svd we do below on expr throws an exception if expr created by one of the normalizations has a constant feature (=gene, i.e. row)
+  constantFeatures = apply(expr, 1, function(x) max(x)-min(x)) < 1e-3
+  if(any(constantFeatures)) {
+    warning(sprintf("scone_eval: expression matrix contained %d constant features (rows) ---> excluding them", sum(constantFeatures)))
+    expr = expr[!constantFeatures, ]
+  }
 
   if(!is_log) {
     expr <- log1p(expr)
   }
 
   if(is.null(eval_proj)){
-      proj = svd(scale(t(expr),center = TRUE,scale = TRUE),eval_pcs,0)$u
-  }else{
+      proj = tryCatch({svd(scale(t(expr),center = TRUE,scale = TRUE),eval_pcs,0)$u},
+                      error = function(e) {
+                        stop("scone_eval: svd failed")
+                      })
+                      
+  } else {
       proj = eval_proj(expr,eval_proj_args = eval_proj_args)
       eval_pcs = ncol(proj)
   }
