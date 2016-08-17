@@ -98,8 +98,9 @@ scone_easybake <- function(expr, qc,
                   norm_adjust_bio=c("yes", "no", "force"),
                   norm_adjust_batch=c("yes", "no", "force"), 
                   
-                  eval_dim=NULL, eval_expr_expl=0.1,
-                  eval_poscon=NULL, eval_max_kclust = 10, eval_stratified_pam = TRUE,
+                  eval_dim = NULL, eval_expr_expl = 0.1,
+                  eval_poscon = NULL, eval_negcon = negcon,
+                  eval_max_kclust = 10, eval_stratified_pam = TRUE,
                   
                   report_num = 13, out_rda = FALSE) {
 
@@ -127,6 +128,11 @@ scone_easybake <- function(expr, qc,
   if (!file.exists(misc_dir)) {
     dir.create(misc_dir)
   }
+  
+  #duplicate stdout to log file
+  logFile = file(file.path(out_dir, "stdout.txt"), open = "wt")
+  sink(logFile, type = "output", split = TRUE)
+  #sink(logFile, type = "message", split = TRUE) -- no, cannot split the message connection
   
   ## ------ Data Filtering Module ------
   if(filt_cells) {
@@ -358,7 +364,7 @@ scone_easybake <- function(expr, qc,
                                  adjust_batch = match.arg(norm_adjust_batch), batch = batch,
 
                                  run=TRUE, params = params, verbose = (verbose > 1),
-                                 eval_poscon = eval_poscon, eval_kclust = eval_kclust, 
+                                 eval_poscon = eval_poscon, eval_negcon = eval_negcon, eval_kclust = eval_kclust, 
                                  stratified_pam = eval_stratified_pam ,rezero = norm_rezero)
   toc = proc.time()
   if(verbose > 0) {
@@ -394,7 +400,7 @@ scone_easybake <- function(expr, qc,
                                  adjust_batch = match.arg(norm_adjust_batch), batch = batch,
                                  
                                  run=TRUE, return_norm = "in_memory", params = params_select, verbose = (verbose > 1),
-                                 eval_poscon = eval_poscon, eval_kclust = eval_kclust, 
+                                 eval_poscon = eval_poscon, eval_negcon = eval_negcon, eval_kclust = eval_kclust, 
                                  stratified_pam = eval_stratified_pam ,rezero = norm_rezero)
   toc = proc.time()
   if(verbose > 0) {
@@ -459,5 +465,9 @@ scone_easybake <- function(expr, qc,
   if(verbose > 0){
     printf("\n=====sessionInfo=====\n\n")
     sessionInfo()
-    }
+  }
+  
+  #stop duplicating stdout to log file
+  sink(type = "output")
+  #sink(type = "message")  -- no, cannot split the message connection
 }
