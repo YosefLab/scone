@@ -1,8 +1,4 @@
 #!/usr/local/bin/Rscript
-print("Loading SCONE...")
-library(scone)
-print("Complete")
-
 args <- commandArgs(TRUE)
 
 if(length(args) < 1) {
@@ -14,11 +10,11 @@ if("--help" %in% args) {
       SCONE Easy-Bake Script: Run Essential SCONE Modules
       
       Arguments:\n
-      --expr\tPath to tab-delim txt file containing expression data matrix (genes in rows, cells in columns).\n
-      --genes\tPath to txt file containing gene names (gene per row).\n
-      --cells\tPath to txt file containing cell names (cell per row).\n
-      --qc\tPath to tab-delim txt file containing quality control (QC) matrix (cells in rows, metrics in columns).\n
-      --metrics\tPath to txt file containing qc metric names (metric per row).\n
+      --expr\tPath to a tab-delimited text file containing all of your gene expression\n
+      \t\tscores for all genes and single cells. The file must be a plain text (.txt) file 
+      \t\twith with a header row containing the value 'GENE' in the first column, and single 
+      \t\tcell names in each successive column.\n
+      --qc\tPath to tab-delim txt file containing quality control (QC) matrix (cells in rows, metrics in columns). Must include header.\n
       --bio\t(Optional) Path to txt file containing biological conditions (cell per row).
       \t\tThis condition will be modeled in the Adjustment Step
       \t\tas variation to be preserved. If adjust_bio='no', it will not be used
@@ -86,60 +82,36 @@ if(is.null(argsL$expr)) {
   stop("expr argument is missing")
 }else{
   print("Loading expression matrix...")
-  expr = as.matrix(read.table(argsL$expr, sep = "\t",header = FALSE,row.names = NULL))
-  print("Complete")
-}
-
-if(is.null(argsL$genes)) {
-  stop("genes argument is missing")
-}else{
-  print("Loading gene names...")
-  genes = as.character(unlist(read.table(argsL$genes,header = FALSE,row.names = NULL)))
-  print("Complete")
+  expr_tab = read.table(argsL$expr, sep = "\t",header = TRUE,row.names = NULL)
+  expr = as.matrix(expr_tab[,-1])
+  genes = as.character(expr_tab$GENE)
   rownames(expr) = genes
-}
-
-if(is.null(argsL$cells)) {
-  stop("cells argument is missing")
-}else{
-  print("Loading cell names...")
-  cells = as.character(unlist(read.table(argsL$cells,header = FALSE,row.names = NULL)))
   print("Complete")
-  colnames(expr) = cells 
 }
 
 if(is.null(argsL$qc)) {
   stop("qc argument is missing")
 }else{
   print("Loading qc matrix...")
-  qc = read.table(argsL$qc,sep = "\t",header = FALSE,row.names = NULL)
+  qc = read.table(argsL$qc,sep = "\t",header = TRUE,row.names = NULL)
+  rownames(qc) = colnames(expr)
   print("Complete")
-}
-
-if(is.null(argsL$metrics)) {
-  stop("metrics argument is missing")
-}else{
-  print("Loading metric names...")
-  metrics = as.character(unlist(read.table(argsL$metrics,header = FALSE, sep = "\t",col.names = FALSE)))
-  print("Complete")
-  colnames(qc) = metrics
-  rownames(qc) = cells
 }
 
 if(!is.null(argsL$bio)) {
   print("Loading bio data...")
-  bio = unlist(read.table(argsL$bio,header = FALSE, sep = "\t",col.names = FALSE))
+  bio = factor(unlist(read.table(argsL$bio,header = FALSE, sep = "\t",col.names = FALSE)))
   print("Complete")
-  names(bio) = cells
+  names(bio) = colnames(expr)
 }else{
   bio = NULL
 }
 
 if(!is.null(argsL$batch)) {
   print("Loading batch data...")
-  batch = unlist(read.table(argsL$batch,header = FALSE, sep = "\t",col.names = FALSE))
+  batch = factor(unlist(read.table(argsL$batch,header = FALSE, sep = "\t",col.names = FALSE)))
   print("Complete")
-  names(batch) = cells
+  names(batch) = colnames(expr)
 }else{
   batch = NULL
 }
@@ -262,7 +234,7 @@ if(is.null(argsL$verbose)) {
 }
 
 ## ----- SCONE -----
-scone_easybake(expr = expr, qc = qc, bio = bio, batch = batch,
+scone::scone_easybake(expr = expr, qc = qc, bio = bio, batch = batch,
                negcon = negcon, verbose = verbose, out_dir = out_dir, seed = seed,
                filt_genes = filt_genes,
                fnr_maxiter = fnr_maxiter,
