@@ -203,6 +203,8 @@ scone_easybake <- function(expr, qc,
   if(verbose > 0){printf("Data Filtering Module: COMPLETE\n\n")}
   ## ------ False-Negative Rate Inference Module ------
   
+  cc <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"),brewer.pal(9,"Set3"))
+  
   if(fnr_maxiter > 0) {
     ## fnr_maxiter > 0 -- user wants to do fnr estimation
     
@@ -216,7 +218,6 @@ scone_easybake <- function(expr, qc,
     if(verbose > 0){printf("False-Negative Rate Inference Module: Producing report...\n")}
     
     # FNR Report
-    cc <- c(brewer.pal(9, "Set1"), brewer.pal(8, "Set2"),brewer.pal(9,"Set3"))
     
     logistic_coef = simple_FNR_params(expr = expr, pos_controls = rownames(expr) %in% negcon) # "Non-DE" are expected to be expressed in all cells
     
