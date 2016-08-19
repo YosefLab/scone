@@ -141,7 +141,7 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
                                 mixture = TRUE, dip_thresh = 0.05,
                                 hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2, hard_auc = 10,
                                 suff_nreads = NULL, suff_ralign = NULL, suff_breadth = NULL, suff_auc = NULL,
-                                plot = FALSE, hist_breaks = 10){
+                                plot = FALSE, hist_breaks = 10, ...){
 
   criterion_count = 0
 

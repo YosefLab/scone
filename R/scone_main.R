@@ -129,7 +129,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
                   eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=ruv_negcon,
                   eval_poscon=NULL, params=NULL, verbose=FALSE,
                   stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
-                  hdf5file) {
+                  hdf5file, ...) {
 
   return_norm <- match.arg(return_norm)
 
@@ -249,8 +249,11 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
     }
   }
 
+
   if(evaluate) {
-    if(!is.character(eval_negcon) & !is.null(eval_negcon)) {
+    if(is.null(eval_negcon)) {
+      if(verbose) message("eval_negcon is null, negative controls will not be used in evaluation (correlations with negative controls will be returned as NA)")
+    } else if(!is.character(eval_negcon)) {
       stop("'eval_negcon' must be a character vector.")
     } else if(!all(eval_negcon %in% rownames(expr))) {
       stop("'eval_negcon' must be a subset of the genes in 'expr.'")
