@@ -8,9 +8,10 @@ library(DT) # devtools::install_github('rstudio/DT')
 library(plotly) # devtools::install_github("ropensci/plotly")
 library(reshape)
 library(d3heatmap) #devtools::install_github("rstudio/d3heatmap")
+library(NMF)
 
 # Data
-scone_out = list( qc = qc, bio = condition, batch = batch, res = res_select, poscon = de, negcon = hk)
+scone_out = list( qc = as.matrix(qc[,apply(qc,2,sd) > 0]), bio = bio, batch = batch, res = res_select, poscon = poscon, negcon = negcon)
 
 # Build Network
 leaves = rownames(scone_out$res$params)
@@ -69,12 +70,13 @@ ui <- fluidPage(
                   choices = list("Batch"="batch", "Biological Condition"="bio", "PAM Cluster"="clust"),
                   selected = "batch"),
       sliderInput("dim", label = "Reduced Dimension (PCA)",
-                  min=2, max=min(length(metaDat$batch)-1,10),
+                  min=2, max=min(length(scone_out$batch)-1,10),
                   value = 3),
       sliderInput("k", label = "Number of Clusters (PAM)",
                   min=2, max=10,
                   value = 7),
-      helpText("Please note that with many cells (>500), some plots may take several seconds (sometimes minutes) to appear.")
+      helpText("Please note that with many cells (>500), some plots may take several seconds (sometimes minutes) to appear."),
+      downloadLink('downloadData', 'Download')
     ),
     
     mainPanel(tabsetPanel(type = "tabs",
@@ -118,7 +120,7 @@ ui <- fluidPage(
                           ),
                           tabPanel("Silhouette",
                                    br(),
-                                   p("Bar-plot with silhouette width per sample by any of the three categories. PAM clustered by bio by batch: three tables."),
+                                   p("Silhouette Width per Sample and Contingency Tables"),
                                    br(),
                                    plotOutput("plotsil",width = "650px",height = "450px"),
                                    fluidRow(
@@ -137,8 +139,34 @@ ui <- fluidPage(
                           ),
                           tabPanel("Control Genes",
                                    br(),
-                                   p("Heatmap per control gene set, colored by all three categories, ordered by PAM silhouette."),
-                                   br()
+                                   p("Heatmap of control genes, colored by all three categories, ordered by silhouette of Plot Stratification."),
+                                   br(),
+                                   p("Positive controls:"),
+                                   plotOutput("hmposcon",width = "650px",height = "450px"),
+                                   p("Negative controls:"),
+                                   plotOutput("hmnegcon",width = "650px",height = "450px")
+                          ),
+                          
+                          tabPanel("Population Structure",
+                                   br(),
+                                   p("Plots of Principal Components Stratified by Plot Stratification."),
+                                   br(),
+                                   sliderInput("pcsel", label = "Selected Principal Component",
+                                               min=1, max=min(length(scone_out$batch)-1,10),
+                                               value = 1),
+                                   h6("All Genes:"),
+                                   plotOutput("violin_base",width = "650px",height = "450px"),
+                                   selectInput("gene_set2", label = "Gene selection",
+                                               choices = list("Negative Controls"="neg","Positive Controls"="pos"),
+                                               selected = "neg"),
+                                   h6("Select Genes:"),
+                                   plotOutput("violin_select",width = "650px",height = "450px")
+                          ),
+                          
+                          tabPanel("Relative Log-Expression",
+                                   br(),
+                                   p("Relative Log-Expression Plot for top 100 Most Variable Genes Stratified by Plot Stratification."),
+                                   plotOutput("rle",width = "850px",height = "450px")
                           )
     ))))
 
@@ -151,16 +179,16 @@ server <- function(input, output, session) {
     
     # Awk: Check if any non-loaded methods are included
     if(any(!all_nodes  %in% leaves)){
-    visNetwork(nodes, edges,width = "100%",main = "Tree of Methods") %>% 
-      visHierarchicalLayout(sortMethod = "directed" )  %>% 
-      visGroups(groupname = "NoData", shape = "dot", size = 10, color = list(background = "lightgrey",border = "darkblue", highlight = list(background = "black",border = "red")), 
-                shadow = list(enabled = TRUE)) %>% 
-      visGroups(groupname = "Loaded", shape = "dot", size = 20, color = list(background = "lightblue",border = "darkblue", highlight = list(background = "cyan",border = "red")), 
-                shadow = list(enabled = TRUE)) %>%
-      visEdges(shadow = TRUE, arrows = list(to = list(enabled = TRUE)),
-               color = list(color = "darkblue", highlight = "red")) %>%
-      visOptions(nodesIdSelection = list(enabled = TRUE, values = nodes$id[nodes$group == "Loaded"], selected = nodes$id[nodes$title == rownames(scone_out$res$params)[1]])) %>%
-      visLegend(width = 0.1, position = "right", main = "Status")
+      visNetwork(nodes, edges,width = "100%",main = "Tree of Methods") %>% 
+        visHierarchicalLayout(sortMethod = "directed" )  %>% 
+        visGroups(groupname = "NoData", shape = "dot", size = 10, color = list(background = "lightgrey",border = "darkblue", highlight = list(background = "black",border = "red")), 
+                  shadow = list(enabled = TRUE)) %>% 
+        visGroups(groupname = "Loaded", shape = "dot", size = 20, color = list(background = "lightblue",border = "darkblue", highlight = list(background = "cyan",border = "red")), 
+                  shadow = list(enabled = TRUE)) %>%
+        visEdges(shadow = TRUE, arrows = list(to = list(enabled = TRUE)),
+                 color = list(color = "darkblue", highlight = "red")) %>%
+        visOptions(nodesIdSelection = list(enabled = TRUE, values = nodes$id[nodes$group == "Loaded"], selected = nodes$id[nodes$title == rownames(scone_out$res$params)[1]])) %>%
+        visLegend(width = 0.1, position = "right", main = "Status")
     }else{
       visNetwork(nodes, edges,width = "100%",main = "Tree of Methods") %>% 
         visHierarchicalLayout(sortMethod = "directed" )  %>% 
@@ -197,7 +225,7 @@ server <- function(input, output, session) {
   # Update Menu Upon Table Selection
   observeEvent(input$tbl_score_rows_selected,{
     if(length(input$tbl_score_rows_selected) > 0 ){ # probably unnecessary 
-          updateSelectInput(session,"norm_code", selected = as.character(nodes$title[nodes$id == as.integer(input$tbl_score_rows_selected)]))
+      updateSelectInput(session,"norm_code", selected = as.character(nodes$title[nodes$id == as.integer(input$tbl_score_rows_selected)]))
     }
   })
   
@@ -274,12 +302,14 @@ server <- function(input, output, session) {
   })
   
   output$plot_scree <- renderPlot({
-    plot(pc_obj_base()$sdev[1:min(input$dim*2,length(metaDat$batch)-1)]^2/sum(pc_obj_base()$sdev^2), typ = "l", ylab = "Proportion of Variance", xlab = "PC Index", log = "y")
+    plot(pc_obj_base()$sdev[1:min(input$dim*2,length(scone_out$batch)-1)]^2/sum(pc_obj_base()$sdev^2), typ = "l", ylab = "Proportion of Variance", xlab = "PC Index", log = "y")
     abline(v = input$dim, col = "red",lty = 2)
   })
   
   output$plot_base <- renderPlot({
+    par(mar=c(5.1, 4.1, 4.1, 10.1), xpd=TRUE)
     plot(pc_obj_base()$x[,1:2],col =  pc_col(), pch = 16)
+    legend("topright", inset=c(-0.3,0), legend=levels(factor(strat_col())), fill = cc[sort(unique(factor(strat_col())))])
   })
   
   output$plot3d_base <- renderPlotly({
@@ -288,7 +318,9 @@ server <- function(input, output, session) {
   })
   
   output$plot_select <- renderPlot({
+    par(mar=c(5.1, 4.1, 4.1, 10.1), xpd=TRUE)
     plot(pc_obj_select()$x[,1:2],col =  pc_col(), pch = 16)
+    legend("topright", inset=c(-0.3,0), legend=levels(factor(strat_col())), fill = cc[sort(unique(factor(strat_col())))])
   })
   
   pam_obj <- reactive({
@@ -316,24 +348,34 @@ server <- function(input, output, session) {
   })
   
   output$plot_qc <- renderPlot({
+    par(mar=c(5.1, 4.1, 4.1, 10.1), xpd=TRUE)
     plot(pc_obj_qc()$x[,1:2],col =  pc_col(), pch = 16)
+    legend("topright", inset=c(-0.3,0), legend=levels(factor(strat_col())), fill = cc[sort(unique(factor(strat_col())))])
   })
   
   output$plot3d_qc <- renderPlotly({
     df <- setNames(data.frame(pc_obj_qc()$x[,1:3]), c("x", "y", "z"))
     plot_ly(df, x = ~x, y = ~y, z = ~z, color = I(pc_col()), type = "scatter3d", mode = "markers")
   })
-
+  
   ## ------ Silhouette Tab ------
   
+  sil_obj <- reactive({
+    cluster::silhouette(x = as.numeric(strat_col()),dist = dist(pc_obj_base()$x[,1:input$dim]))
+  })
+  
   output$plotsil <- renderPlot({
-    sil = cluster::silhouette(x = as.numeric(strat_col()),dist = dist(pc_obj_base()$x[,1:input$dim]))
+    par(mar=c(5.1, 4.1, 4.1, 10.1), xpd=TRUE)
+    
+    sil = sil_obj()
     o1 = order(sil[,3])
     o = o1[order(-sil[,1][o1])]
     barplot(sil[,3][o], main = paste0("ASW = ",signif(mean(sil[,3]),3)),xlab = "silhouette width",horiz=TRUE,
             xlim = 1.5*range(c(sil[,3],-sil[,3])),
             col = pc_col()[o],
             border = pc_col()[o])
+    legend("topright", inset=c(-0.3,0), legend=levels(factor(strat_col())), fill = cc[sort(unique(factor(strat_col())))])
+    
   })
   
   output$batch_bio <- renderTable({
@@ -349,6 +391,97 @@ server <- function(input, output, session) {
   })
   
   ## ------ Control Genes Tab ------
+  
+  silo <- reactive({
+    sil = sil_obj()
+    o1 = order(sil[,3])
+    o1[order(-sil[,1][o1])]    
+  })
+  
+  output$hmnegcon <- renderPlot({
+    aheatmap(normle()[scone_out$negcon,], Colv = silo(), 
+             annCol = list(batch = scone_out$batch, bio = scone_out$bio, pam =  as.factor(pam_obj()$clust)),
+             annColors = list(batch = cc, bio = cc, pam =  cc))
+  })
+  
+  output$hmposcon <- renderPlot({
+    aheatmap(normle()[scone_out$poscon,], Colv = silo(), 
+             annCol = list(batch = scone_out$batch, bio = scone_out$bio, pam = as.factor(pam_obj()$clust)),
+             annColors = list(batch = cc, bio = cc, pam =  cc))
+  })
+  
+  ## ------ Population Structure Tab ------
+  
+  output$violin_base <- renderPlot({
+    
+    Class = factor(strat_col())
+    Val = pc_obj_base()$x[,input$pcsel] 
+    
+    ggplot(data.frame(Class,Val ),aes(x = Class,y = Val))   +  
+      geom_violin(scale = "width", trim = TRUE, aes(fill = Class))+ 
+      labs(x = "Plot Stratification", y = "PC") +
+      coord_cartesian(ylim = max(abs(range(Val)))*c(-1.5,1.5))  +
+      scale_fill_manual(values=cc[sort(unique(factor(strat_col())))]) +
+      geom_point(colour = "black") + guides(fill=FALSE)
+    
+    
+  })
+  
+  pc_gene2 <- reactive({
+    switch(input$gene_set2,
+           pos = intersect(scone_out$poscon,rownames(normle())),
+           neg = intersect(scone_out$negcon,rownames(normle())))
+  })
+  
+  pc_obj_select2 <- reactive({
+    prcomp(t(normle()[pc_gene2(),]),center = TRUE, scale = TRUE)
+  })
+  
+  output$violin_select <- renderPlot({
+    
+    Class = factor(strat_col())
+    Val = pc_obj_select2()$x[,input$pcsel] 
+    
+    ggplot(data.frame(Class,Val ),aes(x = Class,y = Val))   +  
+      geom_violin(scale = "width", trim = TRUE, aes(fill = Class))+ 
+      labs(x = "Plot Stratification", y = "PC") +
+      coord_cartesian(ylim = max(abs(range(Val)))*c(-1.5,1.5))  +
+      scale_fill_manual(values=cc[sort(unique(factor(strat_col())))]) +
+      geom_point(colour = "black") + guides(fill=FALSE)
+    
+    
+  })
+  
+  ## ------ Relative Log-Expression ------
+  
+  output$rle <- renderPlot({
+    par(mar=c(5.1, 4.1, 4.1, 10.1), xpd=TRUE)
+    
+    mads = apply(normle(),1,mad)
+    is_var = rank(-mads) <= 100
+    median <- apply(normle()[is_var,], 1, median)
+    rle <- apply(normle()[is_var,], 2, function(x) x - median)
+    boxplot(rle[,rev(silo())],col = pc_col()[rev(silo())], 
+            outline = FALSE, names = rep("",ncol(rle)))
+    abline(h=0, lty=2)
+    legend("topright", inset=c(-0.2,0), legend=levels(factor(strat_col())), fill = cc[sort(unique(factor(strat_col())))])
+    
+  })
+  
+  ## ----- Download
+  
+  output$downloadData <- downloadHandler(
+    filename = function() {
+      paste('scone_out-', Sys.Date(), '.csv', sep='')
+    },
+    content = function(con) {
+      datt = cbind(as.character(scone_out$bio),as.character(scone_out$batch),as.character(pam_obj()$clust))
+      colnames(datt) = c("Class-Bio","Class-Batch","Class-Pam")
+      rownames(datt) = colnames(normle())
+      datt = rbind(t(datt),normle())
+      write.csv(datt, con)
+    }
+  )
   
 }
 
