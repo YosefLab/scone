@@ -108,7 +108,7 @@ estimate_ziber = function(x, fp_tresh = 0,
   EL1 = 2*EL2
   
   niter = 1
-  while( (EL2 - EL1) > em_tol ) {   
+  while( is.infinite(EL1) | (EL2 - EL1) > em_tol ) {   
     
     EL1 = EL2
     

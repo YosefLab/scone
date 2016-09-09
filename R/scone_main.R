@@ -352,7 +352,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
 
-  imputed <- lapply(seq_along(im_params), function(i) imputation[[i]](expr,impute_args))
+  imputed <- lapply(seq_along(im_params), function(i) imputation[[im_params[i]]](expr,impute_args))
   names(imputed) <- im_params
   # output: a list of imputed matrices
 
