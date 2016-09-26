@@ -6,13 +6,14 @@
 \usage{
 scone_easybake(expr, qc, bio = NULL, batch = NULL, negcon = NULL,
   verbose = c("0", "1", "2"), out_dir = getwd(), seed = 112233,
-  filt_genes = TRUE, fnr_maxiter = 1000, norm_impute = c("yes", "no",
-  "force"), norm_scaling = c("none", "sum", "deseq", "tmm", "uq", "fq",
-  "detect"), norm_rezero = TRUE, norm_k_max = NULL, norm_qc_expl = 0.5,
-  norm_adjust_bio = c("yes", "no", "force"), norm_adjust_batch = c("yes",
-  "no", "force"), eval_dim = NULL, eval_expr_expl = 0.1,
-  eval_poscon = NULL, eval_max_kclust = 10, eval_stratified_pam = TRUE,
-  report_num = 13)
+  filt_cells = TRUE, filt_genes = TRUE, fnr_maxiter = 1000,
+  norm_impute = c("yes", "no", "force"), norm_scaling = c("none", "sum",
+  "deseq", "tmm", "uq", "fq", "detect"), norm_rezero = TRUE,
+  norm_k_max = NULL, norm_qc_expl = 0.5, norm_adjust_bio = c("yes", "no",
+  "force"), norm_adjust_batch = c("yes", "no", "force"), eval_dim = NULL,
+  eval_expr_expl = 0.1, eval_poscon = NULL, eval_negcon = negcon,
+  eval_max_kclust = 10, eval_stratified_pam = TRUE, report_num = 13,
+  out_rda = FALSE, ...)
 }
 \arguments{
 \item{expr}{matrix. The expression data matrix (genes in rows, cells in columns).}
@@ -42,11 +43,16 @@ Default getwd().}
 \item{seed}{numeric. Random seed. 
 Default 112233.}
 
+\item{filt_cells}{logical. Should cells be filtered? Set to FALSE if low quality cells have already been excluded. If cells are not filtered, then initial gene filtering (the one that is done prior to cell filtering) is disabled as it becomes redundant with the gene filtering that is done after cell filtering.
+Default TRUE.}
+
 \item{filt_genes}{logical. Should genes be filtered post-sample filtering?
 Default TRUE.}
 
 \item{fnr_maxiter}{numeric. Maximum number of iterations in EM estimation of expression posteriors.
-Dafault 1000.}
+If 0, then FNR estimation is skipped entirely, and as a
+ consequence no imputation will be performed, disregarding 
+ the value of the "norm_impute" argument. Default 1000.}
 
 \item{norm_impute}{character. Should imputation be included in the comparison? 
 If 'force', only imputed normalizations will be run.
@@ -87,6 +93,8 @@ Default 0.1. Ignored if eval_dim is not NULL.}
 evaluation. These genes should be expected to change according to the
 biological phenomenon of interest.}
 
+\item{eval_negcon}{character. Alternative negative control gene list for evaluation only.}
+
 \item{eval_max_kclust}{numeric. The max number of clusters (> 1) to be used for pam
 tightness evaluation. If NULL, tightness will be returned NA.}
 
@@ -97,6 +105,11 @@ Default TRUE.}
 
 \item{report_num}{numeric. Number of top methods to report.
 Default 13.}
+
+\item{out_rda}{logical. If TRUE, a sconeResults.Rda file with the object that the scone function returns is saved in the out_dir (may be very large for large datasets, but useful for post-processing)
+Default FALSE.}
+
+\item{...}{extra params passed to the metric_sample_filter and scone when they're called by easybake}
 }
 \value{
 Directory structure "ADD DESCRIPTION"

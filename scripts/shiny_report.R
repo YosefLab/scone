@@ -11,7 +11,8 @@ library(d3heatmap) #devtools::install_github("rstudio/d3heatmap")
 library(NMF)
 
 # Data
-scone_out = list( qc = as.matrix(qc[,apply(qc,2,sd) > 0]), bio = bio, batch = batch, res = res_select, poscon = poscon, negcon = negcon)
+scone_out = list( qc = as.matrix(qc[,apply(qc,2,sd) > 0]), bio = bio, batch = batch, 
+                  res = res_select, poscon = poscon, negcon = negcon)
 
 # Build Network
 leaves = rownames(scone_out$res$params)

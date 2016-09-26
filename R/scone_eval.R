@@ -1,23 +1,27 @@
-#' scone evaluation: function to evaluate one normalization scheme
+#' SCONE Evaluation: Evaluate an Expression Matrix
 #'
-#' This function evaluates an expression matrix using SCONE criteria, producing a number of scores based on
-#' projections of the normalized data, correlations, and RLE metrics.
+#' This function evaluates a (normalized) expression matrix using SCONE criteria, 
+#' producing 8 metrics based on i) Clustering, ii) Correlations and iii) Relative Expression.
 #'
-#' @details The eval_proj function argument must have 2 inputs:
+#' @details Users may specify their own eval_proj function that will be used to compute
+#' Clustering and Correlation metrics. This eval_proj() function must have 2 input arguments:
 #' \itemize{
-#' \item{e}{ matrix. log-transformed expression (genes in rows, cells in columns).}
+#' \item{e}{ matrix. log-transformed (+ pseudocount) expression data (genes in rows, cells in columns).}
 #' \item{eval_proj_args}{ list. additional function arguments, e.g. prior data weights.}
 #' }
 #' and it must output a matrix representation of the original data (cells in rows, factors in columns).
+#' The value of eval_proj_args is passed to the user-defined function from the eval_proj_args argument
+#' of the main score_matrix() function call.
 #'
-#' @param expr matrix. The data matrix (genes in rows, cells in columns).
-#' @param eval_pcs numeric. The number of principal components to use for evaluation.
+#' @param expr matrix. The expression data matrix (genes in rows, cells in columns).
+#' @param eval_pcs numeric. The number of principal components to use for evaluation (Default 3).
 #' Ignored if !is.null(eval_proj).
-#' @param eval_proj function. Projection function for evaluation (see details).
+#' @param eval_proj function. Projection function for evaluation (see Details).
 #' If NULL, PCA is used for projection
-#' @param eval_proj_args list. List of arguments passed to projection function as eval_proj_args (see details).
+#' @param eval_proj_args list. List of arguments passed to projection function as eval_proj_args (see Details).
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness (PAM_SIL) evaluation.
-#' If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL. If NULL, PAM_SIL will be returned NA.
+#' If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL. 
+#' If NULL, PAM_SIL will be returned NA.
 #' @param bio factor. A known biological condition (variation to be preserved), NA is allowed.
 #' If NULL, condition ASW, BIO_SIL, will be returned NA.
 #' @param batch factor. A known batch variable (variation to be removed), NA is allowed.
@@ -28,9 +32,11 @@
 #' If NULL, uv correlations, EXP_UV_COR, will be returned NA.
 #' @param wv_factors Factors of wanted variation derived from positive control genes (evaluation set).
 #' If NULL, wv correlations, EXP_WV_COR, will be returned NA.
-#' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be carried out prior to projection.
-#' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is separately computed for each biological-cross-batch condition (accepting NAs),
-#' and a weighted average silhouette width is returned.
+#' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be 
+#' carried out prior to projection. Default FALSE.
+#' @param stratified_pam logical. If TRUE then maximum ASW is separately computed for each 
+#' biological-cross-batch stratum (accepting NAs), and a weighted average silhouette width 
+#' is returned as PAM_SIL. Default FALSE.
 #'
 #' @importFrom class knn
 #' @importFrom fpc pamk
@@ -39,16 +45,16 @@
 #'
 #' @export
 #'
-#' @return A list with the following elements:
+#' @return A list with the following metrics:
 #' \itemize{
 #' \item{BIO_SIL}{ Average silhouette width by biological condition.}
 #' \item{BATCH_SIL}{ Average silhouette width by batch condition.}
-#' \item{PAM_SIL}{ Maximum average silhouette width from pam clustering (see stratified_pam argument).}
-#' \item{EXP_QC_COR}{ Maximum squared spearman correlation between pcs and quality factors.}
-#' \item{EXP_UV_COR}{ Maximum squared spearman correlation between pcs and passive uv factors.}
-#' \item{EXP_WV_COR}{ Maximum squared spearman correlation between pcs and passive wv factors.}
+#' \item{PAM_SIL}{ Maximum average silhouette width from PAM clustering (see stratified_pam argument).}
+#' \item{EXP_QC_COR}{ Maximum squared spearman correlation between expression pcs and quality factors.}
+#' \item{EXP_UV_COR}{ Maximum squared spearman correlation between expression pcs and negative control gene factors.}
+#' \item{EXP_WV_COR}{ Maximum squared spearman correlation between expression pcs and positive control gene factors.}
 #' \item{RLE_MED}{ The mean squared median Relative Log Expression (RLE).}
-#' \item{RLE_IQR}{ The mean inter-quartile range (IQR) of the RLE.}
+#' \item{RLE_IQR}{ The variance of the inter-quartile range (IQR) of the RLE.}
 #' }
 #'
 
@@ -56,7 +62,7 @@ score_matrix <- function(expr, eval_pcs = 3,
                          eval_proj = NULL, eval_proj_args = NULL,
                          eval_kclust = NULL,
                          bio = NULL, batch = NULL,
-                         qc_factors = NULL,uv_factors = NULL, wv_factors = NULL,
+                         qc_factors = NULL,uv_factors = NULL,wv_factors = NULL,
                          is_log=FALSE, stratified_pam = FALSE){
 
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
@@ -88,6 +94,8 @@ score_matrix <- function(expr, eval_pcs = 3,
   ## ------ Bio and Batch Tightness -----
   dd <- as.matrix(dist(proj))
 
+  # Biological Condition
+  
   if( !is.null(bio) ) {
     if(!all(is.na(bio))) {
       if(length(unique(bio)) > 1) {
@@ -105,6 +113,8 @@ score_matrix <- function(expr, eval_pcs = 3,
     BIO_SIL = NA
   }
 
+  # Batch Condition
+  
   if(!is.null(batch)) {
     if(!all(is.na(batch))) {
       if(length(unique(batch)) > 1) {
@@ -127,6 +137,7 @@ score_matrix <- function(expr, eval_pcs = 3,
   if ( !is.null(eval_kclust) ){
 
     # "Stratified" PAM
+    
     if(stratified_pam){
 
       biobatch = as.factor(paste(bio,batch,sep = "_"))
@@ -157,6 +168,7 @@ score_matrix <- function(expr, eval_pcs = 3,
       PAM_SIL = PAM_SIL/length(biobatch)
 
     # Traditional PAM
+      
     }else{
       pamk_object = pamk(proj,krange = eval_kclust)
       PAM_SIL = pamk_object$pamobject$silinfo$avg.width
@@ -191,9 +203,13 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   ## ----- RLE Measures
   rle <- expr - rowMedians(expr)
-  RLE_MED <- mean(colMedians(rle)^2)
-  RLE_IQR <- mean(colIQRs(rle))
-
+  
+  # Non-Zero Median RLE
+  RLE_MED <- mean(colMedians(rle)^2) # Variance of the median
+  
+  # Variable IQR RLE
+  RLE_IQR <- var(colIQRs(rle)) # Variance of the IQR
+  
   scores = c(BIO_SIL, BATCH_SIL, PAM_SIL,
              EXP_QC_COR, EXP_UV_COR, EXP_WV_COR,
              RLE_MED, RLE_IQR)

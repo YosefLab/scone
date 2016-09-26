@@ -122,6 +122,8 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #'  fnr auc threshold.
 #'@param plot logical. Should a plot be produced?
 #'@param hist_breaks hist() breaks argument. Ignored if `plot=FALSE`.
+#'@param ... Arguments to be passed to methods.
+#'
 #'
 #'@return A list with the following elements: \itemize{ \item{filtered_nreads}{
 #'  Logical. Sample has too few reads.} \item{filtered_ralign}{ Logical. Sample

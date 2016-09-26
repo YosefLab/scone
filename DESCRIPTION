@@ -34,7 +34,13 @@ Imports:
   shiny,
   miniUI,
   rhdf5,
-  RUVSeq
+  RUVSeq,
+  DT,
+  NMF,
+  ggplot2,
+  plotly,
+  reshape2,
+  visNetwork
 Suggests:
   knitr,
   rmarkdown,
