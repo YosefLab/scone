@@ -18,6 +18,7 @@
 #'
 #' @importFrom boot logit
 #' @importFrom matrixStats rowMedians
+#' @export
 #'
 simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 
@@ -121,6 +122,8 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #'  fnr auc threshold.
 #'@param plot logical. Should a plot be produced?
 #'@param hist_breaks hist() breaks argument. Ignored if `plot=FALSE`.
+#'@param ... Arguments to be passed to methods.
+#'
 #'
 #'@return A list with the following elements: \itemize{ \item{filtered_nreads}{
 #'  Logical. Sample has too few reads.} \item{filtered_ralign}{ Logical. Sample
@@ -140,7 +143,7 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
                                 mixture = TRUE, dip_thresh = 0.05,
                                 hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2, hard_auc = 10,
                                 suff_nreads = NULL, suff_ralign = NULL, suff_breadth = NULL, suff_auc = NULL,
-                                plot = FALSE, hist_breaks = 10){
+                                plot = FALSE, hist_breaks = 10, ...){
 
   criterion_count = 0
 

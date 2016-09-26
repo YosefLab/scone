@@ -2,8 +2,7 @@
 % Please edit documentation in R/scone_main.R
 \name{scone}
 \alias{scone}
-\title{scone main wrapper: function to apply and evaluate all the normalization
-schemes}
+\title{SCONE Main: Normalize Expression Data and Evaluate Normalization Performance}
 \usage{
 scone(expr, imputation = list(none = impute_null), impute_args = NULL,
   rezero = FALSE, scaling, k_ruv = 5, k_qc = 5, ruv_negcon = NULL,
@@ -13,15 +12,15 @@ scone(expr, imputation = list(none = impute_null), impute_args = NULL,
   eval_proj_args = NULL, eval_kclust = 2:10, eval_negcon = ruv_negcon,
   eval_poscon = NULL, params = NULL, verbose = FALSE,
   stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
-  hdf5file)
+  hdf5file, ...)
 }
 \arguments{
-\item{expr}{matrix. The data matrix (genes in rows, cells in columns).}
+\item{expr}{matrix. The expression data matrix (genes in rows, cells in columns).}
 
 \item{imputation}{list or function. (A list of) function(s) to be used for
-imputation.}
+imputation. By default only scone::impute_null is included.}
 
-\item{impute_args}{arguments for imputation functions.}
+\item{impute_args}{arguments passed to all imputation functions.}
 
 \item{rezero}{Restore zeroes following scaling step? Default FALSE.}
 
@@ -32,7 +31,7 @@ scaling normalization.}
 (the function will adjust for 1 to k_ruv factors of unwanted variation). If
 0, RUV will not be performed.}
 
-\item{k_qc}{numeric. The maximum number of quality metrics PCs (the function
+\item{k_qc}{numeric. The maximum number of quality metric PCs (the function
 will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.}
 
 \item{ruv_negcon}{character. The genes to be used as negative controls for
@@ -98,7 +97,7 @@ run=FALSE back into the algorithm (see example).}
 \item{verbose}{logical. If TRUE some messagges are printed.}
 
 \item{stratified_pam}{logical. If TRUE then maximum ASW for PAM_SIL is
-separately computed for each biological-cross-batch condition (accepting
+separately computed for each biological-cross-batch stratum (accepting
 NAs), and a weighted average is returned as PAM_SIL.}
 
 \item{return_norm}{character. If "no" the normalized values will not be
@@ -109,6 +108,8 @@ they will be written on file using the \code{rhdf5} package.}
 
 \item{hdf5file}{character. If \code{return_norm="hdf5"}, the name of the file
 onto which to save the normalized matrices.}
+
+\item{...}{Arguments to be passed to methods.}
 }
 \value{
 A list with the following elements: \itemize{ \item{normalized_data}{
@@ -117,8 +118,8 @@ A list with the following elements: \itemize{ \item{normalized_data}{
   raw evaluation metrics for each normalization method (see
   \code{\link{score_matrix}} for details). Rows are sorted in the same order
   as in the scores output matrix. NULL when evaluate = FALSE.} \item{scores}{
-  A matrix containing scores for each normalization, including average score.
-  Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
+  A matrix containing scores for each normalization, including average score rank.
+  Rows are sorted by decreasing mean score rank. NULL when evaluate = FALSE.}
   \item{params}{ A data.frame with each row corresponding to a set of
   normalization parameters.} }
 
@@ -126,23 +127,18 @@ If \code{run=FALSE} a \code{data.frame} with each row corresponding
   to a set of normalization parameters.
 }
 \description{
-This function is a high-level wrapper to apply and evaluate a variety of
-normalization schemes to a specified expression matrix.
+This function is a high-level wrapper function for applying and evaluating
+a variety of normalization schemes to a specified expression matrix.
 }
 \details{
-The function consists of four main steps: imputation, scaling normalization,
-adjusting for batch effects, and evaluation of the normalization performance.
-
-Note that if one wants to include the unnormalized data in the
-  comparison, the identity function must be included in the scaling list.
-  Analogously, if one wants to avoid the imputation and/or include the
-  non-imputed data in the comparison, the identity function must be included.
-
-
-If \code{run=FALSE} the normalization and evaluation are not run,
-  but the function returns a matrix of parameters that will be run for
-  inspection by the user.
-
+Each normalization consists of three main steps:
+\itemize{
+ \item{Impute:}{ Replace observations of zeroes with expected expression values. }
+ \item{Scale:}{ Match sample-specific expression scales or quantiles. }
+ \item{Adjust:}{ Adjust for sample-level batch factors / unwanted variation. }
+}
+Following completion of each step, the normalized expression matrix is scored
+based on SCONE's data-driven evaluation criteria.
 
 Evaluation metrics are defined in \code{\link{score_matrix}}.
   Each metric is assigned a signature for conversion to scores:
@@ -150,7 +146,19 @@ Evaluation metrics are defined in \code{\link{score_matrix}}.
   BIO_SIL, PAM_SIL, and EXP_WV_COR. Negative-signature metrics decrease with
   improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR,
   RLE_MED, and RLE_IQR. Scores are computed so that higer-performing methods
-  are assigned a higher scores.
+  are assigned higher scores.
+  
+
+Note that if one wants to include the unnormalized data in the final
+  comparison of normalized matrices, the identity function must be included 
+  in the scaling list argument. Analogously, if one wants to include non-
+  imputed data in the comparison, the scone::impute_null function must be 
+  included.
+
+
+If \code{run=FALSE} the normalization and evaluation are not run,
+  but the function returns a matrix of parameters that will be run for
+  inspection by the user.
 
 
 If \code{return_norm="hdf5"}, the normalized matrices will be

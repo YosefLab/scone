@@ -1,28 +1,28 @@
-#' scone main wrapper: function to apply and evaluate all the normalization
-#' schemes
+#' SCONE Main: Normalize Expression Data and Evaluate Normalization Performance
 #'
-#' This function is a high-level wrapper to apply and evaluate a variety of
-#' normalization schemes to a specified expression matrix.
+#' This function is a high-level wrapper function for applying and evaluating
+#' a variety of normalization schemes to a specified expression matrix.
 #'
-#' The function consists of four main steps: imputation, scaling normalization,
-#' adjusting for batch effects, and evaluation of the normalization performance.
-#'
-#' @details Note that if one wants to include the unnormalized data in the
-#'   comparison, the identity function must be included in the scaling list.
-#'   Analogously, if one wants to avoid the imputation and/or include the
-#'   non-imputed data in the comparison, the identity function must be included.
-#'
-#' @param expr matrix. The data matrix (genes in rows, cells in columns).
+#' Each normalization consists of three main steps:
+#' \itemize{
+#'  \item{Impute:}{ Replace observations of zeroes with expected expression values. }
+#'  \item{Scale:}{ Match sample-specific expression scales or quantiles. }
+#'  \item{Adjust:}{ Adjust for sample-level batch factors / unwanted variation. }
+#' }
+#' Following completion of each step, the normalized expression matrix is scored
+#' based on SCONE's data-driven evaluation criteria.
+#' 
+#' @param expr matrix. The expression data matrix (genes in rows, cells in columns).
 #' @param imputation list or function. (A list of) function(s) to be used for
-#'   imputation.
-#' @param impute_args arguments for imputation functions.
+#'   imputation. By default only scone::impute_null is included.
+#' @param impute_args arguments passed to all imputation functions.
 #' @param rezero Restore zeroes following scaling step? Default FALSE.
 #' @param scaling list or function. (A list of) function(s) to be used for
 #'   scaling normalization.
 #' @param k_ruv numeric. The maximum number of factors of unwanted variation
 #'   (the function will adjust for 1 to k_ruv factors of unwanted variation). If
 #'   0, RUV will not be performed.
-#' @param k_qc numeric. The maximum number of quality metrics PCs (the function
+#' @param k_qc numeric. The maximum number of quality metric PCs (the function
 #'   will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.
 #' @param ruv_negcon character. The genes to be used as negative controls for
 #'   RUV. Ignored if k_ruv=0.
@@ -68,7 +68,7 @@
 #'   run=FALSE back into the algorithm (see example).
 #' @param verbose logical. If TRUE some messagges are printed.
 #' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
-#'   separately computed for each biological-cross-batch condition (accepting
+#'   separately computed for each biological-cross-batch stratum (accepting
 #'   NAs), and a weighted average is returned as PAM_SIL.
 #' @param run logical. If FALSE the normalization and evaluation are not run,
 #'   but the function returns a data.frame of parameters that will be run for
@@ -80,7 +80,44 @@
 #'   they will be written on file using the \code{rhdf5} package.
 #' @param hdf5file character. If \code{return_norm="hdf5"}, the name of the file
 #'   onto which to save the normalized matrices.
+#' @param ... Arguments to be passed to methods.
 #'
+#' @return A list with the following elements: \itemize{ \item{normalized_data}{
+#'   A list containing the normalized data matrix, log-scaled. NULL when
+#'   \code{return_norm} is not "in_memory".} \item{metrics}{ A matrix containing
+#'   raw evaluation metrics for each normalization method (see
+#'   \code{\link{score_matrix}} for details). Rows are sorted in the same order
+#'   as in the scores output matrix. NULL when evaluate = FALSE.} \item{scores}{
+#'   A matrix containing scores for each normalization, including average score rank.
+#'   Rows are sorted by decreasing mean score rank. NULL when evaluate = FALSE.}
+#'   \item{params}{ A data.frame with each row corresponding to a set of
+#'   normalization parameters.} }
+#'   
+#' @return If \code{run=FALSE} a \code{data.frame} with each row corresponding
+#'   to a set of normalization parameters.
+#'
+#' @details Evaluation metrics are defined in \code{\link{score_matrix}}.
+#'   Each metric is assigned a signature for conversion to scores:
+#'   Positive-signature metrics increase with improving performance, including
+#'   BIO_SIL, PAM_SIL, and EXP_WV_COR. Negative-signature metrics decrease with
+#'   improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR,
+#'   RLE_MED, and RLE_IQR. Scores are computed so that higer-performing methods
+#'   are assigned higher scores.
+#'   
+#' @details Note that if one wants to include the unnormalized data in the final
+#'   comparison of normalized matrices, the identity function must be included 
+#'   in the scaling list argument. Analogously, if one wants to include non-
+#'   imputed data in the comparison, the scone::impute_null function must be 
+#'   included.
+#'
+#' @details If \code{run=FALSE} the normalization and evaluation are not run,
+#'   but the function returns a matrix of parameters that will be run for
+#'   inspection by the user.
+#'
+#' @details If \code{return_norm="hdf5"}, the normalized matrices will be
+#'   written to the \code{hdf5file} file. This must be a string specifying (a
+#'   path to) a new file. If the file already exists, it will return error.
+#'   
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
 #' @import BiocParallel
@@ -91,36 +128,8 @@
 #' @importFrom utils capture.output
 #' @importFrom rhdf5 h5createFile h5write.default h5write
 #' @export
-#'
-#' @details If \code{run=FALSE} the normalization and evaluation are not run,
-#'   but the function returns a matrix of parameters that will be run for
-#'   inspection by the user.
-#'
-#' @return A list with the following elements: \itemize{ \item{normalized_data}{
-#'   A list containing the normalized data matrix, log-scaled. NULL when
-#'   \code{return_norm} is not "in_memory".} \item{metrics}{ A matrix containing
-#'   raw evaluation metrics for each normalization method (see
-#'   \code{\link{score_matrix}} for details). Rows are sorted in the same order
-#'   as in the scores output matrix. NULL when evaluate = FALSE.} \item{scores}{
-#'   A matrix containing scores for each normalization, including average score.
-#'   Rows are sorted by increasing mean score. NULL when evaluate = FALSE.}
-#'   \item{params}{ A data.frame with each row corresponding to a set of
-#'   normalization parameters.} }
-#' @return If \code{run=FALSE} a \code{data.frame} with each row corresponding
-#'   to a set of normalization parameters.
-#'
-#' @details Evaluation metrics are defined in \code{\link{score_matrix}}.
-#'   Each metric is assigned a signature for conversion to scores:
-#'   Positive-signature metrics increase with improving performance, including
-#'   BIO_SIL, PAM_SIL, and EXP_WV_COR. Negative-signature metrics decrease with
-#'   improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR,
-#'   RLE_MED, and RLE_IQR. Scores are computed so that higer-performing methods
-#'   are assigned a higher scores.
-#'
-#' @details If \code{return_norm="hdf5"}, the normalized matrices will be
-#'   written to the \code{hdf5file} file. This must be a string specifying (a
-#'   path to) a new file. If the file already exists, it will return error.
-#'
+#' 
+
 scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
                   rezero = FALSE, scaling, k_ruv=5, k_qc=5,
                   ruv_negcon=NULL, qc=NULL, adjust_bio=c("no", "yes", "force"),
@@ -129,7 +138,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
                   eval_proj_args = NULL, eval_kclust=2:10, eval_negcon=ruv_negcon,
                   eval_poscon=NULL, params=NULL, verbose=FALSE,
                   stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
-                  hdf5file) {
+                  hdf5file, ...) {
 
   return_norm <- match.arg(return_norm)
 
@@ -249,8 +258,11 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
     }
   }
 
+
   if(evaluate) {
-    if(!is.character(eval_negcon) & !is.null(eval_negcon)) {
+    if(is.null(eval_negcon)) {
+      if(verbose) message("eval_negcon is null, negative controls will not be used in evaluation (correlations with negative controls will be returned as NA)")
+    } else if(!is.character(eval_negcon)) {
       stop("'eval_negcon' must be a character vector.")
     } else if(!all(eval_negcon %in% rownames(expr))) {
       stop("'eval_negcon' must be a subset of the genes in 'expr.'")
@@ -270,7 +282,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
       stop("'eval_kclust' must be less than the number of samples.")
     }
 
-    if(stratified_pam) {
+    if(!is.null(eval_kclust) & stratified_pam) {
       if(is.null(bio) & is.null(batch)){
         stop("For stratified_pam, bio and/or batch must be specified")
       }
@@ -281,12 +293,12 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
     }
   }
 
-  # check design: confounding or nesting of batch and bio
+  # Check Design: Confounded design or Nesting of Batch Condition and Biological Condition
   nested <- FALSE
 
   if(!is.null(bio) & !is.null(batch)) {
     tab <- table(bio, batch)
-    if(all(colSums(tab>0)==1)){
+    if(all(colSums(tab>0)==1)){ # On
       if(nlevels(bio) == nlevels(batch)) {
         if(adjust_bio != "no" & adjust_batch != "no") {
           stop("Biological conditions and batches are confounded. They cannot both be included in the model, please set at least one of 'adjust_bio' and 'adjust_batch' to 'no.'")
@@ -295,6 +307,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
         }
       } else {
         nested <- TRUE
+        if(verbose) message("Detected nested design...")
       }
     }
   }
@@ -349,7 +362,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
   if(verbose) message("Imputation step...")
   im_params <- unique(params[,1])
 
-  imputed <- lapply(seq_along(im_params), function(i) imputation[[i]](expr,impute_args))
+  imputed <- lapply(seq_along(im_params), function(i) imputation[[im_params[i]]](expr,impute_args))
   names(imputed) <- im_params
   # output: a list of imputed matrices
 
@@ -370,7 +383,14 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
   failing <- simplify2array(failing)
   if(any(failing)) {
     idx <- which(failing)
-    stop(paste(names(scaled)[idx], "returned at least one NA value. Consider removing it from the comparison."))
+    failed_names = names(scaled)[idx]
+    warning(paste(failed_names, "returned at least one NA value. Consider removing it from the comparison.\n", 
+                  "In the meantime, failed methods have been filtered from the output."))
+    
+    remove_params = paste(params$imputation_method, params$scaling_method, sep="_") %in% failed_names
+    params <- params[!remove_params,]
+    
+    scaled = scaled[!failing]
   }
 
   if(verbose) message("Computing RUV factors...")
@@ -405,6 +425,7 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
     sc_name <- paste(params[i,1:2], collapse="_")
     adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
     if(evaluate) {
+      #cat(sprintf("scoring matrix: I am in method: %s", sc_name)) #debug message
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, uv_factors = uv_factors, wv_factors = wv_factors,
@@ -440,16 +461,23 @@ scone <- function(expr, imputation=list(none=impute_null), impute_args = NULL,
                              -1, -1, 1, # "EXP_QC_COR", "EXP_UV_COR", "EXP_WV_COR"
                              -1, -1) # "RLE_MED", "RLE_IQR"
 
-    mean_score <- colMeans(scores, na.rm=TRUE)
-    scores <- cbind(t(scores), mean_score)[order(mean_score, decreasing = TRUE),]
+    # Mean Score Rank per Method
+    ranked_scores = apply(na.omit(scores),1,rank)
+    if(is.null(dim(ranked_scores))){
+      mean_score_rank <- mean(ranked_scores)
+    }else{
+      mean_score_rank <- rowMeans(ranked_scores)
+    }
+    
+    scores <- cbind(t(scores), mean_score_rank)[order(mean_score_rank, decreasing = TRUE),]
 
-    evaluation <- t(evaluation[,order(mean_score, decreasing = TRUE), drop=FALSE])
+    evaluation <- t(evaluation[,order(mean_score_rank, decreasing = TRUE), drop=FALSE])
 
     if(return_norm == "in_memory") {
-      adjusted <- adjusted[order(mean_score, decreasing = TRUE)]
+      adjusted <- adjusted[order(mean_score_rank, decreasing = TRUE)]
     }
 
-    params <- params[order(mean_score, decreasing = TRUE),]
+    params <- params[order(mean_score_rank, decreasing = TRUE),]
   } else {
     evaluation <- scores <- NULL
   }

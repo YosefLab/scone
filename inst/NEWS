@@ -1,3 +1,15 @@
+Changes in version 0.0.8 (2016-09-26)
+========================
+
+* Added sconeReport() function for shiny browser of SCONE results.
+* scone() outputs are now sorted according to mean *rank* of scores rather than mean scores. Although this is a relative measure it accounts for differing variability of metrics.
+* RLE_IQR now quantifies the variability of the IQR RLE across samples, rather than the mean.
+* Bug Fix: Previously imputation could be applied to the wrong subset of params rows when user passed params arguments. Imputation functions are now indexed by name to avoid this error.
+* Bug Fix: Negative infinity expected likelihood is temporarily permitted in the ziber loop.
+* "ezbake" script and scone_easybake() function added for pipelined SCONE commands. 
+* Revised documentation and removed old scripts.
+* Various other bug fixes.
+
 Changes in version 0.0.6 (2016-07-22)
 ========================
 
