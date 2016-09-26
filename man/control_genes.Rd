@@ -24,7 +24,7 @@ The datasets are in the form of \code{data.frame}, with at least one
 
 Note that the gene symbols follow the mouse conventions (i.e.,
   capitalized) or the human conventions (i.e, all upper-case), based on the
-  original pubblication. One can use the \code{\link[base]{toupper}},
+  original publication. One can use the \code{\link[base]{toupper}},
   \code{\link[base]{tolower}}, and \code{\link[tools]{toTitleCase}} functions
   to convert symbols.
 
