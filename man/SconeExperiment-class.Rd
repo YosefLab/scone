@@ -20,7 +20,7 @@ The typical way of creating \code{SconeExperiment} objects is
   Slots for a full list).
 
 This object extends the
-  \code{\linkS4class[SummarizedExperiment]{SummarizedExperiment}}.
+  \code{\linkS4class{SummarizedExperiment}} class.
 }
 \details{
 The QC matrix, biological class, and batch information are stored as
