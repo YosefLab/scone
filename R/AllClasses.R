@@ -53,7 +53,7 @@
 #' @slot scone_scores matrix. Matrix containing the performance scores
 #'   (transformed metrics). See \code{\link{scone}} for a discussion on the
 #'   difference between scores and metrics.
-#' @slot scone_parmas data.frame. A data frame containing the normalization
+#' @slot scone_params data.frame. A data frame containing the normalization
 #'   schemes applied to the data and compared.
 #' @slot design_mats list. A list of design matrices, one for each normalization
 #'   scheme.

@@ -114,7 +114,7 @@ See \code{\link{scone}} for a description of each metric.}
 (transformed metrics). See \code{\link{scone}} for a discussion on the
 difference between scores and metrics.}
 
-\item{\code{scone_parmas}}{data.frame. A data frame containing the normalization
+\item{\code{scone_params}}{data.frame. A data frame containing the normalization
 schemes applied to the data and compared.}
 
 \item{\code{design_mats}}{list. A list of design matrices, one for each normalization
