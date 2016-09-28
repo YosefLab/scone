@@ -81,80 +81,240 @@ setClass(
 setValidity("SconeExperiment", function(object) {
 
   ## check that the indeces are not out of bounds
-  if(!all(which_qc %in% seq_len(NCOL(colData(object))))) {
+  if(!all(object@which_qc %in% seq_len(NCOL(colData(object))))) {
     return("`which_qc` index out of bounds.")
   }
 
-  if(!all(which_bio %in% seq_len(NCOL(colData(object))))) {
+  if(!all(object@which_bio %in% seq_len(NCOL(colData(object))))) {
     return("`which_bio` index out of bounds.")
   }
 
-  if(!all(which_batch %in% seq_len(NCOL(colData(object))))) {
+  if(!all(object@which_batch %in% seq_len(NCOL(colData(object))))) {
     return("`which_batch` index out of bounds.")
   }
 
-  if(!all(which_negconruv %in% seq_len(NCOL(rowData(object))))) {
+  if(!all(object@which_negconruv %in% seq_len(NCOL(rowData(object))))) {
     return("`which_negconruv` index out of bounds.")
   }
 
-  if(!all(which_negconeval %in% seq_len(NCOL(rowData(object))))) {
+  if(!all(object@which_negconeval %in% seq_len(NCOL(rowData(object))))) {
     return("`which_negconeval` index out of bounds.")
   }
 
-  if(!all(which_poscon %in% seq_len(NCOL(rowData(object))))) {
+  if(!all(object@which_poscon %in% seq_len(NCOL(rowData(object))))) {
     return("`which_poscon` index out of bounds.")
   }
 
   ## check that which_bio and which_batch are of length 1
-  if(length(which_bio) > 1) {
+  if(length(object@which_bio) > 1) {
     return("Only one `bio` variable can be specified.")
   }
-  if(length(which_batch) > 1) {
+  if(length(object@which_batch) > 1) {
     return("Only one `batch` variable can be specified.")
   }
 
   ## check that which_poscon and which_negcon are of length 1
-  if(length(which_negconruv) > 1) {
+  if(length(object@which_negconruv) > 1) {
     return("Only one set of negative controls for RUV can be specified.")
   }
-  if(length(which_negconeval) > 1) {
+  if(length(object@which_negconeval) > 1) {
     return("Only one set of negative controls for evaluation can be specified.")
   }
-  if(length(which_poscon) > 1) {
+  if(length(object@which_poscon) > 1) {
     return("Only one set of positive controls can be specified.")
   }
 
   ## check that all QC columns are numeric
-  if(any(lapply(colData(object)[,which_qc], class) != "numeric")) {
-    return("Only numeric QC metrics are allowed.")
+  if(length(object@which_qc) > 0) {
+    if(any(lapply(colData(object)[,object@which_qc], class) != "numeric")) {
+      return("Only numeric QC metrics are allowed.")
+    }
   }
 
   ## check that bio is a factor
-  if(!is.factor(colData(object)[,which_bio])) {
-    return("`bio` must be a factor.")
+  if(length(object@which_bio) > 0) {
+    if(!is.factor(colData(object)[,object@which_bio])) {
+      return("`bio` must be a factor.")
+    }
   }
 
   ## check that batch is a factor
-  if(!is.factor(colData(object)[,which_batch])) {
-    return("`batch` must be a factor.")
+  if(length(object@which_batch) > 0) {
+    if(!is.factor(colData(object)[,object@which_batch])) {
+      return("`batch` must be a factor.")
+    }
   }
 
   ## check that poscon and negcon are logical
-  if(!is.logical(rowData(object)[,which_negconruv])) {
-    return("`negconruv` must be a logical vector.")
+  if(length(object@which_negconruv) > 0) {
+    if(!is.logical(rowData(object)[,object@which_negconruv])) {
+      return("`negconruv` must be a logical vector.")
+    }
   }
-  if(!is.logical(rowData(object)[,which_negconeval])) {
-    return("`negconeval` must be a logical vector.")
+  if(length(object@which_negconeval) > 0) {
+    if(!is.logical(rowData(object)[,object@which_negconeval])) {
+      return("`negconeval` must be a logical vector.")
+    }
   }
-  if(!is.logical(rowData(object)[,which_poscon])) {
-    return("`poscon` must be a logical vector.")
+  if(length(object@which_poscon) > 0) {
+    if(!is.logical(rowData(object)[,object@which_poscon])) {
+      return("`poscon` must be a logical vector.")
+    }
   }
 
   ## check if hdf5 file exist (depends on scone_run)
-  if(scone_run == "hdf5" && !file.exists(hdf5_pointer)) {
-    return(paste0("File ", hdf5_pointer, " not found."))
+  if(length(object@hdf5_pointer) > 0) {
+    if(object@scone_run == "hdf5" && !file.exists(object@hdf5_pointer)) {
+      return(paste0("File ", object@hdf5_pointer, " not found."))
+    }
+    if(object@scone_run == "no" && file.exists(object@hdf5_pointer)) {
+      return(paste0("File ", object@hdf5_pointer, " exists. Please specify a new file."))
+    }
   }
-  if(scone_run == "no" && file.exists(hdf5_pointer)) {
-    return(paste0("File ", hdf5_pointer, " exists. Please specify a new file."))
-  }
+
+  return(TRUE)
+
 })
+
+## Constructor
+
+#' @rdname SconeExperiment-class
+#'
+#' @description The constructor \code{sconeExperiment} creates an object of the
+#'   class \code{SconeExperiment}.
+#'
+#' @param object Either a matrix or a \code{\link{SummarizedExperiment}}
+#'   containing the raw gene expression.
+#'
+#' @export
+#'
+#' @examples
+#'
+#' nrows <- 200
+#' ncols <- 6
+#' counts <- matrix(rpois(nrows * ncols, lambda=10), nrows)
+#' rowdata <- data.frame(poscon=c(rep(TRUE, 10), rep(FALSE, nrows-10)))
+#' coldata <- data.frame(bio=gl(2, 3))
+#' se <- SummarizedExperiment(assays=SimpleList(counts=counts),
+#'                           rowData=rowdata, colData=coldata)
+#'
+#' scone1 <- sconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
+#'
+#' scone2 <- sconeExperiment(se, which_bio=1L, which_poscon=1L)
+#'
+#'
+setGeneric(
+  name = "sconeExperiment",
+  def = function(object, ...) {
+    standardGeneric("sconeExperiment")
+  }
+)
+
+#' @rdname SconeExperiment-class
+#'
+#' @param which_qc index that specifies which columns of `colData` correspond to
+#'   QC measures.
+#' @param which_bio index that specifies which column of `colData` corresponds
+#'   to `bio`.
+#' @param which_batch index that specifies which column of `colData` corresponds
+#'   to `batch`.
+#' @param which_negconruv index that specifies which column of `rowData` has
+#'   information on negative controls for RUV.
+#' @param which_negconeval index that specifies which column of `rowData` has
+#'   information on negative controls for evaluation.
+#' @param which_poscon index that specifies which column of `rowData` has
+#'   information on positive controls.
+#'
+#' @export
+#'
+setMethod(
+  f = "sconeExperiment",
+  signature = signature("SummarizedExperiment"),
+  definition = function(object, which_qc=integer(), which_bio=integer(),
+                        which_batch=integer(),
+                        which_negconruv=integer(), which_negconeval=integer(),
+                        which_poscon=integer()) {
+
+    out <- new("SconeExperiment",
+               object,
+               which_qc = which_qc,
+               which_bio = which_bio,
+               which_batch = which_batch,
+               which_negconruv = which_negconruv,
+               which_negconeval = which_negconeval,
+               which_poscon = which_poscon,
+               hdf5_pointer = character(),
+               scone_metrics = matrix(),
+               scone_scores = matrix(),
+               scone_params = data.frame(),
+               design_mats = list(),
+               scone_run = "no"
+               )
+
+    validObject(out)
+    return(out)
+  }
+)
+
+
+#' @rdname SconeExperiment-class
+#'
+#' @param qc numeric matrix with the QC measures.
+#' @param bio factor with the biological class of interest.
+#' @param batch factor with the batch information.
+#' @param negcon_ruv a logical vector indicating which genes to use as negative controls for RUV.
+#' @param negcon_eval a logical vector indicating which genes to use as negative controls for evaluation.
+#' @param poscon a logical vector indicating which genes to use as positive controls.
+#'
+#' @export
+#'
+setMethod(
+  f = "sconeExperiment",
+  signature = signature("matrix"),
+  definition = function(object, qc, bio, batch,
+                        negcon_ruv=NULL, negcon_eval=negcon_ruv,
+                        poscon=NULL) {
+
+    which_qc <- which_bio <- which_batch <- integer()
+    which_negconruv <- which_negconeval <- which_poscon <- integer()
+
+    coldata <- as.data.frame(matrix(nrow=NCOL(object), ncol=0))
+
+    if(!missing(qc)) {
+      coldata <- cbind(coldata, qc)
+      which_qc <- seq_len(NCOL(coldata))
+    }
+
+    if(!missing(bio)) {
+      coldata <- cbind(coldata, bio)
+      which_bio <- NCOL(coldata)
+    }
+
+    if(!missing(batch)) {
+      coldata <- cbind(coldata, batch)
+      which_batch <- NCOL(coldata)
+    }
+
+    rowdata <- as.data.frame(matrix(nrow=NROW(object), ncol=0))
+
+    if(!is.null(negcon_ruv)) {
+      rowdata <- cbind(rowdata, negcon_ruv)
+      which_negconruv <- NCOL(rowdata)
+    }
+
+    if(!is.null(negcon_eval)) {
+      rowdata <- cbind(rowdata, negcon_eval)
+      which_negconeval <- NCOL(rowdata)
+    }
+
+    if(!is.null(poscon)) {
+      rowdata <- cbind(rowdata, poscon)
+      which_poscon <- NCOL(rowdata)
+    }
+
+    se <- SummarizedExperiment(object, rowData=rowdata, colData=coldata)
+    sconeExperiment(se,  which_qc, which_bio, which_batch,
+                    which_negconruv, which_negconeval, which_poscon)
+  }
+)
+

@@ -4,7 +4,55 @@
 \name{SconeExperiment-class}
 \alias{SconeExperiment}
 \alias{SconeExperiment-class}
+\alias{sconeExperiment}
+\alias{sconeExperiment,SummarizedExperiment-method}
+\alias{sconeExperiment,matrix-method}
 \title{Class SconeExperiment}
+\usage{
+sconeExperiment(object, ...)
+
+\S4method{sconeExperiment}{SummarizedExperiment}(object, which_qc = integer(),
+  which_bio = integer(), which_batch = integer(),
+  which_negconruv = integer(), which_negconeval = integer(),
+  which_poscon = integer())
+
+\S4method{sconeExperiment}{matrix}(object, qc, bio, batch, negcon_ruv = NULL,
+  negcon_eval = negcon_ruv, poscon = NULL)
+}
+\arguments{
+\item{object}{Either a matrix or a \code{\link{SummarizedExperiment}}
+containing the raw gene expression.}
+
+\item{which_qc}{index that specifies which columns of `colData` correspond to
+QC measures.}
+
+\item{which_bio}{index that specifies which column of `colData` corresponds
+to `bio`.}
+
+\item{which_batch}{index that specifies which column of `colData` corresponds
+to `batch`.}
+
+\item{which_negconruv}{index that specifies which column of `rowData` has
+information on negative controls for RUV.}
+
+\item{which_negconeval}{index that specifies which column of `rowData` has
+information on negative controls for evaluation.}
+
+\item{which_poscon}{index that specifies which column of `rowData` has
+information on positive controls.}
+
+\item{qc}{numeric matrix with the QC measures.}
+
+\item{bio}{factor with the biological class of interest.}
+
+\item{batch}{factor with the batch information.}
+
+\item{negcon_ruv}{a logical vector indicating which genes to use as negative controls for RUV.}
+
+\item{negcon_eval}{a logical vector indicating which genes to use as negative controls for evaluation.}
+
+\item{poscon}{a logical vector indicating which genes to use as positive controls.}
+}
 \description{
 Objects of this class store,  at the minimum, the original gene
   expression matrix and a set of covariates (aka sample metadata) useful for
@@ -21,6 +69,9 @@ The typical way of creating \code{SconeExperiment} objects is
 
 This object extends the
   \code{\linkS4class{SummarizedExperiment}} class.
+
+The constructor \code{sconeExperiment} creates an object of the
+  class \code{SconeExperiment}.
 }
 \details{
 The QC matrix, biological class, and batch information are stored as
@@ -72,4 +123,20 @@ scheme.}
 \item{\code{scone_run}}{character Whether \code{\link{scone}} and in which mode
 ("no", "in_memory", "hdf5").}
 }}
+\examples{
+
+nrows <- 200
+ncols <- 6
+counts <- matrix(rpois(nrows * ncols, lambda=10), nrows)
+rowdata <- data.frame(poscon=c(rep(TRUE, 10), rep(FALSE, nrows-10)))
+coldata <- data.frame(bio=gl(2, 3))
+se <- SummarizedExperiment(assays=SimpleList(counts=counts),
+                          rowData=rowdata, colData=coldata)
+
+scone1 <- sconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
+
+scone2 <- sconeExperiment(se, which_bio=1L, which_poscon=1L)
+
+
+}
 
