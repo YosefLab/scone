@@ -57,8 +57,9 @@
 #'   schemes applied to the data and compared.
 #' @slot design_mats list. A list of design matrices, one for each normalization
 #'   scheme.
-#' @slot scone_run character Whether \code{\link{scone}} and in which mode
-#'   ("no", "in_memory", "hdf5").
+#' @slot scone_run character. Whether \code{\link{scone}} should be run and in
+#'   which mode ("no", "in_memory", "hdf5").
+#' @slot is_log logical. Are the expression data in log scale?
 setClass(
   Class = "SconeExperiment",
   contains = "SummarizedExperiment",
@@ -74,7 +75,8 @@ setClass(
     scone_scores = "matrix",
     scone_params = "data.frame",
     design_mats = "list",
-    scone_run = "character"
+    scone_run = "character",
+    is_log = "logical"
   )
 )
 
@@ -224,7 +226,7 @@ setGeneric(
 #'   information on negative controls for evaluation.
 #' @param which_poscon index that specifies which column of `rowData` has
 #'   information on positive controls.
-#'
+#' @param is_log are the expression data in log scale?
 #' @export
 #'
 setMethod(
@@ -233,7 +235,7 @@ setMethod(
   definition = function(object, which_qc=integer(), which_bio=integer(),
                         which_batch=integer(),
                         which_negconruv=integer(), which_negconeval=integer(),
-                        which_poscon=integer()) {
+                        which_poscon=integer(), is_log=FALSE) {
 
     out <- new("SconeExperiment",
                object,
@@ -248,7 +250,8 @@ setMethod(
                scone_scores = matrix(),
                scone_params = data.frame(),
                design_mats = list(),
-               scone_run = "no"
+               scone_run = "no",
+               is_log = is_log
                )
 
     validObject(out)
@@ -273,7 +276,7 @@ setMethod(
   signature = signature("matrix"),
   definition = function(object, qc, bio, batch,
                         negcon_ruv=NULL, negcon_eval=negcon_ruv,
-                        poscon=NULL) {
+                        poscon=NULL, is_log=FALSE) {
 
     which_qc <- which_bio <- which_batch <- integer()
     which_negconruv <- which_negconeval <- which_poscon <- integer()
@@ -314,7 +317,7 @@ setMethod(
 
     se <- SummarizedExperiment(object, rowData=rowdata, colData=coldata)
     sconeExperiment(se,  which_qc, which_bio, which_batch,
-                    which_negconruv, which_negconeval, which_poscon)
+                    which_negconruv, which_negconeval, which_poscon, is_log)
   }
 )
 

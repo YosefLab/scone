@@ -14,10 +14,10 @@ sconeExperiment(object, ...)
 \S4method{sconeExperiment}{SummarizedExperiment}(object, which_qc = integer(),
   which_bio = integer(), which_batch = integer(),
   which_negconruv = integer(), which_negconeval = integer(),
-  which_poscon = integer())
+  which_poscon = integer(), is_log = FALSE)
 
 \S4method{sconeExperiment}{matrix}(object, qc, bio, batch, negcon_ruv = NULL,
-  negcon_eval = negcon_ruv, poscon = NULL)
+  negcon_eval = negcon_ruv, poscon = NULL, is_log = FALSE)
 }
 \arguments{
 \item{object}{Either a matrix or a \code{\link{SummarizedExperiment}}
@@ -42,6 +42,8 @@ information on negative controls for evaluation.}
 
 \item{which_poscon}{index that specifies which column of `rowData` has
 information on positive controls.}
+
+\item{is_log}{are the expression data in log scale?}
 
 \item{qc}{numeric matrix with the QC measures.}
 
@@ -122,8 +124,10 @@ schemes applied to the data and compared.}
 \item{\code{design_mats}}{list. A list of design matrices, one for each normalization
 scheme.}
 
-\item{\code{scone_run}}{character Whether \code{\link{scone}} and in which mode
-("no", "in_memory", "hdf5").}
+\item{\code{scone_run}}{character. Whether \code{\link{scone}} should be run and in
+which mode ("no", "in_memory", "hdf5").}
+
+\item{\code{is_log}}{logical. Are the expression data in log scale?}
 }}
 \examples{
 
