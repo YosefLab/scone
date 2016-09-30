@@ -2,7 +2,7 @@
 % Please edit documentation in R/scone_main.R
 \name{get_normalized}
 \alias{get_normalized}
-\title{Retrieve normalized matrix}
+\title{Retrieve Normalized Matrix}
 \usage{
 get_normalized(normalization, hdf5file)
 }

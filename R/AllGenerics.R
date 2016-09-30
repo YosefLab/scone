@@ -28,7 +28,10 @@ setGeneric(
 )
 
 
-## all these should return NULL if the object hasn't have that info
+#' Get Negative and Positive Controls
+#'
+#' @aliases get_negconeval get_poscon get_negconruv,SconeExperiment-method
+#'   get_negconeval,SconeExperiment-method get_poscon,SconeExperiment-method
 setGeneric(
   name = "get_negconruv",
   def = function(x) {
@@ -36,6 +39,7 @@ setGeneric(
   }
 )
 
+#' @rdname get_negconruv
 setGeneric(
   name = "get_negconeval",
   def = function(x) {
@@ -43,6 +47,7 @@ setGeneric(
   }
 )
 
+#' @rdname get_negconruv
 setGeneric(
   name = "get_poscon",
   def = function(x) {
@@ -50,6 +55,9 @@ setGeneric(
   }
 )
 
+#' Get Quality Control Matrix
+#'
+#' @aliases get_qc,SconeExperiment-method
 setGeneric(
   name = "get_qc",
   def = function(x) {
@@ -57,6 +65,10 @@ setGeneric(
   }
 )
 
+#' Get Factor of Biological Conditions and Batch
+#'
+#' @aliases get_batch get_bio,SconeExperiment-method
+#'   get_batch,SconeExperiment-method
 setGeneric(
   name = "get_bio",
   def = function(x) {
@@ -64,6 +76,7 @@ setGeneric(
   }
 )
 
+#' @rdname get_bio
 setGeneric(
   name = "get_batch",
   def = function(x) {

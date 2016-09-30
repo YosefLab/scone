@@ -1,4 +1,103 @@
-#' Internal Function
+#' @rdname get_negconruv
+#'
+#' @param x an object of class \code{\link{sconeExperiment}}.
+#'
+#' @return NULL or a logical vector.
+#'
+#' @return For \code{get_negconruv} it indicates which genes are negative controls
+#'   to be used for RUV.
+setMethod(
+  f = "get_negconruv",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    if(length(x@which_negconruv) == 0) {
+      return(NULL)
+    } else {
+      return(rowData(x)[,x@which_negconruv])
+    }
+  }
+)
+
+#' @rdname get_negconruv
+#'
+#' @return For \code{get_negconeval} it indicates which genes are negative controls
+#'   to be used for evaluation.
+setMethod(
+  f = "get_negconeval",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    if(length(x@which_negconeval) == 0) {
+      return(NULL)
+    } else {
+      return(rowData(x)[,x@which_negconeval])
+    }
+  }
+)
+
+#' @rdname get_negconruv
+#'
+#' @return For \code{get_poscon} it indicates which genes are positive controls.
+setMethod(
+  f = "get_poscon",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    if(length(x@which_poscon) == 0) {
+      return(NULL)
+    } else {
+      return(rowData(x)[,x@which_poscon])
+    }
+  }
+)
+
+#' @rdname get_qc
+#'
+#' @param x an object of class \code{\link{sconeExperiment}}.
+#'
+#' @return NULL or the QC matrix.
+setMethod(
+  f = "get_qc",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    if(length(x@which_qc) == 0) {
+      return(NULL)
+    } else {
+      retval <- as.matrix(colData(x)[, x@which_qc, drop=FALSE])
+      return(retval)
+    }
+  }
+)
+
+#' @rdname get_bio
+#'
+#' @param x an object of class \code{\link{sconeExperiment}}.
+#'
+#' @return NULL or a factor containing the bio or batch information.
+setMethod(
+  f = "get_bio",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    if(length(x@which_bio) == 0) {
+      return(NULL)
+    } else {
+      return(colData(x)[,x@which_bio])
+    }
+  }
+)
+
+#' @rdname get_bio
+setMethod(
+  f = "get_batch",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    if(length(x@which_batch) == 0) {
+      return(NULL)
+    } else {
+      return(colData(x)[,x@which_batch])
+    }
+  }
+)
+
+#' Parse rows
 #'
 #' This function is used internally in scone to parse the variables used to generate the design matrices.
 #'
@@ -34,7 +133,7 @@ parse_row <- function(pars, bio, batch, ruv_factors, qc) {
   return(list(sc_name=sc_name, W=W, bio=out_bio, batch=out_batch))
 }
 
-#' Function to make a design matrix
+#' Make a Design Matrix
 #'
 #' This function is useful to create a design matrix, when the covariates are two (possibly nested) factors
 #' and one or more continuous variables.
@@ -103,7 +202,7 @@ make_design <- function(bio, batch, W, nested=FALSE) {
   }
 }
 
-#' Function to perform linear batch effect correction
+#' Linear Batch Effect Correction
 #'
 #' Given a matrix with log expression values and a design matrix, this function fits a linear model
 #' and removes the effects of the batch factor as well as of the linear variables encoded in W.

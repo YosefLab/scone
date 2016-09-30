@@ -451,7 +451,7 @@ setMethod(
   }
 )
 
-#' Retrieve normalized matrix
+#' Retrieve Normalized Matrix
 #'
 #' Given a string representing a normalization scheme and an HDF5 file created by
 #' scone, it will return a matrix of normalized counts (in log scale).
