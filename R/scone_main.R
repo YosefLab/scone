@@ -123,6 +123,10 @@ setMethod(
                         verbose=FALSE, stratified_pam = FALSE,
                         return_norm = c("no", "in_memory", "hdf5"), hdf5file) {
 
+#    browser()
+  if(x@is_log) {
+    stop("At the moment, scone is implemented only for non-log counts.")
+  }
   return_norm <- match.arg(return_norm)
 
   if(return_norm == "hdf5") {
@@ -181,7 +185,7 @@ setMethod(
   if(k_qc < 0) stop("'k_qc' must be non-negative.")
 
   if(k_ruv > 0) {
-    if(length(x@which_negconruv == 0)) {
+    if(length(x@which_negconruv) == 0) {
       stop("If k_ruv>0, negative controls must be specified.")
     } else {
       ruv_negcon <- get_negconruv(x)
@@ -219,10 +223,12 @@ setMethod(
   }
   batch <- get_batch(x)
 
-  if(!is.null(bio)) {
-    batch <- factor(batch, levels = unique(batch[order(bio)]))
-  } else {
-    batch <- factor(batch, levels = sort(levels(batch)))
+  if(!is.null(batch)) {
+    if(!is.null(bio)) {
+      batch <- factor(batch, levels = unique(batch[order(bio)]))
+    } else {
+      batch <- factor(batch, levels = sort(levels(batch)))
+    }
   }
 
   if(evaluate) {
@@ -307,9 +313,11 @@ setMethod(
                              & params$adjust_biology=="bio")
       params <- params[-remove_params,]
     }
+    x@scone_params <- data.frame(params)
+  } else {
+    params <- x@scone_params
   }
 
-  x@scone_params <- data.frame(params)
 
   if(!run) {
     return(x)
@@ -399,15 +407,16 @@ setMethod(
       return(list(score=score, adjusted=adjusted))
     } else {
       if(return_norm == "hdf5") {
-        h5write(adjusted, hdf5file, rownames(params)[i])
+        h5write(expm1(adjusted), hdf5file, rownames(params)[i])
       }
       return(list(score=score))
     }
   })
 
   if(return_norm == "in_memory") {
-    adjusted <- lapply(outlist, function(x) x$adjusted)
+    adjusted <- lapply(outlist, function(x) expm1(x$adjusted))
     names(adjusted) <- apply(params, 1, paste, collapse=',')
+    assays(x) <- adjusted
   } else {
     adjusted <- NULL
   }
@@ -429,7 +438,7 @@ setMethod(
       mean_score_rank <- rowMeans(ranked_scores)
     }
 
-    scores <- cbind(t(scores), mean_score_rank)[order(mean_score_rank, decreasing = TRUE),]
+    scores <- cbind(t(scores), mean_score_rank)[order(mean_score_rank, decreasing = TRUE), ,drop=FALSE]
 
     evaluation <- t(evaluation[,order(mean_score_rank, decreasing = TRUE), drop=FALSE])
 
