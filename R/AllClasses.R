@@ -185,7 +185,7 @@ setValidity("SconeExperiment", function(object) {
 #'
 #' @param object Either a matrix or a \code{\link{SummarizedExperiment}}
 #'   containing the raw gene expression.
-#'
+#' @param ... see specific S4 methods for additional arguments.
 #' @export
 #'
 #' @examples

@@ -23,6 +23,8 @@ sconeExperiment(object, ...)
 \item{object}{Either a matrix or a \code{\link{SummarizedExperiment}}
 containing the raw gene expression.}
 
+\item{...}{see specific S4 methods for additional arguments.}
+
 \item{which_qc}{index that specifies which columns of `colData` correspond to
 QC measures.}
 
