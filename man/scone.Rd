@@ -19,6 +19,8 @@ scone(x, ...)
 \arguments{
 \item{x}{a \code{\link{SconeExperiment}} object.}
 
+\item{...}{see specific S4 methods for additional arguments.}
+
 \item{imputation}{list or function. (A list of) function(s) to be used for
 imputation. By default only scone::impute_null is included.}
 
@@ -79,20 +81,6 @@ they will be written on file using the \code{rhdf5} package.}
 
 \item{hdf5file}{character. If \code{return_norm="hdf5"}, the name of the file
 onto which to save the normalized matrices.}
-
-\item{ruv_negcon}{character. The genes to be used as negative controls for
-RUV. Ignored if k_ruv=0.}
-
-\item{eval_negcon}{character. The genes to be used as negative controls for
-evaluation. These genes should be expected not to change according to the
-biological phenomenon of interest. Ignored if evaluation=FALSE. Default is
-ruv_negcon argument. If NULL, correlations with negative controls will be
-returned NA.}
-
-\item{eval_poscon}{character. The genes to be used as positive controls for
-evaluation. These genes should be expected to change according to the
-biological phenomenon of interest. Ignored if evaluation=FALSE. If NULL,
-correlations with positive controls will be returned NA.}
 }
 \value{
 A \code{\link{SconeExperiment}} object with the
@@ -152,6 +140,6 @@ In all cases, the normalized matrices can be retrieved via the
   \code{\link{get_normalized}} function.
 }
 \seealso{
-\code{\link{get_normalized}} \code{\link{get_design}}
+\code{\link{get_normalized}}, \code{\link{get_design}}
 }
 

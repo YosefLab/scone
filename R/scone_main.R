@@ -11,6 +11,7 @@
 #' scored based on SCONE's data-driven evaluation criteria.
 #'
 #' @param x a \code{\link{SconeExperiment}} object.
+#' @param ... see specific S4 methods for additional arguments.
 #' @param imputation list or function. (A list of) function(s) to be used for
 #'   imputation. By default only scone::impute_null is included.
 #' @param impute_args arguments passed to all imputation functions.
@@ -22,8 +23,6 @@
 #'   0, RUV will not be performed.
 #' @param k_qc numeric. The maximum number of quality metric PCs (the function
 #'   will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.
-#' @param ruv_negcon character. The genes to be used as negative controls for
-#'   RUV. Ignored if k_ruv=0.
 #' @param adjust_bio character. If 'no' it will not be included in the model; if
 #'   'yes', both models with and without 'bio' will be run; if 'force', only
 #'   models with 'bio' will be run.
@@ -42,15 +41,6 @@
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam
 #'   tightness evaluation. If an array of integers, largest average silhouette
 #'   width (tightness) will be reported. If NULL, tightness will be returned NA.
-#' @param eval_negcon character. The genes to be used as negative controls for
-#'   evaluation. These genes should be expected not to change according to the
-#'   biological phenomenon of interest. Ignored if evaluation=FALSE. Default is
-#'   ruv_negcon argument. If NULL, correlations with negative controls will be
-#'   returned NA.
-#' @param eval_poscon character. The genes to be used as positive controls for
-#'   evaluation. These genes should be expected to change according to the
-#'   biological phenomenon of interest. Ignored if evaluation=FALSE. If NULL,
-#'   correlations with positive controls will be returned NA.
 #' @param verbose logical. If TRUE some messagges are printed.
 #' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
 #'   separately computed for each biological-cross-batch stratum (accepting
@@ -108,7 +98,7 @@
 #'
 #' @name scone
 #'
-#' @seealso \code{\link{get_normalized}} \code{\link{get_design}}
+#' @seealso \code{\link{get_normalized}}, \code{\link{get_design}}
 #'
 #' @importFrom RUVSeq RUVg
 #' @importFrom matrixStats rowMedians
@@ -237,7 +227,7 @@ setMethod(
 
   if(evaluate) {
     if(length(x@which_negconeval) == 0) {
-      if(verbose) message("eval_negcon is null, negative controls will not be used in evaluation (correlations with negative controls will be returned as NA)")
+      if(verbose) message("Negative controls will not be used in evaluation (correlations with negative controls will be returned as NA)")
     }
     eval_negcon <- get_negconeval(x)
 
@@ -374,6 +364,7 @@ setMethod(
 
     ## generate factors: eval_pcs pcs per gene set
     uv_factors <- wv_factors <- NULL
+    eval_poscon <- get_poscon(x)
 
     if(!is.null(eval_negcon)) {
       uv_factors <- svd(scale(t(log1p(assay(x)[eval_negcon,])),center = TRUE,scale = TRUE),eval_pcs,0)$u
