@@ -72,7 +72,7 @@
 #'
 #' @param out_rda logical. If TRUE, a sconeResults.Rda file with the object that the scone function returns is saved in the out_dir (may be very large for large datasets, but useful for post-processing)
 #'   Default FALSE.
-#' @param eval_negcon 
+#' @param eval_negcon character. Alternative negative control gene list for evaluation only. 
 #' @param ... extra params passed to the metric_sample_filter and scone when they're called by easybake
 #'   
 #' @export

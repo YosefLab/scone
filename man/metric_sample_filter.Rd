@@ -10,7 +10,8 @@ metric_sample_filter(expr, nreads = colSums(expr), ralign = NULL,
   AUC_range = c(0, 15), zcut = 1, mixture = TRUE, dip_thresh = 0.05,
   hard_nreads = 25000, hard_ralign = 15, hard_breadth = 0.2,
   hard_auc = 10, suff_nreads = NULL, suff_ralign = NULL,
-  suff_breadth = NULL, suff_auc = NULL, plot = FALSE, hist_breaks = 10)
+  suff_breadth = NULL, suff_auc = NULL, plot = FALSE, hist_breaks = 10,
+  ...)
 }
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}
@@ -78,6 +79,8 @@ fnr auc threshold.}
 \item{plot}{logical. Should a plot be produced?}
 
 \item{hist_breaks}{hist() breaks argument. Ignored if `plot=FALSE`.}
+
+\item{...}{Arguments to be passed to methods.}
 }
 \value{
 A list with the following elements: \itemize{ \item{filtered_nreads}{
