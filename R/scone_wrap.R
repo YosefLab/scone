@@ -22,10 +22,9 @@
 #'
 #' @param filt_cells logical. Should cells be filtered? Set to FALSE if low quality cells have already been excluded. If cells are not filtered, then initial gene filtering (the one that is done prior to cell filtering) is disabled as it becomes redundant with the gene filtering that is done after cell filtering.
 #'   Default TRUE.
-#'      
 #' @param filt_genes logical. Should genes be filtered post-sample filtering?
 #'   Default TRUE.
-#'   
+#' @param always_keep_genes logical. A character vector of gene names that should never be excluded (e.g., marker genes). Default NULL.
 #' @param fnr_maxiter numeric. Maximum number of iterations in EM estimation of expression posteriors.
 #'    If 0, then FNR estimation is skipped entirely, and as a
 #'     consequence no imputation will be performed, disregarding 
@@ -92,7 +91,7 @@ scone_easybake <- function(expr, qc,
                            bio=NULL, batch=NULL, negcon=NULL,
                            verbose=c("0","1","2"), out_dir=getwd(), seed = 112233,
                            filt_cells=TRUE,
-                           filt_genes=TRUE,
+                           filt_genes=TRUE, always_keep_genes = NULL,
                            
                            fnr_maxiter=1000,
                            
@@ -158,7 +157,7 @@ scone_easybake <- function(expr, qc,
     if(verbose > 0){printf("Data Filtering Module: Filtering samples\n")}
     
     pdf(paste0(misc_dir,"/filter_report.pdf"))
-    mfilt = metric_sample_filter(expr, mixture = TRUE, plot = TRUE, hist_breaks = 100,
+    mfilt = metric_sample_filter(expr, plot = TRUE, hist_breaks = 100,
                                  zcut = 4, ###Make argument###
                                  pos_controls = rownames(expr) %in% small_negcon,
                                  gene_filter = init.gf.vec,
@@ -185,8 +184,11 @@ scone_easybake <- function(expr, qc,
     thresh_fail = quantile(expr[expr > 0], 0.2) ###Make argument###
     num_fail = 10 ###Make argument###
     final.gf.vec = rowSums(expr > thresh_fail) > num_fail
-    if(verbose > 0){printf("Data Filtering Module: Kept only %d genes expressed in more than %.2f units in more than %d cells, excluded %d genes\n", sum(final.gf.vec), thresh_fail, num_fail, sum(!final.gf.vec))}
-    
+    if(!is.null(always_keep_genes)) {
+      final.gf.vec[always_keep_genes %in% rownames(expr)] = TRUE  
+    }
+    if(verbose > 0){printf("Data Filtering Module: Kept only %d genes expressed in more than %.2f units in more than %d cells (or ones that were forced to be kept by the user's argument), excluded %d genes\n", sum(final.gf.vec), thresh_fail, num_fail, sum(!final.gf.vec))}
+
     # Implement gene filter
     expr = expr[final.gf.vec,]
     negcon = negcon[negcon %in% rownames(expr)]
