@@ -48,6 +48,8 @@
 #'   evaluate the performance of the normalizations.
 #' @slot hdf5_pointer character. A string specifying to which file to write /
 #'   read the normalized data.
+#' @slot imputation_fn list of functions used by scone for the imputation step.
+#' @slot scaling_fn list of functions used by scone for the scaling step.
 #' @slot scone_metrics matrix. Matrix containing the "raw" performance metrics.
 #'   See \code{\link{scone}} for a description of each metric.
 #' @slot scone_scores matrix. Matrix containing the performance scores
@@ -60,6 +62,9 @@
 #' @slot scone_run character. Whether \code{\link{scone}} should be run and in
 #'   which mode ("no", "in_memory", "hdf5").
 #' @slot is_log logical. Are the expression data in log scale?
+#' @slot nested logical. Is batch nested within bio? (Automatically set by
+#'   \code{\link{scone}}).
+#'
 setClass(
   Class = "SconeExperiment",
   contains = "SummarizedExperiment",
@@ -71,12 +76,15 @@ setClass(
     which_negconeval = "integer",
     which_poscon = "integer",
     hdf5_pointer = "character",
+    imputation_fn = "list",
+    scaling_fn = "list",
     scone_metrics = "matrix",
     scone_scores = "matrix",
     scone_params = "data.frame",
     design_mats = "list",
     scone_run = "character",
-    is_log = "logical"
+    is_log = "logical",
+    nested = "logical"
   )
 )
 
@@ -246,12 +254,15 @@ setMethod(
                which_negconeval = which_negconeval,
                which_poscon = which_poscon,
                hdf5_pointer = character(),
+               imputation_fn = list(),
+               scaling_fn = list(),
                scone_metrics = matrix(),
                scone_scores = matrix(),
                scone_params = data.frame(),
                design_mats = list(),
                scone_run = "no",
-               is_log = is_log
+               is_log = is_log,
+               nested = FALSE
                )
 
     validObject(out)

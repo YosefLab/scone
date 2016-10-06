@@ -162,6 +162,8 @@ setMethod(
     imputation <- l
   }
 
+  x@imputation_fn <- imputation
+
   if(!is.function(scaling)) {
     if(is.list(scaling)) {
       if(!all(sapply(scaling, is.function))) {
@@ -180,6 +182,8 @@ setMethod(
     names(l) <- deparse(substitute(scaling))
     scaling <- l
   }
+
+  x@scaling_fn <- scaling
 
   if(k_ruv < 0) stop("'k_ruv' must be non-negative.")
   if(k_qc < 0) stop("'k_qc' must be non-negative.")
@@ -270,6 +274,7 @@ setMethod(
         }
       } else {
         nested <- TRUE
+        x@nested <- TRUE
         if(verbose) message("Detected nested design...")
       }
     }
@@ -459,32 +464,3 @@ setMethod(
   return(x)
   }
 )
-
-#' Retrieve Normalized Matrix
-#'
-#' Given a string representing a normalization scheme and an HDF5 file created by
-#' scone, it will return a matrix of normalized counts (in log scale).
-#'
-#' @details The string must be of of the row.names of the \code{params}
-#'   component of the scone output.
-#'
-#' @param normalization character. A string identifying the normalization scheme
-#'   to be retrieved.
-#' @param hdf5file character. The name of the file in which the data have been
-#'   stored.
-#'
-#' @return A matrix of normalized counts in log-scale.
-#'
-#' @importFrom rhdf5 h5ls h5read
-#' @export
-get_normalized <- function(normalization, hdf5file) {
-
-  if(!normalization %in% h5ls(hdf5file)$name) {
-    stop(paste0(normalization, " does not match any object in ", hdf5file))
-  } else {
-    retval <- h5read(hdf5file, normalization)
-    rownames(retval) <- h5read(hdf5file, "genes")
-    colnames(retval) <- h5read(hdf5file, "samples")
-    return(retval)
-  }
-}

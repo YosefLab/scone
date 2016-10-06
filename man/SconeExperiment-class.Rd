@@ -111,6 +111,10 @@ evaluate the performance of the normalizations.}
 \item{\code{hdf5_pointer}}{character. A string specifying to which file to write /
 read the normalized data.}
 
+\item{\code{imputation_fn}}{list of functions used by scone for the imputation step.}
+
+\item{\code{scaling_fn}}{list of functions used by scone for the scaling step.}
+
 \item{\code{scone_metrics}}{matrix. Matrix containing the "raw" performance metrics.
 See \code{\link{scone}} for a description of each metric.}
 
@@ -128,6 +132,9 @@ scheme.}
 which mode ("no", "in_memory", "hdf5").}
 
 \item{\code{is_log}}{logical. Are the expression data in log scale?}
+
+\item{\code{nested}}{logical. Is batch nested within bio? (Automatically set by
+\code{\link{scone}}).}
 }}
 \examples{
 

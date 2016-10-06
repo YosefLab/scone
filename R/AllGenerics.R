@@ -6,9 +6,33 @@ setGeneric(
   }
 )
 
+#' Retrieve Normalized Matrix
+#'
+#' Given a \code{SconeExperiment} object created by a call to scone, it will
+#' return a matrix of normalized counts (in log scale if \code{log=TRUE}).
+#'
+#' @details If \code{\link{scone}} was run with \code{return_norm="in_memory"},
+#'   this function simply retrieves the normalized data from the \code{assays}
+#'   slote of \code{object}.
+#'
+#' @details If \code{\link{scone}} was run with \code{return_norm="hdf5"}, this
+#'   function will read the normalized matrix from the specified hdf5 file.
+#'
+#' @details If \code{\link{scone}} was run with \code{return_norm="no"}, this
+#'   function will compute the normalized matrix on the fly.
+#'
+#' @param x a \code{\link{sconeExperiment}} object containing the results of
+#'   \code{\link{scone}}.
+#' @param method character or numeric. Either a string identifying the
+#'   normalization scheme to be retrieved, or a numeric index with the rank of
+#'   the normalization method to retrieve (according to scone ranking of
+#'   normalizations).
+#' @param ... additional arguments for specific methods.
+#'
+#' @return A matrix of normalized counts in log-scale.
 setGeneric(
   name = "get_normalized",
-  def = function(x, method) {
+  def = function(x, method, ...) {
     standardGeneric("get_normalized")
   }
 )
