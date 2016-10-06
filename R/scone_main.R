@@ -356,6 +356,7 @@ setMethod(
     if(verbose) message("Re-zero step...")
     toz = assay(x) <= 0
     scaled <- lapply(scaled,function(x) x - x*toz)
+    x@rezero <- TRUE
   }
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices

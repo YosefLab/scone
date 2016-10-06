@@ -135,6 +135,9 @@ which mode ("no", "in_memory", "hdf5").}
 
 \item{\code{nested}}{logical. Is batch nested within bio? (Automatically set by
 \code{\link{scone}}).}
+
+\item{\code{rezero}}{logical. TRUE if \code{\link{scone}} was run with
+\code{rezero=TRUE}.}
 }}
 \examples{
 

@@ -64,6 +64,8 @@
 #' @slot is_log logical. Are the expression data in log scale?
 #' @slot nested logical. Is batch nested within bio? (Automatically set by
 #'   \code{\link{scone}}).
+#' @slot rezero logical. TRUE if \code{\link{scone}} was run with
+#'   \code{rezero=TRUE}.
 #'
 setClass(
   Class = "SconeExperiment",
@@ -84,7 +86,8 @@ setClass(
     design_mats = "list",
     scone_run = "character",
     is_log = "logical",
-    nested = "logical"
+    nested = "logical",
+    rezero = "logical"
   )
 )
 
@@ -262,7 +265,8 @@ setMethod(
                design_mats = list(),
                scone_run = "no",
                is_log = is_log,
-               nested = FALSE
+               nested = FALSE,
+               rezero = FALSE
                )
 
     validObject(out)

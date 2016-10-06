@@ -34,6 +34,11 @@ setMethod(
       imputed <- x@imputation_fn[[params[1]]](assay(x))
       scaled <- x@scaling_fn[[params[2]]](imputed)
 
+      if(x@rezero) {
+        toz = assay(x) <= 0
+        scaled <- scaled - scaled*toz
+      }
+
       ruv_factors <- qc_factors <- NULL
       if(params[3] != "no_uv") {
 
