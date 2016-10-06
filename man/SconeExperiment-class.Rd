@@ -138,6 +138,8 @@ which mode ("no", "in_memory", "hdf5").}
 
 \item{\code{rezero}}{logical. TRUE if \code{\link{scone}} was run with
 \code{rezero=TRUE}.}
+
+\item{\code{impute_args}}{list. Arguments passed to all imputation functions.}
 }}
 \examples{
 

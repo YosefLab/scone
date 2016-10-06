@@ -31,7 +31,13 @@ setMethod(
     if(x@scone_run == "no") {
       params <- unlist(x@scone_params[method,])
 
-      imputed <- x@imputation_fn[[params[1]]](assay(x))
+      if(length(x@impute_args) > 0) {
+        impute_args <- unlist(x@impute_args)
+      } else {
+        impute_args <- NULL
+      }
+
+      imputed <- x@imputation_fn[[params[1]]](assay(x), impute_args)
       scaled <- x@scaling_fn[[params[2]]](imputed)
 
       if(x@rezero) {

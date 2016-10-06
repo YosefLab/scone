@@ -66,6 +66,7 @@
 #'   \code{\link{scone}}).
 #' @slot rezero logical. TRUE if \code{\link{scone}} was run with
 #'   \code{rezero=TRUE}.
+#' @slot impute_args list. Arguments passed to all imputation functions.
 #'
 setClass(
   Class = "SconeExperiment",
@@ -87,7 +88,8 @@ setClass(
     scone_run = "character",
     is_log = "logical",
     nested = "logical",
-    rezero = "logical"
+    rezero = "logical",
+    impute_args = "list"
   )
 )
 
@@ -266,7 +268,8 @@ setMethod(
                scone_run = "no",
                is_log = is_log,
                nested = FALSE,
-               rezero = FALSE
+               rezero = FALSE,
+               impute_args = list()
                )
 
     validObject(out)

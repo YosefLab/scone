@@ -130,6 +130,10 @@ setMethod(
   return_norm <- match.arg(return_norm)
   x@scone_run <- return_norm
 
+  if(!is.null(impute_args)) {
+    x@impute_args <- as.list(impute_args)
+  }
+
   if(is.null(rownames(x))) {
     rownames(x) <- as.character(seq_len(NROW(x)))
   }

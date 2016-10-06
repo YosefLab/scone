@@ -1,5 +1,5 @@
 context("Tests for the get_normalized wrappers")
-set.seed(42)
+set.seed(421)
 BiocParallel::register(BiocParallel::bpparam("SerialParam"))
 
 test_that("get_normalized works in all three modes", {
