@@ -5,6 +5,7 @@ BiocParallel::register(BiocParallel::bpparam("SerialParam"))
 test_that("Test with no real method (only identity)", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
   obj <- sconeExperiment(e)
 
   # one combination
@@ -114,6 +115,7 @@ test_that("Test with no real method (only identity)", {
 test_that("Test imputation and scaling", {
   e <-  matrix(rpois(1000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
 
   qc_mat <- matrix(rnorm(20), nrow=10)
   bio <- gl(2, 5)
@@ -181,6 +183,7 @@ test_that("Test imputation and scaling", {
 test_that("scone works with only one normalization",{
   e <-  matrix(rpois(1000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
   obj <- sconeExperiment(e)
 
   res <- scone(obj, imputation=list(none=impute_null),
@@ -194,6 +197,7 @@ test_that("scone works with only one normalization",{
 test_that("conditional PAM",{
   e <-  matrix(rpois(1000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
 
   qc_mat <- matrix(rnorm(20), nrow=10)
   bio <- gl(2, 5)
@@ -234,6 +238,7 @@ test_that("conditional PAM",{
 test_that("if bio=no bio is ignored", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
   bio <- gl(2, 5)
   obj1 <- sconeExperiment(e)
   obj2 <- sconeExperiment(e, bio=bio)
@@ -250,6 +255,7 @@ test_that("if bio=no bio is ignored", {
 test_that("if batch=no batch is ignored", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
   batch <- gl(2, 5)
   obj1 <- sconeExperiment(e)
   obj2 <- sconeExperiment(e, batch=batch)
@@ -266,6 +272,7 @@ test_that("if batch=no batch is ignored", {
 test_that("batch and bio can be confounded if at least one of adjust_bio or adjust_batch is no", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
   obj <- sconeExperiment(e, batch=gl(2, 5), bio=gl(2, 5))
 
   expect_warning(scone(obj, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0,
@@ -280,6 +287,7 @@ test_that("batch and bio can be confounded if at least one of adjust_bio or adju
 test_that("batch and bio can contain NA", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
   batch <- gl(2, 5)
   bio <- gl(5, 2)
   obj <- sconeExperiment(e, batch=batch, bio=bio)

@@ -108,7 +108,7 @@
 #'   dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm
 #'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
-#' @importFrom rhdf5 h5createFile h5write.default h5write
+#' @importFrom rhdf5 h5createFile h5write.default h5write H5close
 #' @export
 #'
 setMethod(
@@ -123,11 +123,19 @@ setMethod(
                         verbose=FALSE, stratified_pam = FALSE,
                         return_norm = c("no", "in_memory", "hdf5"), hdf5file) {
 
-#    browser()
+ #   browser()
   if(x@is_log) {
     stop("At the moment, scone is implemented only for non-log counts.")
   }
   return_norm <- match.arg(return_norm)
+  x@scone_run <- return_norm
+
+  if(is.null(rownames(x))) {
+    rownames(x) <- as.character(seq_len(NROW(x)))
+  }
+  if(is.null(colnames(x))) {
+    colnames(x) <- paste0("Sample", seq_len(NCOL(x)))
+  }
 
   if(return_norm == "hdf5") {
     if(missing(hdf5file)) {
@@ -139,7 +147,8 @@ setMethod(
       stopifnot(h5createFile(hdf5file))
       h5write(rownames(x), hdf5file, "genes")
       h5write(colnames(x), hdf5file, "samples")
-      x@hd5file <- hdf5file
+      x@hdf5_pointer <- hdf5file
+      H5close()
     }
   }
 
@@ -413,6 +422,7 @@ setMethod(
     } else {
       if(return_norm == "hdf5") {
         h5write(expm1(adjusted), hdf5file, rownames(params)[i])
+        H5close()
       }
       return(list(score=score))
     }
@@ -460,6 +470,7 @@ setMethod(
   x@scone_params <- data.frame(params)
 
   if(verbose) message("Done!")
+
 
   return(x)
   }

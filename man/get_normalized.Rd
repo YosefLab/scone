@@ -43,6 +43,13 @@ If \code{\link{scone}} was run with \code{return_norm="hdf5"}, this
 
 If \code{\link{scone}} was run with \code{return_norm="no"}, this
   function will compute the normalized matrix on the fly.
+
+The numeric method will always return the normalization
+  corresponding to row \code{method} of the \code{scone_params} slot. This
+  means that if \code{\link{scone}} was run with \code{eval=TRUE},
+  \code{get_normalized(x, 1)} will return the top ranked method. If
+  \code{\link{scone}} was run with \code{eval=FALSE}, \code{get_normalized(x,
+  1)} will return the first normalization in the order saved by scone.
 }
 \section{Methods (by class)}{
 \itemize{

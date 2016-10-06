@@ -5,6 +5,8 @@ BiocParallel::register(BiocParallel::bpparam("SerialParam"))
 test_that("Upper-quartile normalization works the same as in the EDASeq package", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
+
   negcon_ruv <- c(rep(TRUE, 100), rep(FALSE, NROW(e)-100))
   obj <- sconeExperiment(e, negcon_ruv=negcon_ruv)
 

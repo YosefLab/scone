@@ -128,7 +128,7 @@ schemes applied to the data and compared.}
 \item{\code{design_mats}}{list. A list of design matrices, one for each normalization
 scheme.}
 
-\item{\code{scone_run}}{character. Whether \code{\link{scone}} should be run and in
+\item{\code{scone_run}}{character. Whether \code{\link{scone}} was run and in
 which mode ("no", "in_memory", "hdf5").}
 
 \item{\code{is_log}}{logical. Are the expression data in log scale?}

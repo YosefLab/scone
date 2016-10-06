@@ -54,6 +54,7 @@ test_that("return_norm in memory", {
 test_that("do not return_norm", {
   e <-  matrix(rpois(1000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
+  colnames(e) <- paste0("Sample", 1:ncol(e))
 
   qc_mat <- matrix(rnorm(20), nrow=10)
   bio <- gl(2, 5)

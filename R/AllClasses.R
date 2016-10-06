@@ -59,7 +59,7 @@
 #'   schemes applied to the data and compared.
 #' @slot design_mats list. A list of design matrices, one for each normalization
 #'   scheme.
-#' @slot scone_run character. Whether \code{\link{scone}} should be run and in
+#' @slot scone_run character. Whether \code{\link{scone}} was run and in
 #'   which mode ("no", "in_memory", "hdf5").
 #' @slot is_log logical. Are the expression data in log scale?
 #' @slot nested logical. Is batch nested within bio? (Automatically set by

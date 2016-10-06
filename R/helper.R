@@ -118,7 +118,7 @@ parse_row <- function(pars, bio, batch, ruv_factors, qc) {
     if(grepl("ruv", parsed[1])) {
       W <- ruv_factors[[sc_name]][,1:as.numeric(parsed[2])]
     } else {
-      W <- qc[,1:as.numeric(parsed[2])]
+      W <- qc[,seq_len(as.numeric(parsed[2]))]
     }
   }
 
