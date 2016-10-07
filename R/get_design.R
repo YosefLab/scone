@@ -19,6 +19,21 @@ setMethod(
       k <- as.numeric(strsplit(params[3], "=")[[1]][2])
 
       if(grepl("ruv", params[3])) {
+
+        if(length(x@impute_args) > 0) {
+          impute_args <- unlist(x@impute_args)
+        } else {
+          impute_args <- NULL
+        }
+
+        imputed <- x@imputation_fn[[params[1]]](assay(x), impute_args)
+        scaled <- x@scaling_fn[[params[2]]](imputed)
+
+        if(x@rezero) {
+          toz = assay(x) <= 0
+          scaled <- scaled - scaled*toz
+        }
+
         r <- RUVg(log1p(scaled), get_negconruv(x), k, isLog=TRUE)$W
         ruv_factors <- list(r)
         names(ruv_factors) <- paste(params[1:2], collapse="_")
