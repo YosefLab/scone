@@ -78,7 +78,8 @@ setMethod(
 )
 
 
-#' @describeIn get_normalized If \code{method} is a numeric, it will return the normalized matrix according to the scone ranking.
+#' @describeIn get_normalized If \code{method} is a numeric, it will return the
+#'   normalized matrix according to the scone ranking.
 #'
 #' @details The numeric method will always return the normalization
 #'   corresponding to row \code{method} of the \code{scone_params} slot. This

@@ -37,6 +37,19 @@ setGeneric(
   }
 )
 
+#' Retrieve Design Matrix
+#'
+#' Given a \code{SconeExperiment} object created by a call to scone, it will
+#' return the design matrix of the selected method.
+#'
+#' @param x a \code{\link{sconeExperiment}} object containing the results of
+#'   \code{\link{scone}}.
+#' @param method character or numeric. Either a string identifying the
+#'   normalization scheme to be retrieved, or a numeric index with the rank of
+#'   the normalization method to retrieve (according to scone ranking of
+#'   normalizations).
+#'
+#' @return The design matrix.
 setGeneric(
   name = "get_design",
   def = function(x, method) {

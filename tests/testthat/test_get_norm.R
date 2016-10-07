@@ -84,7 +84,6 @@ test_that("get_normalized works with rezero", {
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=FALSE, run=TRUE, return_norm="in_memory", rezero=TRUE)
 
-  ##don't do them all
   all1 <- lapply(seq_len(10), function(i) get_normalized(res1, i))
   all2 <- lapply(seq_len(10), function(i) get_normalized(res2, i))
 

@@ -58,6 +58,7 @@ the normalized matrix corresponding to the normalization scheme specified
 by the character string. The string must be one of the \code{row.names} of
 the slot \code{scone_params}.
 
-\item \code{x = SconeExperiment,method = numeric}: If \code{method} is a numeric, it will return the normalized matrix according to the scone ranking.
+\item \code{x = SconeExperiment,method = numeric}: If \code{method} is a numeric, it will return the
+normalized matrix according to the scone ranking.
 }}
 
