@@ -148,3 +148,13 @@ setGeneric(
     standardGeneric("get_score_ranks")
   }
 )
+
+#' Extract scone parameters
+#'
+#' @aliases get_params get_params,SconeExperiment-method
+setGeneric(
+  name = "get_params",
+  def = function(x) {
+    standardGeneric("get_params")
+  }
+)

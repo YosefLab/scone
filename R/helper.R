@@ -1,3 +1,19 @@
+#' @rdname get_params
+#'
+#' @param x an object of class \code{\link{sconeExperiment}}.
+#'
+#' @return A data.frame with the information of the normalization schemes that
+#'   scone has run.
+#'
+#' @export
+#'
+setMethod(
+  f = "get_params",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    return(x@scone_params)
+  })
+
 #' @rdname get_scores
 #'
 #' @param x an object of class \code{\link{sconeExperiment}}.
