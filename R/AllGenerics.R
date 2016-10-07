@@ -57,13 +57,22 @@ setGeneric(
   }
 )
 
+#' Get a subset of normalizations from a SconeExperiment object
+#'
+#' @description This method let a user extract a subset of normalizations. This
+#'   is useful when the original dataset is large and/or many normalization
+#'   schemes have been applied.
+#'
+#' @description In such cases, the user may want to run scone in mode
+#'   \code{return_norm = "no"}, explore the results, and then select the top
+#'   performing methods for additional exploration.
+#'
 setGeneric(
   name = "select_methods",
-  def = function(x, index) {
+  def = function(x, methods) {
     standardGeneric("select_methods")
   }
 )
-
 
 #' Get Negative and Positive Controls
 #'
