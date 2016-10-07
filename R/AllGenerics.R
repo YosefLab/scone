@@ -129,3 +129,22 @@ setGeneric(
     standardGeneric("get_batch")
   }
 )
+
+#' Extract scone scores
+#'
+#' @aliases get_scores get_score,SconeExperiment-method get_score_ranks
+#'   get_score_ranks,SconeExperiment-method
+setGeneric(
+  name = "get_scores",
+  def = function(x) {
+    standardGeneric("get_scores")
+  }
+)
+
+#' @rdname get_scores
+setGeneric(
+  name = "get_score_ranks",
+  def = function(x) {
+    standardGeneric("get_score_ranks")
+  }
+)

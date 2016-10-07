@@ -1,3 +1,35 @@
+#' @rdname get_scores
+#'
+#' @param x an object of class \code{\link{sconeExperiment}}.
+#'
+#' @return \code{get_scores} returns a matrix with the non-missing scone scores,
+#'   ordered by average score.
+#'
+#' @export
+#'
+setMethod(
+  f = "get_scores",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+      scores <- t(na.omit(t(x@scone_scores[,-NCOL(x@scone_scores)])))
+      return(scores)
+})
+
+#' @rdname get_scores
+#'
+#' @return \code{get_score_ranks} returns a vector with the ranks of the average
+#'   score.
+#'
+#' @export
+#'
+setMethod(
+  f = "get_score_ranks",
+  signature = signature(x = "SconeExperiment"),
+  definition = function(x) {
+    return(x@scone_scores[,NCOL(x@scone_scores)])
+  })
+
+
 #' @rdname get_negconruv
 #'
 #' @param x an object of class \code{\link{sconeExperiment}}.
