@@ -248,7 +248,7 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
   }else{
     filtered_breadth = NA
   }
-
+  
   ## ----- Primary Criterion 4) FNR AUC. -----
 
   if(!is.null(pos_controls)){

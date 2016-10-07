@@ -354,7 +354,7 @@ sconeReport = function(scone_res, qc,
     output$plot3d_base <- renderPlotly({
       PC1 <- PC2 <- PC3 <- NULL
       df <- setNames(data.frame(pc_obj_base()$x[,1:3]), c("PC1", "PC2", "PC3"))
-      plot_ly(df, x = PC1, y = PC2, z = PC3, type = "scatter3d", mode = "markers",marker = list(color=pc_col() ))
+      plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3, type = "scatter3d", mode = "markers",marker = list(color=pc_col() ))
     })
     
     output$plot_select <- renderPlot({
@@ -410,7 +410,7 @@ sconeReport = function(scone_res, qc,
     output$plot3d_qc <- renderPlotly({
       PC1 <- PC2 <- PC3 <- NULL
       df <- setNames(data.frame(pc_obj_qc()$x[,1:3]), c("PC1", "PC2", "PC3"))
-      plot_ly(df, x = PC1, y = PC2, z = PC3, type = "scatter3d", mode = "markers",marker = list(color=pc_col() ))
+      plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3, type = "scatter3d", mode = "markers",marker = list(color=pc_col() ))
     })
     
     ## ------ Silhouette Tab ------
