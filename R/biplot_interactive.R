@@ -7,8 +7,7 @@
 #'   static documents, such as vignettes or markdown / knitr documents.
 #'   See \code{biplot_colored} for more details on the internals.
 #'
-#' @param data a data.frame containing the data to be plotted.
-#' @param scores a numeric vector used to color the points.
+#' @param x a \code{\link{sconeExperiment}} object.
 #' @param ... passed to \code{\link{biplot_colored}}.
 #'
 #' @importFrom miniUI gadgetTitleBar miniContentPanel miniPage gadgetTitleBar
@@ -18,15 +17,17 @@
 #'
 #' @examples
 #' \dontrun{
-#' mat <- matrix(rnorm(1000), ncol=10)
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#'
-#' biplot_interactive(mat, mat[,1])
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#' evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' biplot_interactive(res)
 #' }
-biplot_interactive <- function(data, scores, ...) {
+biplot_interactive <- function(x, ...) {
 
-  data <- as.data.frame(data)
-  scores <- as.numeric(scores)
+  data <- as.data.frame(get_scores(x))
+  scores <- get_score_ranks(x)
 
   ui <- miniPage(
     gadgetTitleBar("Drag to select points"),
@@ -65,7 +66,9 @@ biplot_interactive <- function(data, scores, ...) {
     # Handle the Done button being pressed.
     observeEvent(input$done, {
       # Return the brushed points. See ?shiny::brushedPoints.
-      stopApp(brushedPoints(data_out, input$plot_brush, xvar="PC1", yvar="PC2"))
+      names <- rownames(brushedPoints(data_out, input$plot_brush, xvar="PC1", yvar="PC2"))
+      out <- select_methods(x, names)
+      stopApp(invisible(out))
     })
   }
 
