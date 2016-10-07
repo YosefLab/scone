@@ -125,9 +125,6 @@ difference between scores and metrics.}
 \item{\code{scone_params}}{data.frame. A data frame containing the normalization
 schemes applied to the data and compared.}
 
-\item{\code{design_mats}}{list. A list of design matrices, one for each normalization
-scheme.}
-
 \item{\code{scone_run}}{character. Whether \code{\link{scone}} was run and in
 which mode ("no", "in_memory", "hdf5").}
 

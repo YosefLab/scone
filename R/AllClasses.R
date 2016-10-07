@@ -57,8 +57,6 @@
 #'   difference between scores and metrics.
 #' @slot scone_params data.frame. A data frame containing the normalization
 #'   schemes applied to the data and compared.
-#' @slot design_mats list. A list of design matrices, one for each normalization
-#'   scheme.
 #' @slot scone_run character. Whether \code{\link{scone}} was run and in
 #'   which mode ("no", "in_memory", "hdf5").
 #' @slot is_log logical. Are the expression data in log scale?
@@ -84,7 +82,6 @@ setClass(
     scone_metrics = "matrix",
     scone_scores = "matrix",
     scone_params = "data.frame",
-    design_mats = "list",
     scone_run = "character",
     is_log = "logical",
     nested = "logical",
@@ -264,7 +261,6 @@ setMethod(
                scone_metrics = matrix(),
                scone_scores = matrix(),
                scone_params = data.frame(),
-               design_mats = list(),
                scone_run = "no",
                is_log = is_log,
                nested = FALSE,
