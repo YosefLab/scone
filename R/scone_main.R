@@ -123,7 +123,7 @@ setMethod(
                         verbose=FALSE, stratified_pam = FALSE,
                         return_norm = c("no", "in_memory", "hdf5"), hdf5file) {
 
- #   browser()
+  # browser()
   if(x@is_log) {
     stop("At the moment, scone is implemented only for non-log counts.")
   }
@@ -248,6 +248,8 @@ setMethod(
     }
   }
 
+  colData(x)[,x@which_batch] <- batch
+  
   if(evaluate) {
     if(length(x@which_negconeval) == 0) {
       if(verbose) message("Negative controls will not be used in evaluation (correlations with negative controls will be returned as NA)")
@@ -405,7 +407,8 @@ setMethod(
 
   if(verbose) message("Factor adjustment and evaluation...")
 
-  outlist <- bplapply(seq_len(NROW(params)), function(i) {
+outlist <- bplapply(seq_len(NROW(params)), function(i) {
+
     parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
@@ -431,7 +434,7 @@ setMethod(
       }
       return(list(score=score))
     }
-  })
+})
 
   if(return_norm == "in_memory") {
     adjusted <- lapply(outlist, function(x) expm1(x$adjusted))

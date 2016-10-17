@@ -13,7 +13,7 @@ setMethod(
   signature = signature(x = "SconeExperiment", method = "character"),
   definition =  function(x, method, log=FALSE) {
 
-#    browser()
+# browser()
     if(!(method %in% rownames(x@scone_params))) {
       stop("`method` must be one of the row.names of the slot scone_params.")
     }
@@ -32,7 +32,7 @@ setMethod(
       params <- unlist(x@scone_params[method,])
 
       if(length(x@impute_args) > 0) {
-        impute_args <- unlist(x@impute_args)
+        impute_args <- x@impute_args
       } else {
         impute_args <- NULL
       }

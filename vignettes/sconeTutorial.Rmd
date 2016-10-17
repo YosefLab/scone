@@ -384,23 +384,32 @@ impute_args = list(p_nodrop = fnr_out$p_nodrop, mu = exp(fnr_out$Alpha[1,]))
 
 ```
 
-## Selecting Workflow Parameters with `run=FALSE`
+## Creating a SconeExperiment Object
 
-`scone` arguments allow for a lot of flexibility, but a user may choose to run very specific combinations of modules. For this purpose, `scone` can be run in `run=FALSE` mode, returning a data frame of workflows to be performed.
+```{r scone_init}
+
+my_scone <- sconeExperiment(expr, # Primary expression data
+                qc=ppq, bio = bio, # QC metrics and sample metadata
+                negcon_ruv = rownames(expr) %in% negcon, # Negative controls for both normalization and evaluation
+                poscon = rownames(expr) %in% poscon # Positive controls for evaluation
+)
+
+```
+
+## Selecting SCONE Workflows
+
+The main `scone` function arguments allow for a lot of flexibility, but a user may choose to run very specific combinations of modules. For this purpose, `scone` can be run in `run=FALSE` mode, generating a list of workflows to be performed.
 
 ```{r scone_params}
 
-params <- scone(expr, 
+my_scone <- scone(my_scone,
                 imputation = imputation, impute_args = impute_args,
                 scaling=scaling, 
-                qc=ppq, bio = bio,
-                ruv_negcon = negcon, # Negative controls for RUVg normalization and evaluation
-                
-                k_qc=3, k_ruv = 3, # Parameter Arguments
+                k_qc=3, k_ruv = 3,
                 adjust_bio="no", 
                 run=FALSE)
 
-head(params) # Visualize output params object
+head(get_params(my_scone))
 
 ```
 
@@ -414,7 +423,7 @@ These arguments translate to the following set of options:
 
 ```{r scone_params_view}
 
-apply(params,2,unique)
+apply(get_params(my_scone),2,unique)
 
 ```
 
@@ -422,9 +431,9 @@ Some scaling methods, such as scaling by gene detection rate (`EFF_FN()`), will 
 
 ```{r scone_params_filt}
 
-is_screened = ((params$imputation_method == "expect") & (params$scaling_method %in% c("none","deseqp","uqp","fqp","eff")))
+is_screened = ((get_params(my_scone)$imputation_method == "expect") & (get_params(my_scone)$scaling_method %in% c("none","deseqp","uqp","fqp","eff")))
 
-params = params[!is_screened,]
+my_scone = select_methods(my_scone, rownames(get_params(my_scone))[!is_screened ])
 
 ```
 
@@ -445,20 +454,14 @@ Now that we have selected our workflows, we can run `scone` in `run=TRUE` mode. 
 
 BiocParallel::register(BiocParallel::SerialParam()) # Register BiocParallel Serial Execution
 
-res <- scone(expr, 
-             imputation = imputation, impute_args = impute_args,
-             scaling=scaling,
-             qc=ppq, bio = bio,
-             ruv_negcon = negcon,
-             k_qc=3, k_ruv = 3, 
-             adjust_bio="no", 
-            
-             eval_poscon = poscon, # Positive controls for evaluation
-             
-             run=TRUE, params = params, # Additional params
-             eval_kclust = 2:6,stratified_pam = TRUE,
-             return_norm = "in_memory",
-             rezero = TRUE)
+my_scone <- scone(my_scone,
+                  imputation = imputation, impute_args = impute_args,
+                  scaling=scaling, 
+                  
+                  run=TRUE,
+                  eval_kclust = 2:6,stratified_pam = TRUE,
+                  return_norm = "in_memory",
+                  rezero = TRUE)
 
 ```
 
@@ -471,9 +474,16 @@ In the call above, we have set the following parameter arguments:
 
 The output will contain a list of four elements:
 
-```{r scone_view1}
+```{r scone_view1, eval = FALSE}
 
-names(res)
+# View Scores
+head(get_scores(my_scone))
+
+# View Mean Score Rank
+head(get_score_ranks(my_scone))
+
+# Look at normalized data from top method
+head(get_normalized(my_scone,method = rownames(get_params(my_scone))[1]))
 
 ```
 
@@ -483,7 +493,7 @@ names(res)
 
 ```{r scone_view2}
 
-head(res$scores)
+#head(res$scores)
 
 ```
 
@@ -493,8 +503,8 @@ Based on our sorting criteria, it would appear that `none,deseqp,ruv_k=1,no_bio,
 
 ```{r biplot_colored}
 
-pc_obj = prcomp(apply(na.omit(t(res$scores[,-ncol(res$scores)])),1,rank),center = TRUE,scale = FALSE)
-bp_obj = biplot_colored(pc_obj,y = -res$scores[,ncol(res$scores)],expand = .6)
+pc_obj = prcomp(apply(t(get_scores(my_scone)),1,rank),center = TRUE,scale = FALSE)
+bp_obj = biplot_colored(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
 
 ```
 
@@ -502,16 +512,16 @@ We have colored each point above according the corresponding method's mean score
 
 ```{r biplot_colored4}
 
-bp_obj = biplot_colored(pc_obj,y = -res$scores[,ncol(res$scores)],expand = .6)
+bp_obj = biplot_colored(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
 
 points(t(bp_obj[1,]), pch = 1, col = "red", cex = 1)
 points(t(bp_obj[1,]), pch = 1, col = "red", cex = 1.5)
 
-points(t(bp_obj[rownames(bp_obj) == rownames(params)[1],]), pch = 1, col = "blue", cex = 1)
-points(t(bp_obj[rownames(bp_obj) == rownames(params)[1],]), pch = 1, col = "blue", cex = 1.5)
+points(t(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",]), pch = 1, col = "blue", cex = 1)
+points(t(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",]), pch = 1, col = "blue", cex = 1.5)
 
-arrows(bp_obj[rownames(bp_obj) == rownames(params)[1],][1],
-       bp_obj[rownames(bp_obj) == rownames(params)[1],][2],
+arrows(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",][1],
+       bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",][2],
        bp_obj[1,][1],
        bp_obj[1,][2],
        lty = 2, lwd = 2)
@@ -524,7 +534,16 @@ Finally, another useful function for browsing results is `sconeReport`. This fun
 
 ```{r sconeReport, eval=FALSE}
 
-sconeReport(scone_res = res,
+scone_methods = c(rownames(get_params(my_scone))[1:12],"none,none,no_uv,no_bio,no_batch")
+scone_res = list()
+scone_res$normalized_data = lapply(as.list(scone_methods), 
+      FUN = function(x){get_normalized(my_scone,method = x,log=TRUE)})
+names(scone_res$normalized_data) = scone_methods
+scone_res$params = get_params(my_scone)[scone_methods,]
+scone_res$scores = cbind(get_scores(my_scone),get_score_ranks(my_scone))[scone_methods,]
+colnames(scone_res$scores)[ncol(scone_res$scores)] = "mean_score_rank"
+
+sconeReport(scone_res = scone_res,
             qc = ppq,
             bio = bio,
             negcon = negcon, poscon = poscon)
