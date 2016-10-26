@@ -303,10 +303,14 @@ is_quality = rowSums(assay(fluidigm) >= num_reads ) >= num_cells
 
 # Running and Scoring Normalization Workflows with `scone`
 
-Not only does `scone` normalize expression data, but it also provides a framework for evaluating the performance of normalization workflows. In order to run the main `scone` function, we will need to decide which workflows (normalizations) we will want to compare. Prior to running `scone` we will want to define several input arguments.
+Not only does `scone` normalize expression data, but it also provides a framework for evaluating the performance of normalization workflows. 
 
+## Creating a SconeExperiment Object
 
-```{r scone_in1}
+Prior to running main `scone` function we will want to define a `sconeExperiment` object that contains the primary expression data, experimental metadata, and control gene sets.
+
+```{r scone_init}
+
 
 # Expression Data (Required)
 expr = assay(goodDat)[is_quality,]
@@ -324,9 +328,18 @@ poscon = intersect(rownames(expr),strsplit("ALS2, CDK5R1, CYFIP1, DPYSL5, FEZ1, 
 # Negative Control Genes - Uniformly expressed transcripts (Optional)
 negcon = intersect(rownames(expr),hk)
 
+# Creating a SconeExperiment Object
+my_scone <- sconeExperiment(expr,
+                qc=ppq, bio = bio,
+                negcon_ruv = rownames(expr) %in% negcon,
+                poscon = rownames(expr) %in% poscon
+)
+
 ```
 
-We will also need to specify the types of scaling functions we will consider in the comparison of normalizations:
+## Defining Normalization Modules
+
+Before we can decide which workflows (normalizations) we will want to compare, we will also need to define the types of scaling functions we will consider in the comparison of normalizations:
 
 ```{r scone_in2}
 
@@ -384,21 +397,9 @@ impute_args = list(p_nodrop = fnr_out$p_nodrop, mu = exp(fnr_out$Alpha[1,]))
 
 ```
 
-## Creating a SconeExperiment Object
-
-```{r scone_init}
-
-my_scone <- sconeExperiment(expr, # Primary expression data
-                qc=ppq, bio = bio, # QC metrics and sample metadata
-                negcon_ruv = rownames(expr) %in% negcon, # Negative controls for both normalization and evaluation
-                poscon = rownames(expr) %in% poscon # Positive controls for evaluation
-)
-
-```
-
 ## Selecting SCONE Workflows
 
-The main `scone` function arguments allow for a lot of flexibility, but a user may choose to run very specific combinations of modules. For this purpose, `scone` can be run in `run=FALSE` mode, generating a list of workflows to be performed.
+The main `scone` method arguments allow for a lot of flexibility, but a user may choose to run very specific combinations of modules. For this purpose, `scone` can be run in `run=FALSE` mode, generating a list of workflows to be performed and storing this list within a `sconeExperiment` object. After running this command the list can be extracted using the `get_params` method.
 
 ```{r scone_params}
 
@@ -417,7 +418,7 @@ In the call above, we have set the following parameter arguments:
 
 * k_ruv = 3. The maximum number of RUVg factors to consider.
 * k_qc = 3. The maximum number of quality PCs (QPCs) to be included in a linear model, analogous to RUVg normalization. The qc argument must be provided.
-* adjust_bio = "no." Biological origin will NOT be included in RUVg or QPC regression models. The bio argument must be provided for evaluation purposes.
+* adjust_bio = "no." Biological origin will NOT be included in RUVg or QPC regression models. The bio argument will be provided for evaluation purposes.
 
 These arguments translate to the following set of options:
 
@@ -427,7 +428,7 @@ apply(get_params(my_scone),2,unique)
 
 ```
 
-Some scaling methods, such as scaling by gene detection rate (`EFF_FN()`), will not make sense within the context of imputed data, as imputation replaces zeroes with non-zero values. We can remove unnessary rows from `params` to produce a data frame of meaningful normalization workflows.
+Some scaling methods, such as scaling by gene detection rate (`EFF_FN()`), will not make sense within the context of imputed data, as imputation replaces zeroes with non-zero values. We can use the `select_methods` method to produce a `sconeExperiment` object initialized to run only meaningful normalization workflows.
 
 ```{r scone_params_filt}
 
@@ -439,7 +440,7 @@ my_scone = select_methods(my_scone, rownames(get_params(my_scone))[!is_screened 
 
 ## Calling `scone` with `run=TRUE`
 
-Now that we have selected our workflows, we can run `scone` in `run=TRUE` mode. This mode relies on a few additional arguments, including an optional `params` argument for passing results from a `run=FALSE` run. In order to understand these arguments, we must first understand the 8 metrics used to evaluate each normalization. The first 6 metrics rely on a reduction of the normalized data down to 3 dimensions via PCA (default). Each metric is taken to have a positive (higher is better) or negative (lower is better) signature.
+Now that we have selected our workflows, we can run `scone` in `run=TRUE` mode. As well as arguments used in `run=FALSE` mode, this mode relies on a few additional arguments. In order to understand these arguments, we must first understand the 8 metrics used to evaluate each normalization. The first 6 metrics rely on a reduction of the normalized data down to 3 dimensions via PCA (default). Each metric is taken to have a positive (higher is better) or negative (lower is better) signature.
 
 * BIO_SIL: Preservation of Biological Difference. The average silhouette width of clusters defined by `bio`, defined with respect to a Euclidean distance metric over the first 3 expression PCs. Positive signature.
 * BATCH_SIL: Removal of Batch Structure. The average silhouette width of clusters defined by `batch`, defined with respect to a Euclidean distance metric over the first 3 expression PCs. Negative signature.
@@ -469,33 +470,25 @@ In the call above, we have set the following parameter arguments:
 
 * eval_kclust = 2:6. For PAM_SIL, range of k (# of clusters) to use when computing maximum average silhouette width of PAM clusterings.
 * stratified_pam = TRUE. For PAM_SIL, apply separate PAM clusterings to each biological batch rather than across all batches. Average is weighted by batch group size.
-* return_norm = "in_memory". Return all normalized matrices in addition to evaluation data. Otherwise normalized data is not returned in the results.
+* return_norm = "in_memory". Store all normalized matrices in addition to evaluation data. Otherwise normalized data is not returned in the resulting object.
 * rezero = TRUE. Restore data entries that are originally zeroes back to zero after the scaling step.
 
-The output will contain a list of four elements:
+The output will contain various updated elements:
 
-```{r scone_view1, eval = FALSE}
+```{r scone_view1}
 
-# View Scores
+# View Metric Scores
 head(get_scores(my_scone))
 
 # View Mean Score Rank
 head(get_score_ranks(my_scone))
 
-# Look at normalized data from top method
-head(get_normalized(my_scone,method = rownames(get_params(my_scone))[1]))
+# Extract normalized data from top method
+out_norm = get_normalized(my_scone,method = rownames(get_params(my_scone))[1])
 
 ```
 
-`normalized_data` contains a list of normalized expression data (log-scale); each expression matrix is named according to the same convention as seen in the row names of the `params` argument.
-
-`metrics` contains the 8 raw metrics for each normalization. `scores` contains metrics multiplied by their signature - or "scores" - as well as a 9th column that contains the mean score rank for that normalization. Normalization workflows in `normalized_data`,`metrics`, and `scores` are sorted in decreasing order by mean score rank. 
-
-```{r scone_view2}
-
-#head(res$scores)
-
-```
+`get_scores` returns the 8 raw metrics for each normalization multiplied by their signature - or "scores." `get_score_ranks` returns the mean score rank for each normalization. Both of these are sorted in decreasing order by mean score rank. Finally `get_normalized` returns the normalized expression data for the requested method. If the normalized data isn't stored in the object it will be recomputed.
 
 # Step 3: Selecting a normalization for downstream analysis
 
@@ -534,15 +527,24 @@ Finally, another useful function for browsing results is `sconeReport`. This fun
 
 ```{r sconeReport, eval=FALSE}
 
+# Methods to consider
 scone_methods = c(rownames(get_params(my_scone))[1:12],"none,none,no_uv,no_bio,no_batch")
+
 scone_res = list()
+
+# List of normalized matrices
 scone_res$normalized_data = lapply(as.list(scone_methods), 
       FUN = function(x){get_normalized(my_scone,method = x,log=TRUE)})
 names(scone_res$normalized_data) = scone_methods
+
+# Parameter matrix
 scone_res$params = get_params(my_scone)[scone_methods,]
+
+# Merged score matrix
 scone_res$scores = cbind(get_scores(my_scone),get_score_ranks(my_scone))[scone_methods,]
 colnames(scone_res$scores)[ncol(scone_res$scores)] = "mean_score_rank"
 
+# Shiny app
 sconeReport(scone_res = scone_res,
             qc = ppq,
             bio = bio,
