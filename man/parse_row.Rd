@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{parse_row}
 \alias{parse_row}
-\title{Internal Function}
+\title{Parse rows}
 \usage{
 parse_row(pars, bio, batch, ruv_factors, qc)
 }

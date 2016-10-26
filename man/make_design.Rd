@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{make_design}
 \alias{make_design}
-\title{Function to make a design matrix}
+\title{Make a Design Matrix}
 \usage{
 make_design(bio, batch, W, nested = FALSE)
 }

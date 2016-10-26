@@ -4,12 +4,10 @@
 \alias{biplot_interactive}
 \title{Interactive biplot}
 \usage{
-biplot_interactive(data, scores, ...)
+biplot_interactive(x, ...)
 }
 \arguments{
-\item{data}{a data.frame containing the data to be plotted.}
-
-\item{scores}{a numeric vector used to color the points.}
+\item{x}{a \code{\link{sconeExperiment}} object.}
 
 \item{...}{passed to \code{\link{biplot_colored}}.}
 }
@@ -24,10 +22,12 @@ Since this is based on the shiny gadget feature, it will not work in
 }
 \examples{
 \dontrun{
-mat <- matrix(rnorm(1000), ncol=10)
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-
-biplot_interactive(mat, mat[,1])
+obj <- sconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+biplot_interactive(res)
 }
 }
 

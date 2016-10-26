@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{lm_adjust}
 \alias{lm_adjust}
-\title{Function to perform linear batch effect correction}
+\title{Linear Batch Effect Correction}
 \usage{
 lm_adjust(log_expr, design_mat, batch = NULL, weights = NULL)
 }
