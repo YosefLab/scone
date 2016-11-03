@@ -2,17 +2,20 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{UQ_FN_POS}
 \alias{UQ_FN_POS}
-\title{Upper-quartile normalization applied to positive data.}
+\title{Upper-quartile normalization derived from positive data.}
 \usage{
 UQ_FN_POS(ei)
 }
 \arguments{
-\item{ei}{= Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.}
+\item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-Upper-quartile (positive) normalized matrix (scaled by sample UQ)
+Upper-quartile (positive) normalized matrix.
 }
 \description{
-Upper-quartile normalization applied to positive data.
+Upper-quartile normalization derived from positive data.
+}
+\details{
+SCONE scaling function scales expression data by upper quartile of positive data.
 }
 

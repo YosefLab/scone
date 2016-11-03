@@ -2,17 +2,20 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{DESEQ_FN_POS}
 \alias{DESEQ_FN_POS}
-\title{DESeq normalization applied to positive data.}
+\title{DESeq size factor normalization derived from positive data.}
 \usage{
 DESEQ_FN_POS(ei)
 }
 \arguments{
-\item{ei}{= Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.}
+\item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-DESeq (positive) normalized matrix (scaled by sample )
+DESeq size factor (positive) normalized matrix.
 }
 \description{
-DESeq normalization applied to positive data.
+DESeq size factor normalization derived from positive data.
+}
+\details{
+SCONE scaling function scales expression data by DESeq size factor derived from positive data.
 }
 

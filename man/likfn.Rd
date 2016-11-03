@@ -2,7 +2,7 @@
 % Please edit documentation in R/ziber.R
 \name{likfn}
 \alias{likfn}
-\title{Likelihood function of the logistic model}
+\title{Likelihood Function of the Logistic Model}
 \usage{
 likfn(Z, X, Beta)
 }
@@ -14,6 +14,6 @@ likfn(Z, X, Beta)
 \item{Beta}{gene-level values}
 }
 \description{
-Likelihood function of the logistic model
+Likelihood Function of the Logistic Model
 }
 

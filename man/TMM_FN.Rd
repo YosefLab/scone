@@ -2,17 +2,20 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{TMM_FN}
 \alias{TMM_FN}
-\title{TMM normalization wrapper.}
+\title{Weighted trimmed mean of M-values (TMM) normalization wrapper.}
 \usage{
 TMM_FN(ei)
 }
 \arguments{
-\item{ei}{= Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.}
+\item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-TMM normalized matrix (scaled by sample )
+TMM normalized matrix.
 }
 \description{
-TMM normalization wrapper.
+Weighted trimmed mean of M-values (TMM) normalization wrapper.
+}
+\details{
+SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
 }
 

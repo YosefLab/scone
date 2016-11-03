@@ -2,17 +2,20 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{DESEQ_FN}
 \alias{DESEQ_FN}
-\title{DESeq normalization wrapper.}
+\title{DESeq size factor normalization wrapper.}
 \usage{
 DESEQ_FN(ei)
 }
 \arguments{
-\item{ei}{= Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.}
+\item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-DESeq normalized matrix (scaled by sample )
+DESeq size factor normalized matrix.
 }
 \description{
-DESeq normalization wrapper.
+DESeq size factor normalization wrapper.
+}
+\details{
+SCONE scaling wrapper for \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
 }
 
