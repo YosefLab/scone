@@ -103,3 +103,15 @@ TMM_FN = function(ei){
   return(eo)
 }
 
+#' LSF normalization wrapper.
+#' @importFrom scran computeSumFactors
+#' @importFrom scran quickCluster
+#' @export
+#' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
+#' @return LSF normalized matrix (scaled by sample )
+LSF_FN = function(ei){
+  clusters <- quickCluster(ei, min.size = 20)
+  size_fac = computeSumFactors(ei, cluster=clusters, sf.out = TRUE)
+  eo = t(t(ei)/size_fac)
+  return(eo)
+}
