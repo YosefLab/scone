@@ -16,7 +16,7 @@ select_methods(x, methods)
 \arguments{
 \item{x}{a \code{SconeExperiment} object.}
 
-\item{method}{either character or numeric specifying the normalizations to select.}
+\item{methods}{either character or numeric specifying the normalizations to select.}
 }
 \description{
 This method let a user extract a subset of normalizations. This

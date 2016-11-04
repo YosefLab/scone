@@ -68,7 +68,7 @@ setGeneric(
 #'   performing methods for additional exploration.
 #'
 #' @param x a \code{SconeExperiment} object.
-#' @param method either character or numeric specifying the normalizations to select.
+#' @param methods either character or numeric specifying the normalizations to select.
 #'
 setGeneric(
   name = "select_methods",
