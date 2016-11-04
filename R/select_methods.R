@@ -22,6 +22,11 @@ setMethod(
 
     retval@scone_params <- x@scone_params[methods,]
 
+    if(!all(is.na(x@scone_scores))) {
+      retval@scone_scores <- x@scone_scores[methods,]
+      retval@scone_metrics <- x@scone_metrics[methods,]
+    }
+
     validObject(retval)
     return(retval)
   }

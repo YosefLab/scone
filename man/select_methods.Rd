@@ -13,6 +13,11 @@ select_methods(x, methods)
 
 \S4method{select_methods}{SconeExperiment,numeric}(x, methods)
 }
+\arguments{
+\item{x}{a \code{SconeExperiment} object.}
+
+\item{method}{either character or numeric specifying the normalizations to select.}
+}
 \description{
 This method let a user extract a subset of normalizations. This
   is useful when the original dataset is large and/or many normalization

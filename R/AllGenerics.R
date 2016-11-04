@@ -67,6 +67,9 @@ setGeneric(
 #'   \code{return_norm = "no"}, explore the results, and then select the top
 #'   performing methods for additional exploration.
 #'
+#' @param x a \code{SconeExperiment} object.
+#' @param method either character or numeric specifying the normalizations to select.
+#'
 setGeneric(
   name = "select_methods",
   def = function(x, methods) {
