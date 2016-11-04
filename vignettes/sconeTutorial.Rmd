@@ -16,7 +16,7 @@ vignette: >
 -->
 
 ```{r options, results="hide", include=FALSE, cache=FALSE, results='hide', message=FALSE}
-knitr::opts_chunk$set(fig.align="center", cache=TRUE,error=FALSE,
+knitr::opts_chunk$set(fig.align="center", cache=FALSE,error=FALSE,
 fig.width=6,fig.height=6,autodep=TRUE,out.width="600px",out.height="600px", results="markup", echo=TRUE, eval=TRUE)
 options(getClass.msg=FALSE)
 
@@ -373,7 +373,6 @@ scaling=list(none=identity, # Identity - do nothing
              uq = UQ_FN,
              uqp = UQ_FN_POS,
              fq = FQT_FN,
-             fqp = FQ_FN_POS,
              deseq=DESEQ_FN,
              deseqp=DESEQ_FN_POS)
 
@@ -432,7 +431,7 @@ Some scaling methods, such as scaling by gene detection rate (`EFF_FN()`), will 
 
 ```{r scone_params_filt}
 
-is_screened = ((get_params(my_scone)$imputation_method == "expect") & (get_params(my_scone)$scaling_method %in% c("none","deseqp","uqp","fqp","eff")))
+is_screened = ((get_params(my_scone)$imputation_method == "expect") & (get_params(my_scone)$scaling_method %in% c("none","deseqp","uqp","eff")))
 
 my_scone = select_methods(my_scone, rownames(get_params(my_scone))[!is_screened ])
 
