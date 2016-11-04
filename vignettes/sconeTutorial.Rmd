@@ -380,7 +380,7 @@ scaling=list(none=identity, # Identity - do nothing
 
 If imputation is to be included in the comparison, imputation arguments must also be provided by the user:
 
-```{r scone_in3}
+```{r scone_in3, eval=FALSE}
 
 # Simple FNR model estimation with SCONE::estimate_ziber
 fnr_out = estimate_ziber(x = expr, bulk_model = TRUE,
@@ -394,7 +394,15 @@ imputation=list(none=impute_null, # No imputation
 ## ----- Imputation Function Arguments, accessible by functions in imputation list argument ----- 
 impute_args = list(p_nodrop = fnr_out$p_nodrop, mu = exp(fnr_out$Alpha[1,]))
 
+my_scone <- scone(my_scone,
+                imputation = imputation, impute_args = impute_args,
+                scaling=scaling, 
+                k_qc=3, k_ruv = 3,
+                adjust_bio="no", 
+                run=FALSE)
 ```
+
+Note, that because the imputation step is quite slow, we do not run it here, but will run scone without imputation.
 
 ## Selecting SCONE Workflows
 
@@ -403,7 +411,6 @@ The main `scone` method arguments allow for a lot of flexibility, but a user may
 ```{r scone_params}
 
 my_scone <- scone(my_scone,
-                imputation = imputation, impute_args = impute_args,
                 scaling=scaling, 
                 k_qc=3, k_ruv = 3,
                 adjust_bio="no", 
@@ -429,7 +436,7 @@ apply(get_params(my_scone),2,unique)
 
 Some scaling methods, such as scaling by gene detection rate (`EFF_FN()`), will not make sense within the context of imputed data, as imputation replaces zeroes with non-zero values. We can use the `select_methods` method to produce a `sconeExperiment` object initialized to run only meaningful normalization workflows.
 
-```{r scone_params_filt}
+```{r scone_params_filt, eval=FALSE}
 
 is_screened = ((get_params(my_scone)$imputation_method == "expect") & (get_params(my_scone)$scaling_method %in% c("none","deseqp","uqp","eff")))
 
@@ -455,9 +462,7 @@ Now that we have selected our workflows, we can run `scone` in `run=TRUE` mode. 
 BiocParallel::register(BiocParallel::SerialParam()) # Register BiocParallel Serial Execution
 
 my_scone <- scone(my_scone,
-                  imputation = imputation, impute_args = impute_args,
                   scaling=scaling, 
-                  
                   run=TRUE,
                   eval_kclust = 2:6,stratified_pam = TRUE,
                   return_norm = "in_memory",
