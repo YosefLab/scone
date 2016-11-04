@@ -27,7 +27,6 @@ Imports:
   grDevices,
   hexbin,
   limma,
-  MASS,
   matrixStats,
   mixtools,
   RColorBrewer,
