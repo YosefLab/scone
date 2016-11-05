@@ -126,7 +126,7 @@ test_that("Test imputation and scaling", {
                          bio = as.factor(bio), batch=as.factor(batch))
 
   # factorial
-  res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=FALSE, run=TRUE)
@@ -137,13 +137,13 @@ test_that("Test imputation and scaling", {
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
-  obj <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  obj <- scone(obj, imputation=list(none=impute_null),
                   scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                   k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                   evaluate=FALSE, run=FALSE)
   obj@scone_params <- obj@scone_params[-(1:5),]
 
-  res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=FALSE, run=TRUE)
@@ -157,7 +157,7 @@ test_that("Test imputation and scaling", {
                          negcon_eval=eval_negcon, poscon=eval_poscon,
                          bio=as.factor(bio), batch=as.factor(batch))
 
-  system.time(res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  system.time(res <- scone(obj, imputation=list(none=impute_null),
                            scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                            k_ruv=5, k_qc=2, adjust_bio="yes",
                            adjust_batch="yes", run=TRUE, evaluate=TRUE,
@@ -168,7 +168,7 @@ test_that("Test imputation and scaling", {
   expect_equal(rownames(res@scone_metrics), rownames(res@scone_params))
   expect_equal(rownames(res@scone_metrics), names(assays(res)))
 
-  res2 <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res2 <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=5, k_qc=2, adjust_bio="yes", adjust_batch="yes", run=TRUE,
                evaluate=FALSE, eval_kclust = 2, verbose=FALSE,
@@ -209,7 +209,7 @@ test_that("conditional PAM",{
   obj <- sconeExperiment(e, qc=qc_mat, bio=bio,
                          negcon_eval = eval_negcon, poscon=eval_poscon)
 
-  res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=0, k_qc=0, adjust_bio="yes", run=FALSE,
                evaluate=TRUE, eval_kclust = 2, stratified_pam = TRUE)
@@ -217,7 +217,7 @@ test_that("conditional PAM",{
   obj <- sconeExperiment(e, qc=qc_mat, bio=bio, batch=batch,
                          negcon_eval = eval_negcon, poscon=eval_poscon)
 
-  expect_error(res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  expect_error(res <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=0, k_qc=0, adjust_bio="yes", adjust_batch="yes", run=FALSE,
                evaluate=TRUE, eval_kclust = 6, stratified_pam = TRUE),
@@ -225,7 +225,7 @@ test_that("conditional PAM",{
 
   obj <- sconeExperiment(e, qc=qc_mat, negcon_eval = eval_negcon, poscon=eval_poscon)
 
-  expect_error(res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  expect_error(res <- scone(obj, imputation=list(none=impute_null),
                             scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                             k_ruv=0, k_qc=0, run = FALSE,
                             evaluate = TRUE,

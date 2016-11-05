@@ -15,7 +15,7 @@ test_that("hd5 checks", {
   obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # factorial
-  expect_error(scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  expect_error(scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=FALSE, run=TRUE, return_norm = "hdf5"),
@@ -23,7 +23,7 @@ test_that("hd5 checks", {
 
   BiocParallel::register(BiocParallel::bpparam("MulticoreParam"))
 
-  expect_error(scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  expect_error(scone(obj, imputation=list(none=impute_null),
                      scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                      k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                      evaluate=FALSE, run=TRUE, return_norm = "hdf5", hdf5file = "/tmp/tmp"),
@@ -44,7 +44,7 @@ test_that("return_norm in memory", {
   obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # factorial
-  res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res <- scone(obj, imputation=list(none=impute_null),
                      scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                      k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                      evaluate=FALSE, run=TRUE, return_norm = "in_memory")
@@ -65,7 +65,7 @@ test_that("do not return_norm", {
   obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # factorial
-  res <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=FALSE, run=TRUE, return_norm = "no")

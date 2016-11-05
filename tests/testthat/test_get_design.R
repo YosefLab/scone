@@ -15,13 +15,13 @@ test_that("get_normalized works in all three modes", {
                          bio = as.factor(bio), batch=as.factor(batch))
 
   # return_norm = no
-  res1 <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res1 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=FALSE, run=TRUE)
 
   # return_norm = in_memory
-  res2 <- scone(obj, imputation=list(none=impute_null, zinb=impute_zinb),
+  res2 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=FALSE, run=TRUE, return_norm="in_memory")
@@ -33,8 +33,8 @@ test_that("get_normalized works in all three modes", {
   expect_equal(all1, all2)
 
   #get_normalized should give the same results in three modes
-  gn1 <- get_design(res1, 50)
-  gn2 <- get_design(res2, 50)
+  gn1 <- get_design(res1, 30)
+  gn2 <- get_design(res2, 30)
 
   expect_equal(gn1, gn2)
 
