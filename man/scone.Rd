@@ -14,7 +14,7 @@ scone(x, ...)
   "force"), run = TRUE, evaluate = TRUE, eval_pcs = 3, eval_proj = NULL,
   eval_proj_args = NULL, eval_kclust = 2:10, verbose = FALSE,
   stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
-  hdf5file)
+  hdf5file, bpparam = BiocParallel::bpparam())
 }
 \arguments{
 \item{x}{a \code{\link{SconeExperiment}} object.}
@@ -81,6 +81,10 @@ they will be written on file using the \code{rhdf5} package.}
 
 \item{hdf5file}{character. If \code{return_norm="hdf5"}, the name of the file
 onto which to save the normalized matrices.}
+
+\item{bpparam}{object of class \code{bpparamClass} that specifies the
+back-end to be used for computations. See
+\code{\link[BiocParallel]{bpparam}} for details.}
 }
 \value{
 A \code{\link{SconeExperiment}} object with the
