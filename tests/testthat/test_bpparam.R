@@ -18,34 +18,41 @@ test_that("all back-ends work", {
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-               eval_kclust=2, bpparam=SerialParam())
+               eval_kclust=2, bpparam=BiocParallel::SerialParam())
 
   # multicore
   res2 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                eval_kclust=2, bpparam=MulticoreParam(2))
+                eval_kclust=2, bpparam=BiocParallel::MulticoreParam(2))
 
   # snow
   res3 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                eval_kclust=2, bpparam=SnowParam(workers=2, type="SOCK"))
+                eval_kclust=2, bpparam=BiocParallel::SnowParam(workers=2, type="SOCK"))
 
   res4 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                eval_kclust=2, bpparam=SnowParam(workers=2, type="FORK"))
+                eval_kclust=2, bpparam=BiocParallel::SnowParam(workers=2, type="FORK"))
+
+  expect_equal(res1, res2)
+  expect_equal(res1, res3)
+  expect_equal(res1, res4)
 
   # batch jobs
-  res5 <- scone(obj, imputation=list(none=impute_null),
+  if(require(BatchJobs)) {
+    res5 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                eval_kclust=2, bpparam=BatchJobsParam(2))
+                eval_kclust=2, bpparam=BiocParallel::BatchJobsParam(2))
+    expect_equal(res1, res5)
+  }
 
   if(require(doParallel)) {
     registerDoParallel(2)
@@ -53,14 +60,10 @@ test_that("all back-ends work", {
                   scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                   k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                   evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                  eval_kclust=2, bpparam=DoparParam())
+                  eval_kclust=2, bpparam=BiocParallel::DoparParam())
     expect_equal(res1, res6)
   }
 
-  expect_equal(res1, res2)
-  expect_equal(res1, res3)
-  expect_equal(res1, res4)
-  expect_equal(res1, res5)
 })
 
 
