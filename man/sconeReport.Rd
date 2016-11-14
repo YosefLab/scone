@@ -34,7 +34,6 @@ This function opens a shiny application session for visualizing performance
 of a variety of normalization schemes.
 }
 \examples{
-\\donotrun{
 mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- sconeExperiment(mat)
@@ -43,7 +42,9 @@ res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
 rownames(qc) = colnames(mat)
 colnames(qc) = c("NCOUNTS","NGENES")
-sconeReport(res,rownames(get_params(res)), qc = qc)}
+\dontrun{
+sconeReport(res,rownames(get_params(res)), qc = qc)
+}
 
 }
 

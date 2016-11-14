@@ -23,7 +23,9 @@
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #' evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' \dontrun{
 #' biplot_interactive(res)
+#' }
 #' 
 biplot_interactive <- function(x, ...) {
 

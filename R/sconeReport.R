@@ -28,7 +28,6 @@
 #' @return An object that represents the SCONE report app.
 #' 
 #' @examples
-#' \donotrun{
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
@@ -37,7 +36,9 @@
 #' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
 #' rownames(qc) = colnames(mat)
 #' colnames(qc) = c("NCOUNTS","NGENES")
-#' sconeReport(res,rownames(get_params(res)), qc = qc)}
+#' \dontrun{
+#' sconeReport(res,rownames(get_params(res)), qc = qc)
+#' }
 #' 
 sconeReport = function(x, methods,
                        qc, 
