@@ -149,7 +149,7 @@ setMethod(
     if(missing(hdf5file)) {
       stop("If `return_norm='hdf5'`, `hdf5file` must be specified.")
     } else {
-      if(BiocParallel::bpnworkers(BiocParallel::registered()[[1]]) > 1) {
+      if(BiocParallel::bpnworkers(bpparam) > 1) {
         stop("At the moment, `return_norm='hdf5'` does not support multicores.")
       }
       stopifnot(h5createFile(hdf5file))
