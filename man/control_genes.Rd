@@ -29,27 +29,35 @@ Note that the gene symbols follow the mouse conventions (i.e.,
   to convert symbols.
 
 
-Mouse gene symbols in \code{cortical_markers} are transcribed from Figure 3 of Molyneaux
-  et al. (2007): "laminar-specific expression of 66 genes within the neocortex." 
+Mouse gene symbols in \code{cortical_markers} are transcribed from
+  Figure 3 of Molyneaux et al. (2007): "laminar-specific expression of 66
+  genes within the neocortex."
 
 
-Human gene symbols in \code{housekeeping} are derived from the list of "housekeeping" (HK) genes from 
-  the cDNA microarray analysis of Eisenberg and Levanon (2003): "[HK genes] belong to the class of
-  genes that are EXPRESSED in all tissues." "... from 47 different human tissues and cell lines."
-    
+Human gene symbols in \code{housekeeping} are derived from the list
+  of "housekeeping" (HK) genes from the cDNA microarray analysis of Eisenberg
+  and Levanon (2003): "[HK genes] belong to the class of genes that are
+  EXPRESSED in all tissues." "... from 47 different human tissues and cell
+  lines."
 
-Human gene symbols in \code{housekeeping_revised} are from Eisenberg and Levanon (2013): "This list 
- provided ... is based on analysis of next-generation sequencing (RNA-seq) data. At least one variant of these 
- genes is expressed in all tissues uniformly... The RefSeq transcript according to which we deemed the gene 
- 'housekeeping' is given." Housekeeping exons satisfy "(i) expression observed in all tissues; (ii) low 
- variance over tissues: standard-deviation [log2(RPKM)]<1; and (iii) no exceptional expression in any single
- tissue; that is, no log-expression value differed from the averaged log2(RPKM) by two (fourfold) or more." 
- "We define a housekeeping gene as a gene for which at least one RefSeq transcript has more than half of 
- its exons meeting the previous criteria (thus being housekeeping exons)."
-  
 
-Gene symbols in \code{cellcycle_genes} represent a set of genes marking G1/S and G2/M. No reference
- provided.
+Human gene symbols in \code{housekeeping_revised} are from Eisenberg
+  and Levanon (2013): "This list provided ... is based on analysis of
+  next-generation sequencing (RNA-seq) data. At least one variant of these
+  genes is expressed in all tissues uniformly... The RefSeq transcript
+  according to which we deemed the gene 'housekeeping' is given."
+  Housekeeping exons satisfy "(i) expression observed in all tissues; (ii)
+  low variance over tissues: standard-deviation [log2(RPKM)]<1; and (iii) no
+  exceptional expression in any single tissue; that is, no log-expression
+  value differed from the averaged log2(RPKM) by two (fourfold) or more." "We
+  define a housekeeping gene as a gene for which at least one RefSeq
+  transcript has more than half of its exons meeting the previous criteria
+  (thus being housekeeping exons)."
+
+
+Human gene symbols in \code{cellcycle_genes} are from Macosko et al.
+  (2015) and represent a set of genes marking G1/S, S, G2/M, M, and M/G1
+  phases.
 }
 \examples{
 data(housekeeping)
@@ -67,5 +75,9 @@ Eisenberg E, Levanon EY. Human housekeeping genes are compact.
 
 Eisenberg E, Levanon EY. Human housekeeping genes, revisited.
   Trends in Genetics, 2013, 29(10):569-74.
+
+Macosko, E. Z., et al. Highly parallel genome-wide expression
+  profiling of individual cells using nanoliter droplets. Cell, 2015,
+  161.5:1202-1214.
 }
 
