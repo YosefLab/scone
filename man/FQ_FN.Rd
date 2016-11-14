@@ -23,4 +23,12 @@ SCONE "scaling" wrapper for \code{\link[aroma.light]{normalizeQuantileRank.matri
 
 FQT_FN handles ties carefully (see \code{\link[limma]{normalizeQuantiles}}).
 }
+\examples{
+ei <- matrix(0:20,nrow = 7)
+eo <- FQ_FN(ei)
+
+ei <- matrix(0:20,nrow = 7)
+eo <- FQT_FN(ei)
+
+}
 

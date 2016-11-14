@@ -1,7 +1,7 @@
 #' Class SconeExperiment
 #'
-#' @description Objects of this class store,  at the minimum, the original gene
-#'   expression matrix and a set of covariates (aka sample metadata) useful for
+#' @description Objects of this class store, at minimum, a gene
+#'   expression matrix and a set of covariates (sample metadata) useful for
 #'   running \code{\link{scone}}. These include, the quality control (QC)
 #'   metrics, batch information, and biological classes of interest (if
 #'   available).
@@ -10,7 +10,7 @@
 #'   via a call to the \code{\link{sconeExperiment}} function or to the
 #'   \code{\link{scone}} function. If the object is a result to a
 #'   \code{\link{scone}} call, it will contain the results, e.g., the
-#'   performance metrics, scores, and the normalization schemes compared. (See
+#'   performance metrics, scores, and normalization workflow comparisons. (See
 #'   Slots for a full list).
 #'
 #' @description This object extends the
@@ -284,6 +284,8 @@ setMethod(
 #' @param poscon a logical vector indicating which genes to use as positive controls.
 #'
 #' @export
+#' 
+#' @return A \code{\link{sconeExperiment}} object.
 #'
 setMethod(
   f = "sconeExperiment",

@@ -45,7 +45,7 @@ setMethod(
 
     }
 
-    parsed <- parse_row(params, get_bio(x), get_batch(x), ruv_factors, qc_factors)
+    parsed <- .parse_row(params, get_bio(x), get_batch(x), ruv_factors, qc_factors)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
                               nested=(x@nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
 

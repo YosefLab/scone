@@ -4,6 +4,11 @@
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Upper-quartile normalized matrix.
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' eo <- UQ_FN(ei)
+#' 
 UQ_FN = function(ei){
   eo = betweenLaneNormalization(ei, which="upper", round = FALSE)
   return(eo)
@@ -14,6 +19,12 @@ UQ_FN = function(ei){
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Upper-quartile (positive) normalized matrix.
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' ei[1:3,] <- 0
+#' eo <- UQ_FN_POS(ei)
+#' 
 UQ_FN_POS = function(ei){
   zei = ei
   is_zero = (ei == 0)
@@ -33,6 +44,11 @@ UQ_FN_POS = function(ei){
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Full-quantile normalized matrix.
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' eo <- FQ_FN(ei)
+#' 
 FQ_FN = function(ei){
   eo = normalizeQuantileRank.matrix(ei)
   return(eo)
@@ -41,6 +57,11 @@ FQ_FN = function(ei){
 #' @rdname FQ_FN
 #' @details FQT_FN handles ties carefully (see \code{\link[limma]{normalizeQuantiles}}).
 #' @export
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' eo <- FQT_FN(ei)
+#' 
 FQT_FN = function(ei){
   eo = normalizeQuantileRank.matrix(ei, ties = TRUE)
   return(eo)
@@ -52,6 +73,11 @@ FQT_FN = function(ei){
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return DESeq size factor normalized matrix.
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' eo <- DESEQ_FN(ei)
+#' 
 DESEQ_FN = function(ei){
   size_fac = estimateSizeFactorsForMatrix(ei)
   eo = t(t(ei)/size_fac)
@@ -63,6 +89,11 @@ DESEQ_FN = function(ei){
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return DESeq size factor (positive) normalized matrix.
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' ei[1:3,] <- 0
+#' eo <- DESEQ_FN_POS(ei)
 DESEQ_FN_POS = function(ei){
 
   if(any(ei < 0)){stop("Negative values in input.")}
@@ -97,13 +128,18 @@ DESEQ_FN_POS = function(ei){
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return TMM normalized matrix.
+#' 
+#' @examples
+#' ei <- matrix(0:20,nrow = 7)
+#' eo <- TMM_FN(ei)
+#' 
 TMM_FN = function(ei){
   size_fac = calcNormFactors(ei,method = "TMM")
   eo = t(t(ei)/size_fac)
   return(eo)
 }
 
-#' LSF normalization wrapper.
+#' Pooled Sample normalization wrapper.
 #'
 #' @description SCONE scaling wrapper for \code{\link[scran]{computeSumFactors}}
 #'   with clusters from \code{\link[scran]{quickCluster}}.
@@ -111,11 +147,22 @@ TMM_FN = function(ei){
 #' @importFrom scran computeSumFactors
 #' @importFrom scran quickCluster
 #' @export
-#' @param ei = Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.
-#' @return LSF normalized matrix (scaled by sample )
-LSF_FN = function(ei){
+#' @param ei Numerical matrix. (rows = genes, cols = samples).
+#' @return SCRAN size factor normalized matrix.
+#' 
+#' @examples
+#' set.seed(100)
+#' popsize <- 800
+#' ngenes <- 10000
+#' all.facs <- 2^rnorm(popsize, sd=0.5)
+#' mu1 = matrix(rep(all.facs*10,ngenes),nrow = ngenes,byrow = TRUE)
+#' mu2 = matrix(c(rep(2^rnorm(ngenes, sd=0.5),popsize/2), rep(2^rnorm(ngenes, sd=0.5),popsize/2)),ncol = popsize)
+#' ei <- matrix(rnbinom(ngenes*popsize, mu=as.vector(mu1*mu2), size=1), ncol=popsize)
+#' eo <- SCRAN_FN(ei)
+#' 
+SCRAN_FN = function(ei){
   clusters <- quickCluster(ei, min.size = 20)
-  size_fac = computeSumFactors(ei, cluster=clusters, sf.out = TRUE)
+  size_fac = computeSumFactors(ei, cluster=clusters)
   eo = t(t(ei)/size_fac)
   return(eo)
 }

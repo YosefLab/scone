@@ -11,7 +11,7 @@ vignette: >
 ---
 
 <!--
-%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEngine{rmarkdown::render}
 %\VignetteIndexEntry{scone Vignette}
 -->
 
@@ -203,7 +203,7 @@ So far we have only described potential problems with single-cell expression dat
 
 * Filter out poor libraries using the `metric_sample_filter` function.
 * Run and score many different normalization workflows (different combinations of normalization modules) using the main `scone` function.
-* Browse top-ranked methods and visualize trade-offs with the `biplot_colored` and `sconeReport` function.
+* Browse top-ranked methods and visualize trade-offs with the `biplot_color` and `sconeReport` function.
 
 In order to run many different workflows, SCONE relies on a normalization workflow template composed of 3 modules:
 
@@ -496,20 +496,20 @@ out_norm = get_normalized(my_scone,method = rownames(get_params(my_scone))[1])
 
 # Step 3: Selecting a normalization for downstream analysis
 
-Based on our sorting criteria, it would appear that `none,deseqp,ruv_k=1,no_bio,no_batch` performs well compared to other normalization workflows. A useful way to visualize this method with respect to others is the `biplot_colored` function
+Based on our sorting criteria, it would appear that `none,fq,no_uv,no_bio,no_batch` performs well compared to other normalization workflows. A useful way to visualize this method with respect to others is the `biplot_color` function
 
-```{r biplot_colored}
+```{r biplot_color}
 
 pc_obj = prcomp(apply(t(get_scores(my_scone)),1,rank),center = TRUE,scale = FALSE)
-bp_obj = biplot_colored(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
+bp_obj = biplot_color(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
 
 ```
 
 We have colored each point above according the corresponding method's mean score rank (yellow vs blue ~ good vs bad), and we can see that workflows span a continuum of metric performance. Most importantly - and perhaps to no surprise - there is evidence of strong trade-offs between i) Preserving clustering and wanted variation and ii) removing unwanted variation. At roughly 90 degrees to this axis is a direction in which distributional properties of relative log-expression (RLE_MED and RLE_IQR) improve. Let's visualize the top-performing method and it's relation to un-normalized data ("no-op" normalization): 
 
-```{r biplot_colored4}
+```{r biplot_color4}
 
-bp_obj = biplot_colored(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
+bp_obj = biplot_color(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
 
 points(t(bp_obj[1,]), pch = 1, col = "red", cex = 1)
 points(t(bp_obj[1,]), pch = 1, col = "red", cex = 1.5)
@@ -534,22 +534,8 @@ Finally, another useful function for browsing results is `sconeReport`. This fun
 # Methods to consider
 scone_methods = c(rownames(get_params(my_scone))[1:12],"none,none,no_uv,no_bio,no_batch")
 
-scone_res = list()
-
-# List of normalized matrices
-scone_res$normalized_data = lapply(as.list(scone_methods), 
-      FUN = function(x){get_normalized(my_scone,method = x,log=TRUE)})
-names(scone_res$normalized_data) = scone_methods
-
-# Parameter matrix
-scone_res$params = get_params(my_scone)[scone_methods,]
-
-# Merged score matrix
-scone_res$scores = cbind(get_scores(my_scone),get_score_ranks(my_scone))[scone_methods,]
-colnames(scone_res$scores)[ncol(scone_res$scores)] = "mean_score_rank"
-
 # Shiny app
-sconeReport(scone_res = scone_res,
+sconeReport(my_scone,methods = scone_methods,
             qc = ppq,
             bio = bio,
             negcon = negcon, poscon = poscon)

@@ -30,6 +30,16 @@ setGeneric(
 #' @param ... additional arguments for specific methods.
 #'
 #' @return A matrix of normalized counts in log-scale.
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' norm = get_normalized(res,1)
+#'            
+#' 
 setGeneric(
   name = "get_normalized",
   def = function(x, method, ...) {
@@ -50,6 +60,15 @@ setGeneric(
 #'   normalizations).
 #'
 #' @return The design matrix.
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' null_design = get_design(res,1)
+#' 
 setGeneric(
   name = "get_design",
   def = function(x, method) {
@@ -69,6 +88,16 @@ setGeneric(
 #'
 #' @param x a \code{SconeExperiment} object.
 #' @param methods either character or numeric specifying the normalizations to select.
+#' 
+#' @return A \code{SconeExperiment} object with selected method data.
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' select_res = select_methods(res,1:2)
 #'
 setGeneric(
   name = "select_methods",
@@ -137,6 +166,16 @@ setGeneric(
 #'
 #' @aliases get_scores get_score,SconeExperiment-method get_score_ranks
 #'   get_score_ranks,SconeExperiment-method
+#'   
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' scores = get_scores(res)
+#' score_ranks = get_score_ranks(res)
+#' 
 setGeneric(
   name = "get_scores",
   def = function(x) {
@@ -155,6 +194,14 @@ setGeneric(
 #' Extract scone parameters
 #'
 #' @aliases get_params get_params,SconeExperiment-method
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            run = FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' params = get_params(res)
+#' 
 setGeneric(
   name = "get_params",
   def = function(x) {

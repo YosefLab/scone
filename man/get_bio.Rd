@@ -20,7 +20,7 @@ get_batch(x)
 \item{x}{an object of class \code{\link{sconeExperiment}}.}
 }
 \value{
-NULL or a factor containing the bio or batch information.
+NULL or a factor containing bio or batch covariate.
 }
 \description{
 Get Factor of Biological Conditions and Batch

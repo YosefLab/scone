@@ -100,4 +100,13 @@ For each primary criterion (metric), a sample is evaluated based on 4
  thresholding via sd's from the mean (after mixture modeling) A sample must
  pass all sub-criteria to pass the primary criterion.
 }
+\examples{
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+rownames(qc) = colnames(mat)
+colnames(qc) = c("NCOUNTS","NGENES")
+mfilt = metric_sample_filter(expr = mat,nreads = qc[,"NCOUNTS"], plot = TRUE, hard_nreads = 0)
+
+}
 

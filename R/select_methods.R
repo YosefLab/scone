@@ -7,7 +7,7 @@
 #'
 setMethod(
   f = "select_methods",
-  signature = signature(x = "SconeExperiment", method = "character"),
+  signature = signature(x = "SconeExperiment", methods = "character"),
   definition =  function(x, methods) {
 
     if(!all(methods %in% rownames(x@scone_params))) {
@@ -46,7 +46,7 @@ setMethod(
 #'
 setMethod(
   f = "select_methods",
-  signature = signature(x = "SconeExperiment", method = "numeric"),
+  signature = signature(x = "SconeExperiment", methods = "numeric"),
   definition =  function(x, methods) {
 
     norm_methods <- rownames(x@scone_params)[methods]

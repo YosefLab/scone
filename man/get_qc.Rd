@@ -14,7 +14,7 @@ get_qc(x)
 \item{x}{an object of class \code{\link{sconeExperiment}}.}
 }
 \value{
-NULL or the QC matrix.
+NULL or the quality control (QC) metric matrix.
 }
 \description{
 Get Quality Control Matrix

@@ -7,11 +7,11 @@
 make_design(bio, batch, W, nested = FALSE)
 }
 \arguments{
-\item{bio}{factor. The biological factor of interest.}
+\item{bio}{factor. The biological covariate.}
 
-\item{batch}{factor. The known batch effects.}
+\item{batch}{factor. The batch covariate.}
 
-\item{W}{numeric. Either a vector or matrix containing one or more continuous covariates (e.g. RUV factors).}
+\item{W}{numeric. Either a vector or matrix containing one or more continuous covariates (e.g. RUVg factors).}
 
 \item{nested}{logical. Whether or not to consider a nested design (see details).}
 }
@@ -19,12 +19,12 @@ make_design(bio, batch, W, nested = FALSE)
 The design matrix.
 }
 \description{
-This function is useful to create a design matrix, when the covariates are two (possibly nested) factors
-and one or more continuous variables.
+This function builds a design matrix for the Adjustment Normalization Step, in which 
+covariates are two (possibly nested) categorical factors and one or more continuous variables.
 }
 \details{
-If nested=TRUE a nested design is used, i.e., the batch variable is assumed to be nested within
-the bio variable. Here, nested means that each batch is made of observations from only one level of bio,
+If nested=TRUE a nested design is used, i.e. the batch variable is assumed to be nested within
+the bio variable. Here, nested means that each batch is composed of samples from only *one* level of bio,
 while each level of bio may contain multiple batches.
 }
 

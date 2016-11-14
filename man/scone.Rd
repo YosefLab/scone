@@ -139,6 +139,20 @@ If \code{return_norm="no"} the normalized matrices are computed to
 In all cases, the normalized matrices can be retrieved via the
   \code{\link{get_normalized}} function.
 }
+\examples{
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- sconeExperiment(mat)
+no_results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+           run=FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
+           
+results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+           run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+           
+results_in_memory <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+           k_ruv=0, k_qc=0, eval_kclust=2, return_norm = "in_memory")
+
+}
 \seealso{
 \code{\link{get_normalized}}, \code{\link{get_design}}
 }

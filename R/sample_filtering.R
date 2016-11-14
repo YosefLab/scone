@@ -2,8 +2,7 @@
 #' (ubiquitously expressed) genes
 #'
 #' @details logit(Probability of False Negative) ~ a + b*(median log-expression)
-#'   .
-#'
+#' 
 #' @param expr matrix The data matrix in transcript-proportional units (genes in
 #'   rows, cells in columns).
 #' @param pos_controls A logical, numeric, or character vector indicating
@@ -19,6 +18,11 @@
 #' @importFrom boot logit
 #' @importFrom matrixStats rowMedians
 #' @export
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+#' mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+#' fnr_out = simple_FNR_params(mat,pos_controls = 1:10)
 #'
 simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 
@@ -136,6 +140,13 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01){
 #'@importFrom boot inv.logit
 #'@export
 #'
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+#' rownames(qc) = colnames(mat)
+#' colnames(qc) = c("NCOUNTS","NGENES")
+#' mfilt = metric_sample_filter(expr = mat,nreads = qc[,"NCOUNTS"], plot = TRUE, hard_nreads = 0)
 #'
 metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
                                 gene_filter = NULL, pos_controls = NULL,scale. = FALSE,glen = NULL,
@@ -456,7 +467,7 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
 
   keep_quals = qual[,to_keep_vec]
 
-  qpc = prcomp(keep_quals,center = T,scale. = T)
+  qpc = prcomp(keep_quals,center = TRUE,scale. = TRUE)
 
   if(plot) {
     csum = cumsum((qpc$sdev^2)/sum(qpc$sdev^2))
@@ -470,7 +481,7 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
     on.exit(par(op))
     for (i in 1:num_qual_pcs){
       hist(qpc$x[,i],breaks = hist_breaks, main = paste0("Distribution of Quality PC ",i), xlab = paste0("Qual PC",i))
-      barplot(abs(qpc$rotation[,i]),col = c("red","green")[1 + (qpc$rotation[,i] > 0)], cex.names = .25,horiz = T, las=1, main = "Loadings")
+      barplot(abs(qpc$rotation[,i]),col = c("red","green")[1 + (qpc$rotation[,i] > 0)], cex.names = .25,horiz = TRUE, las=1, main = "Loadings")
     }
   }
 
@@ -482,7 +493,7 @@ factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
   if (!is.null(zcut)){
 
     # Initializing sample removal vector
-    to_remove = rep(F,dim(expr)[2])
+    to_remove = rep(FALSE,dim(expr)[2])
 
     # Check if "good" metrics have been selected -> if filtering is signed
     is_signed = sum(to_keep_vec & good_metrics) > 0

@@ -1,32 +1,33 @@
 #' Interactive biplot
 #'
-#' This is a wrapper around \code{\link{biplot_colored}}, which creates a shiny
+#' This is a wrapper around \code{\link{biplot_color}}, creating a shiny
 #' gadget to allow the user to select specific points in the graph.
 #'
 #' @details Since this is based on the shiny gadget feature, it will not work in
 #'   static documents, such as vignettes or markdown / knitr documents.
-#'   See \code{biplot_colored} for more details on the internals.
+#'   See \code{biplot_color} for more details on the internals.
 #'
 #' @param x a \code{\link{sconeExperiment}} object.
-#' @param ... passed to \code{\link{biplot_colored}}.
+#' @param ... passed to \code{\link{biplot_color}}.
 #'
 #' @importFrom miniUI gadgetTitleBar miniContentPanel miniPage gadgetTitleBar
 #' @importFrom shiny plotOutput renderPlot observeEvent brushedPoints runGadget verbatimTextOutput stopApp renderText
 #'
 #' @export
+#' 
+#' @return A \code{\link{sconeExperiment}} object representing selected methods.
 #'
 #' @examples
-#' \dontrun{
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #' evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
 #' biplot_interactive(res)
-#' }
+#' 
 biplot_interactive <- function(x, ...) {
 
-  data <- as.data.frame(get_scores(x))
+  data <- as.data.frame(apply(t(get_scores(x)),1,rank))
   scores <- get_score_ranks(x)
 
   ui <- miniPage(
@@ -43,12 +44,12 @@ biplot_interactive <- function(x, ...) {
 
     # Compute PCA
     pc_obj <- prcomp(data, center = TRUE, scale = FALSE)
-    bp_obj <- biplot_colored(pc_obj, y = scores)
+    bp_obj <- biplot_color(pc_obj, y = scores)
 
     # Render the plot
     output$plot1 <- renderPlot({
       # Biplot
-      biplot_colored(pc_obj, y = scores, ...)
+      biplot_color(pc_obj, y = scores, ...)
     })
 
     data_out <- cbind(data, bp_obj)

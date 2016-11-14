@@ -2,8 +2,7 @@
 #'
 #' @param x an object of class \code{\link{sconeExperiment}}.
 #'
-#' @return A data.frame with the information of the normalization schemes that
-#'   scone has run.
+#' @return A data.frame containing workflow parameters for each scone workflow.
 #'
 #' @export
 #'
@@ -18,8 +17,7 @@ setMethod(
 #'
 #' @param x an object of class \code{\link{sconeExperiment}}.
 #'
-#' @return \code{get_scores} returns a matrix with the non-missing scone scores,
-#'   ordered by average score.
+#' @return \code{get_scores} returns a matrix with all (non-missing) scone scores, ordered by average score rank.
 #'
 #' @export
 #'
@@ -32,9 +30,8 @@ setMethod(
 })
 
 #' @rdname get_scores
-#'
-#' @return \code{get_score_ranks} returns a vector with the ranks of the average
-#'   score.
+#' 
+#' @return \code{get_score_ranks} returns a vector of average score ranks.
 #'
 #' @export
 #'
@@ -52,8 +49,8 @@ setMethod(
 #'
 #' @return NULL or a logical vector.
 #'
-#' @return For \code{get_negconruv} it indicates which genes are negative controls
-#'   to be used for RUV.
+#' @return For \code{get_negconruv} the returned vector indicates which genes are negative controls
+#'  to be used for RUV.
 setMethod(
   f = "get_negconruv",
   signature = signature(x = "SconeExperiment"),
@@ -68,8 +65,8 @@ setMethod(
 
 #' @rdname get_negconruv
 #'
-#' @return For \code{get_negconeval} it indicates which genes are negative controls
-#'   to be used for evaluation.
+#' @return For \code{get_negconeval} the returned vector indicates which genes are negative controls
+#'  to be used for evaluation.
 setMethod(
   f = "get_negconeval",
   signature = signature(x = "SconeExperiment"),
@@ -84,7 +81,8 @@ setMethod(
 
 #' @rdname get_negconruv
 #'
-#' @return For \code{get_poscon} it indicates which genes are positive controls.
+#' @return For \code{get_poscon} the returned vector indicates which genes are positive controls
+#'  to be used for evaluation.
 setMethod(
   f = "get_poscon",
   signature = signature(x = "SconeExperiment"),
@@ -101,7 +99,7 @@ setMethod(
 #'
 #' @param x an object of class \code{\link{sconeExperiment}}.
 #'
-#' @return NULL or the QC matrix.
+#' @return NULL or the quality control (QC) metric matrix.
 setMethod(
   f = "get_qc",
   signature = signature(x = "SconeExperiment"),
@@ -119,7 +117,7 @@ setMethod(
 #'
 #' @param x an object of class \code{\link{sconeExperiment}}.
 #'
-#' @return NULL or a factor containing the bio or batch information.
+#' @return NULL or a factor containing bio or batch covariate.
 setMethod(
   f = "get_bio",
   signature = signature(x = "SconeExperiment"),
@@ -149,22 +147,27 @@ setMethod(
 #'
 #' This function is used internally in scone to parse the variables used to generate the design matrices.
 #'
-#' @param pars character. A vector of parameters corresponding to a row of params.
-#' @param bio factor. The biological factor of interest.
-#' @param batch factor. The known batch effects.
-#' @param ruv_factors list. A list containing the factors of unwanted variation.
-#' @param qc matrix. The principal components of the QC metrics.
+#' @param pars character. A vector of parameters corresponding to a row of workflow parameters.
+#' @param bio factor. The biological covariate.
+#' @param batch factor. The batch covariate.
+#' @param ruv_factors list. A list containing the factors of unwanted variation (RUVg) for all upstream workflows.
+#' @param qc matrix. The principal components of the QC metric matrix.
 #'
 #' @return A list with the variables to be passed to make_design.
-parse_row <- function(pars, bio, batch, ruv_factors, qc) {
+#' 
+#' @keywords internal
+#' 
+.parse_row <- function(pars, bio, batch, ruv_factors, qc) {
+  
+  # Define upstream workflow: imputation x scaling
   sc_name <- paste(pars[1:2], collapse="_")
 
   W <- out_bio <- out_batch <- NULL
-
+  
   if(pars[3]!="no_uv") {
     parsed <- strsplit(as.character(pars[3]), "=")[[1]]
     if(grepl("ruv", parsed[1])) {
-      W <- ruv_factors[[sc_name]][,1:as.numeric(parsed[2])]
+      W <- ruv_factors[[sc_name]][,seq_len(as.numeric(parsed[2]))]
     } else {
       W <- qc[,seq_len(as.numeric(parsed[2]))]
     }
@@ -183,30 +186,33 @@ parse_row <- function(pars, bio, batch, ruv_factors, qc) {
 
 #' Make a Design Matrix
 #'
-#' This function is useful to create a design matrix, when the covariates are two (possibly nested) factors
-#' and one or more continuous variables.
+#' This function builds a design matrix for the Adjustment Normalization Step, in which 
+#' covariates are two (possibly nested) categorical factors and one or more continuous variables.
 #'
-#' @details If nested=TRUE a nested design is used, i.e., the batch variable is assumed to be nested within
-#' the bio variable. Here, nested means that each batch is made of observations from only one level of bio,
+#' @details If nested=TRUE a nested design is used, i.e. the batch variable is assumed to be nested within
+#' the bio variable. Here, nested means that each batch is composed of samples from only *one* level of bio,
 #' while each level of bio may contain multiple batches.
 #'
 #' @export
 #'
-#' @param bio factor. The biological factor of interest.
-#' @param batch factor. The known batch effects.
-#' @param W numeric. Either a vector or matrix containing one or more continuous covariates (e.g. RUV factors).
+#' @param bio factor. The biological covariate.
+#' @param batch factor. The batch covariate.
+#' @param W numeric. Either a vector or matrix containing one or more continuous covariates (e.g. RUVg factors).
 #' @param nested logical. Whether or not to consider a nested design (see details).
 #'
 #' @return The design matrix.
 make_design <- function(bio, batch, W, nested=FALSE) {
+  
   if(nested & (is.null(bio) | is.null(batch))) {
     stop("Nested design can be used only if both batch and bio are specified.")
   }
+  
   if(!is.null(bio)) {
     if(class(bio)!="factor") {
       stop("bio must be a factor.")
     }
   }
+  
   if(!is.null(batch)){
     if(class(batch)!="factor") {
       stop("batch must be a factor.")
@@ -227,6 +233,7 @@ make_design <- function(bio, batch, W, nested=FALSE) {
   if(is.null(bio) & is.null(batch) & is.null(W)) {
     return(NULL)
   } else if (!is.null(bio) & !is.null(batch) & nested) {
+    
     n_vec <- tapply(batch, bio, function(x) nlevels(droplevels(x)))
 
     mat = matrix(0,nrow = sum(n_vec),ncol = sum(n_vec - 1))
@@ -250,7 +257,7 @@ make_design <- function(bio, batch, W, nested=FALSE) {
   }
 }
 
-#' Linear Batch Effect Correction
+#' Linear Adjustment Normalization
 #'
 #' Given a matrix with log expression values and a design matrix, this function fits a linear model
 #' and removes the effects of the batch factor as well as of the linear variables encoded in W.
@@ -264,7 +271,7 @@ make_design <- function(bio, batch, W, nested=FALSE) {
 #'
 #' @param log_expr matrix. The log gene expression (genes in row, samples in columns).
 #' @param design_mat matrix. The design matrix (usually the result of make_design).
-#' @param batch factor. A factor with the batch information.
+#' @param batch factor. A factor with the batch information, identifying batch effect to be removed.
 #' @param weights matrix. A matrix of weights.
 #' @return The corrected log gene expression.
 lm_adjust <- function(log_expr, design_mat, batch=NULL, weights=NULL) {

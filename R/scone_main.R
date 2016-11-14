@@ -110,6 +110,20 @@
 #' @importFrom utils capture.output
 #' @importFrom rhdf5 h5createFile h5write.default h5write H5close
 #' @export
+#' 
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' no_results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            run=FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
+#'            
+#' results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#'            
+#' results_in_memory <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            k_ruv=0, k_qc=0, eval_kclust=2, return_norm = "in_memory")
 #'
 setMethod(
   f = "scone",
@@ -409,7 +423,7 @@ setMethod(
 
 outlist <- bplapply(seq_len(NROW(params)), function(i) {
 
-    parsed <- parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
+    parsed <- .parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
     design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
     sc_name <- paste(params[i,1:2], collapse="_")

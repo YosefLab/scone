@@ -18,4 +18,9 @@ DESeq size factor normalization wrapper.
 \details{
 SCONE scaling wrapper for \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
 }
+\examples{
+ei <- matrix(0:20,nrow = 7)
+eo <- DESEQ_FN(ei)
+
+}
 

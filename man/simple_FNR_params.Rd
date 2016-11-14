@@ -29,6 +29,11 @@ Fit Logistic Regression Model of FNR against set of positive control
 }
 \details{
 logit(Probability of False Negative) ~ a + b*(median log-expression)
-  .
+}
+\examples{
+mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+fnr_out = simple_FNR_params(mat,pos_controls = 1:10)
+
 }
 

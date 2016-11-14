@@ -14,10 +14,18 @@ get_params(x)
 \item{x}{an object of class \code{\link{sconeExperiment}}.}
 }
 \value{
-A data.frame with the information of the normalization schemes that
-  scone has run.
+A data.frame containing workflow parameters for each scone workflow.
 }
 \description{
 Extract scone parameters
+}
+\examples{
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- sconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+           run = FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
+params = get_params(res)
+
 }
 

@@ -18,4 +18,10 @@ Upper-quartile normalization derived from positive data.
 \details{
 SCONE scaling function scales expression data by upper quartile of positive data.
 }
+\examples{
+ei <- matrix(0:20,nrow = 7)
+ei[1:3,] <- 0
+eo <- UQ_FN_POS(ei)
+
+}
 

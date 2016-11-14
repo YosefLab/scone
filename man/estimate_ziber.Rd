@@ -40,13 +40,16 @@ a list with the following elements:
 }
 }
 \description{
-This function implements an EM algorithm to estimate the parameters of a zero-inflated bernoulli model
-}
-\details{
 This function implements an expectation-maximization algorithm for a zero-inflated
 bernoulli model of transcript detection, modeling gene expression state (off of on) 
 as a bernoulli draw on a gene-specific expression rate (Z in {0,1}). Detection conditioned
 on expression is a logistic function of gene-level features. The bernoulli model is modeled 
 numerically by a logistic model with an intercept.
+}
+\examples{
+mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+ziber_out = suppressWarnings(estimate_ziber(mat,bulk_model = TRUE,pos_controls = 1:10))
+
 }
 

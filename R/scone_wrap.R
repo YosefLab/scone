@@ -322,26 +322,34 @@ scone_easybake <- function(expr, qc,
   if(verbose > 0){printf("Normalization Module: Adjusting for up to %d factors of unwanted variation\n", norm_k_max)}
   
   # Generate Params (RUN = FALSE)
-  if(verbose > 0){printf("Normalization Module: Selecting params:\n", norm_k_max)}
+  if(verbose > 0){printf("Normalization Module: Selecting params:\n")}
   
-  params <- scone(expr, imputation = imputation, impute_args = impute_args,
-                  scaling=scaling,
-                  k_qc=norm_k_max, k_ruv = norm_k_max,
-                  qc=qcmat, ruv_negcon = negcon,
-                  adjust_bio = match.arg(norm_adjust_bio), bio = bio,
-                  adjust_batch = match.arg(norm_adjust_batch), batch = batch,
-                  run=FALSE, ...)
-  
-  is_screened = ((params$imputation_method == "expect") & (params$scaling_method %in% c("detect"))) |
-    ((params$adjust_biology == "bio") & (params$adjust_batch != "batch"))
+  # Creating a SconeExperiment Object
+  my_scone <- sconeExperiment(expr,
+                              qc=qcmat, bio = bio, batch = batch,
+                              negcon_ruv = rownames(expr) %in% negcon,
+                              negcon_eval = rownames(expr) %in% eval_negcon,
+                              poscon = rownames(expr)%in% eval_poscon)
+                   
+  my_scone <- scone(my_scone,
+                    imputation = imputation, impute_args = impute_args,
+                    scaling=scaling,
+                    k_qc=norm_k_max, k_ruv = norm_k_max,
+                    
+                    adjust_bio = match.arg(norm_adjust_bio),
+                    adjust_batch = match.arg(norm_adjust_batch),
+                    run=FALSE, ...)
+
+  is_screened = ((get_params(my_scone)$imputation_method == "expect") & (get_params(my_scone)$scaling_method %in% c("detect"))) |
+    ((get_params(my_scone)$adjust_biology == "bio") & (get_params(my_scone)$adjust_batch != "batch"))
   
   if(norm_rezero){
-    is_screened = is_screened | ((params$imputation_method == "expect") & (params$scaling_method %in% c("none")))
+    is_screened = is_screened | ((get_params(my_scone)$imputation_method == "expect") & (get_params(my_scone)$scaling_method %in% c("none")))
   }
   
-  params = params[!is_screened,]
+  my_scone = select_methods(my_scone, rownames(get_params(my_scone))[!is_screened ])
   
-  if(verbose > 0){print(params)}
+  if(verbose > 0){print(get_params(my_scone))}
   
   # Evaluation arguments
   if(is.null(eval_dim)){
@@ -382,17 +390,18 @@ scone_easybake <- function(expr, qc,
   # Generate Scores and Ranking
   if(verbose > 0){printf("Normalization Module: Scoring Normalizations...\n")}
   tic = proc.time()
-  res <- scone(expr, imputation = imputation, impute_args = impute_args,
-               scaling=scaling,
-               k_qc=norm_k_max, k_ruv = norm_k_max,
-               qc=qcmat, ruv_negcon = negcon,
-               adjust_bio = match.arg(norm_adjust_bio), bio = bio,
-               adjust_batch = match.arg(norm_adjust_batch), batch = batch,
-               
-               run=TRUE, params = params, verbose = (verbose > 1),
-               eval_poscon = eval_poscon, eval_negcon = eval_negcon, eval_kclust = eval_kclust, 
-               stratified_pam = eval_stratified_pam, 
-               rezero = norm_rezero, ...)
+  
+  my_scone <- scone(my_scone,
+                    imputation = imputation, impute_args = impute_args,
+                    scaling=scaling,
+                    k_qc=norm_k_max, k_ruv = norm_k_max,
+                    
+                    adjust_bio = match.arg(norm_adjust_bio),
+                    adjust_batch = match.arg(norm_adjust_batch),
+                    run=TRUE, verbose = (verbose > 1),
+                    stratified_pam = eval_stratified_pam, eval_kclust = eval_kclust,
+                    rezero = norm_rezero, ...)
+  
   toc = proc.time()
   if(verbose > 0) {
     printf("Normalization Module: Scoring Normalizations Done!...\n")
@@ -405,31 +414,43 @@ scone_easybake <- function(expr, qc,
   if(verbose > 0){printf("Normalization Module: Producing main report...\n")}
   pdf(paste0(out_dir,"/scone_report.pdf"),width = 6,height = 6)
   
-  pc_obj = prcomp(t(na.omit(t(res$scores[,-ncol(res$scores)]))),center = TRUE, scale = FALSE)
-  bpob = biplot_colored(pc_obj,-res$scores[,ncol(res$scores)],expand = .4)
-  if(any(rownames(bpob) == "none,none,no_uv,no_bio,no_batch")){
-    points(bpob["none,none,no_uv,no_bio,no_batch",1],bpob["none,none,no_uv,no_bio,no_batch",2],lwd = 4, col = "red")
-  }
-  points(head(as.data.frame(bpob),n = report_num),lwd = 2, col = "blue")
-  points(head(as.data.frame(bpob),n = 1),lwd = 2, col = "cyan")
+  pc_obj = prcomp(apply(t(get_scores(my_scone)),1,rank),center = TRUE,scale = FALSE)
+  bp_obj = biplot_color(pc_obj,y = -get_score_ranks(my_scone),expand = .6)
+  
+  points(t(bp_obj[1,]), pch = 1, col = "red", cex = 1)
+  points(t(bp_obj[1,]), pch = 1, col = "red", cex = 1.5)
+  
+  points(t(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",]), pch = 1, col = "blue", cex = 1)
+  points(t(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",]), pch = 1, col = "blue", cex = 1.5)
+  
+  arrows(bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",][1],
+         bp_obj[rownames(bp_obj) == "none,none,no_uv,no_bio,no_batch",][2],
+         bp_obj[1,][1],
+         bp_obj[1,][2],
+         lty = 2, lwd = 2)
   
   dev.off()
   
   # Recomputing top methods
-  params_select = head(res$params,n = report_num)
+  params_select = head(get_params(my_scone),n = report_num)
   if(verbose > 0){printf("Normalization Module: Re-computing top normalizations...\n")}
   tic = proc.time()
-  res_select <- scone(expr, imputation = imputation, impute_args = impute_args,
-                      scaling=scaling,
-                      k_qc=norm_k_max, k_ruv = norm_k_max,
-                      qc=qcmat, ruv_negcon = negcon,
-                      adjust_bio = match.arg(norm_adjust_bio), bio = bio,
-                      adjust_batch = match.arg(norm_adjust_batch), batch = batch,
-                      
-                      run=TRUE, return_norm = "in_memory", params = params_select, verbose = (verbose > 1),
-                      eval_poscon = eval_poscon, eval_negcon = eval_negcon, eval_kclust = eval_kclust, 
-                      stratified_pam = eval_stratified_pam, 
-                      rezero = norm_rezero, ...)
+  
+  scone_res = list()
+  
+  # List of normalized matrices
+  scone_res$normalized_data = lapply(as.list(rownames(params_select)), 
+                                     FUN = function(z){get_normalized(my_scone,method = z,log=TRUE)})
+  names(scone_res$normalized_data) = rownames(params_select)
+  
+  # Parameter matrix
+  scone_res$params = get_params(my_scone)[rownames(params_select),]
+  
+  # Merged score matrix
+  scone_res$scores = cbind(get_scores(my_scone),get_score_ranks(my_scone))[rownames(params_select),]
+  colnames(scone_res$scores)[ncol(scone_res$scores)] = "mean_score_rank"
+  
+
   toc = proc.time()
   if(verbose > 0) {
     printf("Normalization Module: Recomputing top methods done!...\n")
@@ -439,30 +460,30 @@ scone_easybake <- function(expr, qc,
   
   if(out_rda) {
     if(verbose > 0){printf("Normalization Module: Writing sconeResults.Rda file of scone's returned object...\n")}
-    save(file=file.path(out_dir, "sconeResults.Rda"), res_select)
+    save(file=file.path(out_dir, "sconeResults.Rda"),  scone_res)
   }
   
   if(verbose > 0){
-    printf("Normalization Module: (Trumpets): the selected method is... %s!\n", rownames(res_select$scores)[1])
+    printf("Normalization Module: (Trumpets): the selected method is... %s!\n", rownames( scone_res$scores)[1])
     printf("Normalization Module: Writing top normalization to file...\n")
   }
   
-  normle = res_select$normalized_data[[1]]
+  normle =  scone_res$normalized_data[[1]]
   write.table(x = normle,row.names = TRUE,col.names = TRUE,quote = FALSE,sep = "\t",eol = "\n",file = paste0(out_dir,"/best_scone.txt"))
   
   if(verbose > 0){printf("Normalization Module: Producing normalization-specific reports...\n")}
   
-  write.table(x = res_select$scores, row.names = TRUE, col.names = TRUE, quote = FALSE, sep = "\t", eol = "\n", file = file.path(out_dir,"/normalization_scores.txt"))
+  write.table(x =  scone_res$scores, row.names = TRUE, col.names = TRUE, quote = FALSE, sep = "\t", eol = "\n", file = file.path(out_dir,"/normalization_scores.txt"))
   
-  for(count in seq_along(rownames(res_select$scores))) {
-    nom = rownames(res_select$scores)[count]
+  for(count in seq_along(rownames( scone_res$scores))) {
+    nom = rownames( scone_res$scores)[count]
     
     if(verbose > 0){printf(paste0("Normalization Module:\t(",count,")\t",nom,"\n"))}
     nom_dir = paste0(misc_dir,"/N",count,"_",gsub(",","_",nom))
     if (!file.exists(nom_dir)) {
       dir.create(nom_dir)
     }
-    normle = res_select$normalized_data[[nom]]
+    normle =  scone_res$normalized_data[[nom]]
     write.table(x = normle,row.names = TRUE,col.names = TRUE,quote = FALSE,sep = "\t",eol = "\n",file = paste0(nom_dir,"/norm.txt"))
     if(is.null(bio) & is.null(batch)){
       pdf(paste0(nom_dir,"/norm_report.pdf"),width = 6,height = 6)

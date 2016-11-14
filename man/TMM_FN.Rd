@@ -18,4 +18,9 @@ Weighted trimmed mean of M-values (TMM) normalization wrapper.
 \details{
 SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
 }
+\examples{
+ei <- matrix(0:20,nrow = 7)
+eo <- TMM_FN(ei)
+
+}
 

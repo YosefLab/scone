@@ -69,15 +69,15 @@ score_matrix <- function(expr, eval_pcs = 3,
     stop("NA/Inf/NaN Expression Values.")
   }
   
+  if(!is_log) {
+    expr <- log1p(expr)
+  }
+  
   #The svd we do below on expr throws an exception if expr created by one of the normalizations has a constant feature (=gene, i.e. row)
   constantFeatures = apply(expr, 1, function(x) max(x)-min(x)) < 1e-3
   if(any(constantFeatures)) {
     warning(sprintf("scone_eval: expression matrix contained %d constant features (rows) ---> excluding them", sum(constantFeatures)))
     expr = expr[!constantFeatures, ]
-  }
-
-  if(!is_log) {
-    expr <- log1p(expr)
   }
 
   if(is.null(eval_proj)){

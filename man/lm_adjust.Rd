@@ -2,7 +2,7 @@
 % Please edit documentation in R/helper.R
 \name{lm_adjust}
 \alias{lm_adjust}
-\title{Linear Batch Effect Correction}
+\title{Linear Adjustment Normalization}
 \usage{
 lm_adjust(log_expr, design_mat, batch = NULL, weights = NULL)
 }
@@ -11,7 +11,7 @@ lm_adjust(log_expr, design_mat, batch = NULL, weights = NULL)
 
 \item{design_mat}{matrix. The design matrix (usually the result of make_design).}
 
-\item{batch}{factor. A factor with the batch information.}
+\item{batch}{factor. A factor with the batch information, identifying batch effect to be removed.}
 
 \item{weights}{matrix. A matrix of weights.}
 }
