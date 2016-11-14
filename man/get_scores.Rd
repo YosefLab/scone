@@ -29,7 +29,7 @@ get_score_ranks(x)
 Extract scone scores
 }
 \examples{
-mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+mat <- matrix(rpois(500, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- sconeExperiment(mat)
 res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),

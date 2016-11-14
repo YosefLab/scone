@@ -150,16 +150,7 @@ TMM_FN = function(ei){
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return SCRAN size factor normalized matrix.
 #' 
-#' @examples
-#' set.seed(100)
-#' popsize <- 800
-#' ngenes <- 10000
-#' all.facs <- 2^rnorm(popsize, sd=0.5)
-#' mu1 = matrix(rep(all.facs*10,ngenes),nrow = ngenes,byrow = TRUE)
-#' mu2 = matrix(c(rep(2^rnorm(ngenes, sd=0.5),popsize/2), rep(2^rnorm(ngenes, sd=0.5),popsize/2)),ncol = popsize)
-#' ei <- matrix(rnbinom(ngenes*popsize, mu=as.vector(mu1*mu2), size=1), ncol=popsize)
-#' eo <- SCRAN_FN(ei)
-#' 
+
 SCRAN_FN = function(ei){
   clusters <- quickCluster(ei, min.size = 20)
   size_fac = computeSumFactors(ei, cluster=clusters)

@@ -32,7 +32,7 @@ setGeneric(
 #' @return A matrix of normalized counts in log-scale.
 #' 
 #' @examples
-#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -62,7 +62,7 @@ setGeneric(
 #' @return The design matrix.
 #' 
 #' @examples
-#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -92,7 +92,7 @@ setGeneric(
 #' @return A \code{SconeExperiment} object with selected method data.
 #' 
 #' @examples
-#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -168,7 +168,7 @@ setGeneric(
 #'   get_score_ranks,SconeExperiment-method
 #'   
 #' @examples
-#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -195,7 +195,7 @@ setGeneric(
 #'
 #' @aliases get_params get_params,SconeExperiment-method
 #' @examples
-#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
