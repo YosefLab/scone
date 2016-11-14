@@ -10,7 +10,7 @@
 
 <meta name="author" content="Michael Cole and Davide Risso" />
 
-<meta name="date" content="2016-11-08" />
+<meta name="date" content="2016-11-14" />
 
 <title>Introduction to SCONE</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Introduction to SCONE</h1>
 <h4 class="author"><em>Michael Cole and Davide Risso</em></h4>
-<h4 class="date"><em>2016-11-08</em></h4>
+<h4 class="date"><em>2016-11-14</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -546,14 +546,14 @@ sconeReport(my_scone,methods = scone_methods,
 ## 
 ## other attached packages:
 ##  [1] scRNAseq_0.99.0            RColorBrewer_1.1-2        
-##  [3] scone_0.0.99-9002          SummarizedExperiment_1.2.3
+##  [3] scone_0.99.0               SummarizedExperiment_1.2.3
 ##  [5] Biobase_2.32.0             GenomicRanges_1.24.3      
 ##  [7] GenomeInfoDb_1.8.7         IRanges_2.6.1             
 ##  [9] S4Vectors_0.10.3           BiocGenerics_0.18.0       
 ## [11] BiocStyle_2.0.3           
 ## 
 ## loaded via a namespace (and not attached):
-##   [1] colorspace_1.2-7        rjson_0.2.15           
+##   [1] colorspace_1.3-0        rjson_0.2.15           
 ##   [3] hwriter_1.3.2           class_7.3-14           
 ##   [5] modeltools_0.2-21       dynamicTreeCut_1.63-1  
 ##   [7] mclust_5.2              XVector_0.12.1         
@@ -564,7 +564,7 @@ sconeReport(my_scone,methods = scone_methods,
 ##  [17] R.methodsS3_1.7.1       tximport_1.0.3         
 ##  [19] doParallel_1.0.10       DESeq_1.24.0           
 ##  [21] robustbase_0.92-6       scater_1.0.4           
-##  [23] geneplotter_1.50.0      knitr_1.14             
+##  [23] geneplotter_1.50.0      knitr_1.15             
 ##  [25] jsonlite_1.1            Rsamtools_1.24.0       
 ##  [27] gridBase_0.4-7          annotate_1.50.1        
 ##  [29] cluster_2.0.5           kernlab_0.9-25         
@@ -572,47 +572,47 @@ sconeReport(my_scone,methods = scone_methods,
 ##  [33] shiny_0.14.2            httr_1.2.1             
 ##  [35] assertthat_0.1          Matrix_1.2-7.1         
 ##  [37] lazyeval_0.2.0          limma_3.28.21          
-##  [39] formatR_1.4             visNetwork_1.0.2       
-##  [41] htmltools_0.3.5         tools_3.3.1            
-##  [43] gtable_0.2.0            reshape2_1.4.2         
-##  [45] dplyr_0.5.0             ShortRead_1.30.0       
-##  [47] Rcpp_0.12.7             NMF_0.20.6             
-##  [49] trimcluster_0.1-2       Biostrings_2.40.2      
-##  [51] gdata_2.17.0            rtracklayer_1.32.2     
-##  [53] iterators_1.0.8         fpc_2.1-10             
-##  [55] stringr_1.1.0           mime_0.5               
-##  [57] miniUI_0.1.1            rngtools_1.2.4         
-##  [59] gtools_3.5.0            XML_3.98-1.4           
-##  [61] edgeR_3.14.0            DEoptimR_1.0-6         
-##  [63] zoo_1.7-13              zlibbioc_1.18.0        
-##  [65] MASS_7.3-45             scales_0.4.0           
-##  [67] aroma.light_3.2.0       rhdf5_2.16.0           
-##  [69] yaml_2.1.13             gridExtra_2.2.1        
-##  [71] RUVSeq_1.6.2            ggplot2_2.1.0          
-##  [73] pkgmaker_0.22           segmented_0.5-1.4      
-##  [75] biomaRt_2.28.0          latticeExtra_0.6-28    
-##  [77] stringi_1.1.2           RSQLite_1.0.0          
-##  [79] genefilter_1.54.2       foreach_1.4.3          
-##  [81] scran_1.0.4             GenomicFeatures_1.24.5 
-##  [83] caTools_1.17.1          boot_1.3-18            
-##  [85] BiocParallel_1.6.6      chron_2.3-47           
-##  [87] prabclus_2.2-6          matrixStats_0.51.0     
-##  [89] bitops_1.0-6            evaluate_0.10          
-##  [91] lattice_0.20-34         purrr_0.2.2            
-##  [93] GenomicAlignments_1.8.4 htmlwidgets_0.7        
-##  [95] plyr_1.8.4              magrittr_1.5           
-##  [97] R6_2.2.0                gplots_3.0.1           
-##  [99] DBI_0.5-1               mixtools_1.0.4         
-## [101] survival_2.40-1         RCurl_1.95-4.8         
-## [103] nnet_7.3-12             tibble_1.2             
-## [105] EDASeq_2.6.2            KernSmooth_2.23-15     
-## [107] plotly_4.5.2            rmarkdown_1.1          
-## [109] viridis_0.3.4           grid_3.3.1             
-## [111] data.table_1.9.6        digest_0.6.10          
-## [113] diptest_0.75-7          xtable_1.8-2           
-## [115] tidyr_0.6.0             httpuv_1.3.3           
-## [117] R.utils_2.4.0           munsell_0.4.3          
-## [119] registry_0.3            viridisLite_0.1.3</code></pre>
+##  [39] visNetwork_1.0.2        htmltools_0.3.5        
+##  [41] tools_3.3.1             gtable_0.2.0           
+##  [43] reshape2_1.4.2          dplyr_0.5.0            
+##  [45] ShortRead_1.30.0        Rcpp_0.12.7            
+##  [47] NMF_0.20.6              trimcluster_0.1-2      
+##  [49] Biostrings_2.40.2       gdata_2.17.0           
+##  [51] rtracklayer_1.32.2      iterators_1.0.8        
+##  [53] fpc_2.1-10              stringr_1.1.0          
+##  [55] mime_0.5                miniUI_0.1.1           
+##  [57] rngtools_1.2.4          gtools_3.5.0           
+##  [59] XML_3.98-1.4            edgeR_3.14.0           
+##  [61] DEoptimR_1.0-6          zoo_1.7-13             
+##  [63] zlibbioc_1.18.0         MASS_7.3-45            
+##  [65] scales_0.4.1            aroma.light_3.2.0      
+##  [67] rhdf5_2.16.0            yaml_2.1.13            
+##  [69] gridExtra_2.2.1         RUVSeq_1.6.2           
+##  [71] ggplot2_2.1.0           pkgmaker_0.22          
+##  [73] biomaRt_2.28.0          segmented_0.5-1.4      
+##  [75] latticeExtra_0.6-28     stringi_1.1.2          
+##  [77] RSQLite_1.0.0           genefilter_1.54.2      
+##  [79] foreach_1.4.3           scran_1.0.4            
+##  [81] GenomicFeatures_1.24.5  caTools_1.17.1         
+##  [83] boot_1.3-18             BiocParallel_1.6.6     
+##  [85] chron_2.3-47            prabclus_2.2-6         
+##  [87] matrixStats_0.51.0      bitops_1.0-6           
+##  [89] evaluate_0.10           lattice_0.20-34        
+##  [91] purrr_0.2.2             GenomicAlignments_1.8.4
+##  [93] htmlwidgets_0.8         plyr_1.8.4             
+##  [95] magrittr_1.5            R6_2.2.0               
+##  [97] gplots_3.0.1            DBI_0.5-1              
+##  [99] mixtools_1.0.4          survival_2.40-1        
+## [101] RCurl_1.95-4.8          nnet_7.3-12            
+## [103] tibble_1.2              EDASeq_2.6.2           
+## [105] KernSmooth_2.23-15      plotly_4.5.2           
+## [107] rmarkdown_1.1           viridis_0.3.4          
+## [109] grid_3.3.1              data.table_1.9.6       
+## [111] digest_0.6.10           diptest_0.75-7         
+## [113] xtable_1.8-2            tidyr_0.6.0            
+## [115] httpuv_1.3.3            R.utils_2.5.0          
+## [117] munsell_0.4.3           registry_0.3           
+## [119] viridisLite_0.1.3</code></pre>
 <div id="refs" class="references">
 <div id="ref-hicks2015">
 <p>Hicks, Stephanie C., Mingxiang Teng, and Rafael A. Irizarry. 2015. “On the Widespread and Critical Impact of Systematic Bias and Batch Effects in Single-Cell RNA-Seq Data.” <em>BioRxiv Preprint</em>.</p>

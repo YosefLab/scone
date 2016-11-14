@@ -1,6 +1,12 @@
-Changes in version 0.1.0 (2016-10-07)
+Changes in version 0.99.0 (2016-11-14)
 ========================
 * Major release: many changes due to porting to S4.
+* Widespread updates to documentation, including examples.
+* Compatibility with Bioconductor format, including biocViews.
+* Updated cell-cycle genes.
+* Default BPPARAM value, now passed as argument to scone.
+* Removed zinb function.
+* Test different parallel back ends.
 * Added class SconeExperiment based on SummarizedExperiment.
 * Added constructor sconeExperiment to create SconeExperiment objects.
 * Added many helper methods to retrieve content of slots.
@@ -9,6 +15,7 @@ Changes in version 0.1.0 (2016-10-07)
 * Method select_methods() to get a smaller SconeExperiment object containing only the requested normalization schemes.
 * biplot_interactive() now works with SconeExperiment objects.
 * Dropped date from DESCRIPTION as better practice is to add date to NEWS file.
+* Added wrapper for scran normalization, removed FQP.
 
 Changes in version 0.0.8 (2016-09-26)
 ========================
