@@ -55,6 +55,9 @@
 #'   they will be written on file using the \code{rhdf5} package.
 #' @param hdf5file character. If \code{return_norm="hdf5"}, the name of the file
 #'   onto which to save the normalized matrices.
+#' @param bpparam object of class \code{bpparamClass} that specifies the
+#'   back-end to be used for computations. See
+#'   \code{\link[BiocParallel]{bpparam}} for details.
 #'
 #' @return A \code{\link{SconeExperiment}} object with the
 #'   log-scaled normalized data matrix as elements of the \code{assays} slot, if
@@ -135,7 +138,8 @@ setMethod(
                         run=TRUE, evaluate=TRUE, eval_pcs=3, eval_proj = NULL,
                         eval_proj_args = NULL, eval_kclust=2:10,
                         verbose=FALSE, stratified_pam = FALSE,
-                        return_norm = c("no", "in_memory", "hdf5"), hdf5file) {
+                        return_norm = c("no", "in_memory", "hdf5"), hdf5file,
+                        bpparam=BiocParallel::bpparam()) {
 
   # browser()
   if(x@is_log) {
@@ -159,7 +163,7 @@ setMethod(
     if(missing(hdf5file)) {
       stop("If `return_norm='hdf5'`, `hdf5file` must be specified.")
     } else {
-      if(BiocParallel::bpnworkers(BiocParallel::registered()[[1]]) > 1) {
+      if(BiocParallel::bpnworkers(bpparam) > 1) {
         stop("At the moment, `return_norm='hdf5'` does not support multicores.")
       }
       stopifnot(h5createFile(hdf5file))
@@ -263,7 +267,7 @@ setMethod(
   }
 
   colData(x)[,x@which_batch] <- batch
-  
+
   if(evaluate) {
     if(length(x@which_negconeval) == 0) {
       if(verbose) message("Negative controls will not be used in evaluation (correlations with negative controls will be returned as NA)")
@@ -371,7 +375,7 @@ setMethod(
   if(verbose) message("Scaling step...")
   sc_params <- unique(params[,1:2])
 
-  scaled <- bplapply(seq_len(NROW(sc_params)), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]))
+  scaled <- bplapply(seq_len(NROW(sc_params)), function(i) scaling[[sc_params[i,2]]](imputed[[sc_params[i,1]]]), BPPARAM=bpparam)
   if(rezero){
     if(verbose) message("Re-zero step...")
     toz = assay(x) <= 0
@@ -381,7 +385,7 @@ setMethod(
   names(scaled) <- apply(sc_params, 1, paste, collapse="_")
   # output: a list of normalized expression matrices
 
-  failing <- bplapply(scaled, function(x) any(is.na(x)))
+  failing <- bplapply(scaled, function(x) any(is.na(x)), BPPARAM=bpparam)
   failing <- simplify2array(failing)
   if(any(failing)) {
     idx <- which(failing)
@@ -398,7 +402,7 @@ setMethod(
   if(verbose) message("Computing RUV factors...")
   ## compute RUV factors
   if(k_ruv > 0) {
-    ruv_factors <- bplapply(scaled, function(x) RUVg(log1p(x), ruv_negcon, k_ruv, isLog=TRUE)$W)
+    ruv_factors <- bplapply(scaled, function(x) RUVg(log1p(x), ruv_negcon, k_ruv, isLog=TRUE)$W, BPPARAM=bpparam)
   }
 
   if(evaluate) {
@@ -448,7 +452,7 @@ outlist <- bplapply(seq_len(NROW(params)), function(i) {
       }
       return(list(score=score))
     }
-})
+}, BPPARAM=bpparam)
 
   if(return_norm == "in_memory") {
     adjusted <- lapply(outlist, function(x) expm1(x$adjusted))

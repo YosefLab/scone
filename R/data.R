@@ -42,8 +42,9 @@
 #'  has more than half of its exons meeting the previous criteria (thus
 #'  being housekeeping exons)."
 #'   
-#' @details Gene symbols in \code{cellcycle_genes} represent a set of 
-#'  genes marking G1/S and G2/M. No reference provided.
+#' @details Human gene symbols in \code{cellcycle_genes} are from Macosko et al.
+#'   (2015) and represent a set of genes marking G1/S, S, G2/M, M, and M/G1
+#'   phases.
 #'
 #' @references Molyneaux, B.J., Arlotta, P., Menezes, J.R. and Macklis, J.D..
 #'   Neuronal subtype specification in the cerebral cortex. Nature Reviews
@@ -52,6 +53,9 @@
 #'   Trends in Genetics, 2003, 19(7):362-5.
 #' @references Eisenberg E, Levanon EY. Human housekeeping genes, revisited.
 #'   Trends in Genetics, 2013, 29(10):569-74.
+#' @references Macosko, E. Z., et al. Highly parallel genome-wide expression
+#'   profiling of individual cells using nanoliter droplets. Cell, 2015,
+#'   161.5:1202-1214.
 #'
 #' @name control_genes
 #'

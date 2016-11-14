@@ -57,8 +57,9 @@ Human gene symbols in \code{housekeeping_revised} are from
  being housekeeping exons)."
   
 
-Gene symbols in \code{cellcycle_genes} represent a set of 
- genes marking G1/S and G2/M. No reference provided.
+Human gene symbols in \code{cellcycle_genes} are from Macosko et al.
+  (2015) and represent a set of genes marking G1/S, S, G2/M, M, and M/G1
+  phases.
 }
 \examples{
 data(housekeeping)
@@ -76,5 +77,9 @@ Eisenberg E, Levanon EY. Human housekeeping genes are compact.
 
 Eisenberg E, Levanon EY. Human housekeeping genes, revisited.
   Trends in Genetics, 2013, 29(10):569-74.
+
+Macosko, E. Z., et al. Highly parallel genome-wide expression
+  profiling of individual cells using nanoliter droplets. Cell, 2015,
+  161.5:1202-1214.
 }
 
