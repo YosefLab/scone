@@ -123,10 +123,10 @@
 #'            run=FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
 #'            
 #' results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, BiocParallel::SerialParam())
+#'            run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #'            
 #' results_in_memory <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            k_ruv=0, k_qc=0, eval_kclust=2, return_norm = "in_memory", BiocParallel::SerialParam())
+#'            k_ruv=0, k_qc=0, eval_kclust=2, return_norm = "in_memory", bpparam = BiocParallel::SerialParam())
 #'
 setMethod(
   f = "scone",
