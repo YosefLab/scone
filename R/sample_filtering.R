@@ -426,6 +426,15 @@ metric_sample_filter = function(expr, nreads = colSums(expr), ralign = NULL,
 #' @importFrom diptest dip.test
 #' @import gplots
 #' @export
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+#' rownames(qc) = colnames(mat)
+#' colnames(qc) = c("NCOUNTS","NGENES")
+#' mfilt = factor_sample_filter(expr = mat,qc, plot = TRUE,qual_select_q_thresh = 1)
+#' 
 factor_sample_filter = function(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
                                 qual_select_q_thresh = 0.01, force_metrics = NULL, good_metrics = NULL,
                                 min_qual_variance = 0.7, zcut = 1,

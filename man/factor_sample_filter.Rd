@@ -49,4 +49,13 @@ describing whether it passed filtering by factor-based filtering, using PCA of q
 \details{
 None
 }
+\examples{
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+rownames(qc) = colnames(mat)
+colnames(qc) = c("NCOUNTS","NGENES")
+mfilt = factor_sample_filter(expr = mat,qc, plot = TRUE,qual_select_q_thresh = 1)
+
+}
 
