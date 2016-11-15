@@ -26,4 +26,21 @@ impute_args must contain two elements:
 1) p_nodrop  = posterior probability of data not having resulted from drop-out  (genes in rows, cells in columns)
 2) mu  = expected expression of dropped data (genes in rows, cells in columns)
 }
+\examples{
+mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+
+mu = matrix(rep(3/ppois(0,lambda = 3,lower.tail = FALSE),1000),ncol = 10)
+
+p_false = 1 / ( 1 + ppois(0, lambda = 3, lower.tail = TRUE ) / (0.01 * ppois(0, lambda = 3, lower.tail = FALSE) ) )
+
+p_nodrop = matrix(rep(1-p_false,1000),ncol = 10)
+p_nodrop[mat > 0] = 1
+
+impute_args = list()
+impute_args = list(mu = mu, p_nodrop = p_nodrop)
+
+imat = impute_expectation(mat,impute_args = impute_args)
+
+}
 

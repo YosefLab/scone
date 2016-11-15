@@ -1,28 +1,40 @@
-#' Likelihood function of the logistic model
+#
+#' Likelihood Function of the Logistic Model
+#' 
+#' @keywords internal
+#' 
 #' @param Z data matrix
 #' @param X sample-level values
 #' @param Beta gene-level values
 #' 
-likfn = function(Z,X,Beta){
+.likfn = function(Z,X,Beta){
   return((1-Z) + (2*Z - 1)/(1+exp(-X %*% Beta)))
 }
 
+#
 #' Posterior probability of detection
+#' 
+#' @keywords internal
+#' 
 #' @param Y detection matrix.
 #' @param W sample-level drop-out coefficients.
 #' @param Alpha gene-level drop-out features.
 #' @param X sample-level expression features.
 #' @param Beta gene-level sample coefficients.
-#'
-pzfn = function(Y,W,Alpha,X,Beta){
-  matA = likfn(1,X,Beta)
-  matB = matA*likfn(Y,W,Alpha)
-  return(matB/(matB + (Y == 0)*(1-matA)))
+#' 
+.pzfn = function(Y,W,Alpha,X,Beta){
+  
+  matA = .likfn(1,X,Beta) # Expression
+  matB = matA*.likfn(Y,W,Alpha) # Failure
+  
+  o = matB/(matB + (Y == 0)*(1-matA))
+  o[Y > 0] = 1
+    
+  return(o)
 }
 
+#
 #' Parameter estimation of zero-inflated bernoulli model
-#' 
-#' This function implements an EM algorithm to estimate the parameters of a zero-inflated bernoulli model
 #' 
 #' This function implements an expectation-maximization algorithm for a zero-inflated
 #' bernoulli model of transcript detection, modeling gene expression state (off of on) 
@@ -54,6 +66,12 @@ pzfn = function(Y,W,Alpha,X,Beta){
 #' \item{loglik}{ the log-likelihood}
 #' \item{convergence}{ 0 if the algorithm converged and 1 if maxiter was reached}
 #' }
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+#' mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+#' ziber_out = suppressWarnings(estimate_ziber(mat,bulk_model = TRUE,pos_controls = 1:10))
+#' 
 
 estimate_ziber = function(x, fp_tresh = 0, 
                           gfeatM = NULL, bulk_model = FALSE, 
@@ -84,24 +102,44 @@ estimate_ziber = function(x, fp_tresh = 0,
   W = matrix(0,dim(x)[2],K)
   
   # Initialize Z
-  Z = pzfn(Y,W,Alpha,X,Beta)
+  Z = .pzfn(Y,W,Alpha,X,Beta)
   
   if(is.null(pos_controls)){
     stop("Must supply positive controls genes to fit FNR characteristic")
   }
     
   # Fit W once using control genes
-  
   cY = Y[,pos_controls]
   cAlpha = Alpha[,pos_controls]
+  glm_pval = rep(NA,nrow(Z))
+  
   for (i in 1:dim(Z)[1]){
-    W[i,] = glm(cbind(cY[i,],1-cY[i,]) ~ 0 + t(cAlpha),quasibinomial)$coefficients
+    fit = suppressWarnings(glm(cbind(cY[i,],1-cY[i,]) ~ 0 + t(cAlpha),family=binomial(logit)))
+    glm_pval[i] = summary(fit)$coef[,4][1]
+    
+    if((glm_pval[i] < .01) & fit$converged){
+      W[i,] = fit$coefficients
+    } else {
+      if(!fit$converged){
+        warning(paste0("Sample ",i," failed GLM fit, applying expression independent model."))
+      }else{
+        warning(paste0("Sample ",i," exhibits expression dependence consistent with null, applying expression independent model."))
+        }
+      W[i,] = c(0,log((sum(cY[i,]) + 0.5)/(ncol(cY) + 1)) -
+                  log((sum(1-cY[i,]) + 0.5)/(ncol(cY) + 1))) # Only intercept with pseudocounts
+    }
   } 
   Beta[,pos_controls] = NA
   Z[,pos_controls] = 1
   
-  matA = likfn(1,X,Beta)
-  EL2 = sum(Z*log(likfn(Y,W,Alpha)),na.rm = TRUE) + sum(Z*log( matA ),na.rm = TRUE) + sum((1-Z)*log(1- matA ),na.rm = TRUE)
+  matA = .likfn(1,X,Beta[,!pos_controls]) # Expression
+  matC = .likfn(Y[,!pos_controls],W,Alpha[,!pos_controls]) # Detection
+  
+  is_perfect = (matC == 0) | (matA == 0) | (matA == 1)
+  
+  EL2 = sum((Z[,!pos_controls]*log( matC ))[!is_perfect],na.rm = FALSE) + 
+    sum((Z[,!pos_controls]*log( matA ))[!is_perfect],na.rm = FALSE) + 
+    sum(((1-Z[,!pos_controls])*log( 1 - matA ))[!is_perfect],na.rm = FALSE)
   
   if(verbose){print(EL2)}
   
@@ -115,24 +153,33 @@ estimate_ziber = function(x, fp_tresh = 0,
     # Update Beta
     cmz = colMeans(Z[,!pos_controls])
     Beta[,!pos_controls] = t(matrix(log(cmz) - log(1-cmz)))
-    # Update Z
-    Z[,!pos_controls] = pzfn(Y[,!pos_controls],W,Alpha[,!pos_controls],X,Beta[,!pos_controls])
     
-    matA = likfn(1,X,Beta)
-    EL2 = sum(Z*log(likfn(Y,W,Alpha)),na.rm = TRUE) + sum(Z*log( matA ),na.rm = TRUE) + sum((1-Z)*log(1- matA ),na.rm = TRUE)
+    # Update Z
+    Z[,!pos_controls] = .pzfn(Y[,!pos_controls],W,Alpha[,!pos_controls],X,Beta[,!pos_controls])
+    
+    matA = .likfn(1,X,Beta[,!pos_controls])
+    matC = .likfn(Y[,!pos_controls],W,Alpha[,!pos_controls])
+    
+    is_perfect = (matC == 0) | (matA == 0) | (matA == 1)
+
+    EL2 = sum((Z[,!pos_controls]*log( matC ))[!is_perfect],na.rm = FALSE) + 
+      sum((Z[,!pos_controls]*log( matA ))[!is_perfect],na.rm = FALSE) + 
+      sum(((1-Z[,!pos_controls])*log( 1 - matA ))[!is_perfect],na.rm = FALSE)
+    
     if(verbose){print(EL2)}
     niter = niter + 1
     if(niter >= maxiter){
       return(list(W = W, X = X, Alpha = Alpha, Beta = Beta,
-                  fnr_character = t(likfn(1,W,Alpha)), p_nodrop = 1 - t((Y <= fp_tresh)*Z), 
-                  expected_state = t(Z), loglik = EL2, convergence = 1))    }
+                  fnr_character = t(.likfn(1,W,Alpha)), p_nodrop = 1 - t((Y <= fp_tresh)*Z), 
+                  expected_state = t(Z), loglik = EL2, convergence = 1,glm_pval = glm_pval))    }
   }
 
   return(list(W = W, X = X, Alpha = Alpha, Beta = Beta,
-              fnr_character = t(likfn(1,W,Alpha)), p_nodrop = 1 - t((Y <= fp_tresh)*Z), 
-              expected_state = t(Z), loglik = EL2, convergence = 0))
+              fnr_character = t(.likfn(1,W,Alpha)), p_nodrop = 1 - t((Y <= fp_tresh)*Z), 
+              expected_state = t(Z), loglik = EL2, convergence = 0, glm_pval = glm_pval))
 }
 
+#
 #' Imputation of zero abundance based on general zero-inflated model
 #' 
 #' This function is used to impute the data, weighted by probability of 
@@ -152,19 +199,41 @@ estimate_ziber = function(x, fp_tresh = 0,
 #' 
 #' @return the imputed expression matrix.
 #' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+#' mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+#' 
+#' mu = matrix(rep(3/ppois(0,lambda = 3,lower.tail = FALSE),1000),ncol = 10)
+#' 
+#' p_false = 1 / ( 1 + ppois(0, lambda = 3, lower.tail = TRUE ) / (0.01 * ppois(0, lambda = 3, lower.tail = FALSE) ) )
+#' 
+#' p_nodrop = matrix(rep(1-p_false,1000),ncol = 10)
+#' p_nodrop[mat > 0] = 1
+#' 
+#' impute_args = list()
+#' impute_args = list(mu = mu, p_nodrop = p_nodrop)
+#' 
+#' imat = impute_expectation(mat,impute_args = impute_args)
+#' 
 
 impute_expectation <- function(expression,impute_args) {
   imputed <- expression * impute_args$p_nodrop + impute_args$mu * (1 - impute_args$p_nodrop)
   return(imputed)
 }
 
+#
 #' Null or no-op imputation
+#' 
 #' @export
 #' 
 #' @param expression the data matrix (genes in rows, cells in columns)
 #' @param impute_args arguments for imputation (not used)
 #' 
 #' @return the imputed expression matrix.
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' imat = impute_null(mat)
 #' 
 
 impute_null <- function(expression,impute_args) {

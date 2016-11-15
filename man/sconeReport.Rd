@@ -4,28 +4,47 @@
 \alias{sconeReport}
 \title{SCONE Report Browser: Browse Evaluation of Normalization Performance}
 \usage{
-sconeReport(scone_res, qc, bio = NULL, batch = NULL, poscon = character(),
-  negcon = character())
+sconeReport(x, methods, qc, bio = NULL, batch = NULL,
+  poscon = character(), negcon = character())
 }
 \arguments{
-\item{scone_res}{list. SCONE output list from a scone(return_norm = "in_memory") call. Required.}
+\item{x}{a \code{SconeExperiment} object}
 
-\item{qc}{matrix. The QC metrics to be used for QC evaluation. Required.}
+\item{methods}{character specifying the normalizations to report.}
 
-\item{bio}{factor. The biological condition (variation to be preserved). Default NULL.}
+\item{qc}{matrix. QC metrics to be used for QC evaluation report. Required.}
 
-\item{batch}{factor. The known batch variable (variation to be removed). Default NULL.}
+\item{bio}{factor. A biological condition (variation to be preserved). Default NULL.}
 
-\item{poscon}{character. The genes to be used as positive controls for
+\item{batch}{factor. A known batch variable (variation to be removed). Default NULL.}
+
+\item{poscon}{character. Genes to be used as positive controls for
 evaluation. These genes should be expected to change according to the
 biological phenomenon of interest. Default empty character.}
 
-\item{negcon}{character. The genes to be used as negative controls for
+\item{negcon}{character. Genes to be used as negative controls for
 evaluation. These genes should be expected not to change according to the
 biological phenomenon of interest. Default empty character.}
+}
+\value{
+An object that represents the SCONE report app.
 }
 \description{
 This function opens a shiny application session for visualizing performance
 of a variety of normalization schemes.
+}
+\examples{
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- sconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+           evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+rownames(qc) = colnames(mat)
+colnames(qc) = c("NCOUNTS","NGENES")
+\dontrun{
+sconeReport(res,rownames(get_params(res)), qc = qc)
+}
+
 }
 

@@ -7,12 +7,20 @@
 UQ_FN(ei)
 }
 \arguments{
-\item{ei}{= Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.}
+\item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-Upper-quartile normalized matrix (scaled by sample UQ)
+Upper-quartile normalized matrix.
 }
 \description{
 Upper-quartile normalization wrapper.
+}
+\details{
+SCONE scaling wrapper for \code{\link[EDASeq]{betweenLaneNormalization}}).
+}
+\examples{
+ei <- matrix(0:20,nrow = 7)
+eo <- UQ_FN(ei)
+
 }
 

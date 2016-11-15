@@ -4,30 +4,34 @@
 \alias{biplot_interactive}
 \title{Interactive biplot}
 \usage{
-biplot_interactive(data, scores, ...)
+biplot_interactive(x, ...)
 }
 \arguments{
-\item{data}{a data.frame containing the data to be plotted.}
+\item{x}{a \code{\link{sconeExperiment}} object.}
 
-\item{scores}{a numeric vector used to color the points.}
-
-\item{...}{passed to \code{\link{biplot_colored}}.}
+\item{...}{passed to \code{\link{biplot_color}}.}
+}
+\value{
+A \code{\link{sconeExperiment}} object representing selected methods.
 }
 \description{
-This is a wrapper around \code{\link{biplot_colored}}, which creates a shiny
+This is a wrapper around \code{\link{biplot_color}}, creating a shiny
 gadget to allow the user to select specific points in the graph.
 }
 \details{
 Since this is based on the shiny gadget feature, it will not work in
   static documents, such as vignettes or markdown / knitr documents.
-  See \code{biplot_colored} for more details on the internals.
+  See \code{biplot_color} for more details on the internals.
 }
 \examples{
-\dontrun{
-mat <- matrix(rnorm(1000), ncol=10)
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-
-biplot_interactive(mat, mat[,1])
+obj <- sconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+\dontrun{
+biplot_interactive(res)
 }
+
 }
 

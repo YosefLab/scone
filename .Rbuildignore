@@ -38,3 +38,4 @@ R/.Rhistory
 ^old_scripts/*
 ^.*\.Rproj$
 ^\.Rproj\.user$
+scripts

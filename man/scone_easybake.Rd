@@ -6,14 +6,14 @@
 \usage{
 scone_easybake(expr, qc, bio = NULL, batch = NULL, negcon = NULL,
   verbose = c("0", "1", "2"), out_dir = getwd(), seed = 112233,
-  filt_cells = TRUE, filt_genes = TRUE, fnr_maxiter = 1000,
-  norm_impute = c("yes", "no", "force"), norm_scaling = c("none", "sum",
-  "deseq", "tmm", "uq", "fq", "detect"), norm_rezero = TRUE,
-  norm_k_max = NULL, norm_qc_expl = 0.5, norm_adjust_bio = c("yes", "no",
-  "force"), norm_adjust_batch = c("yes", "no", "force"), eval_dim = NULL,
-  eval_expr_expl = 0.1, eval_poscon = NULL, eval_negcon = negcon,
-  eval_max_kclust = 10, eval_stratified_pam = TRUE, report_num = 13,
-  out_rda = FALSE, ...)
+  filt_cells = TRUE, filt_genes = TRUE, always_keep_genes = NULL,
+  fnr_maxiter = 1000, norm_impute = c("yes", "no", "force"),
+  norm_scaling = c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"),
+  norm_rezero = TRUE, norm_k_max = NULL, norm_qc_expl = 0.5,
+  norm_adjust_bio = c("yes", "no", "force"), norm_adjust_batch = c("yes",
+  "no", "force"), eval_dim = NULL, eval_expr_expl = 0.1,
+  eval_poscon = NULL, eval_negcon = negcon, eval_max_kclust = 10,
+  eval_stratified_pam = TRUE, report_num = 13, out_rda = FALSE, ...)
 }
 \arguments{
 \item{expr}{matrix. The expression data matrix (genes in rows, cells in columns).}
@@ -48,6 +48,8 @@ Default TRUE.}
 
 \item{filt_genes}{logical. Should genes be filtered post-sample filtering?
 Default TRUE.}
+
+\item{always_keep_genes}{logical. A character vector of gene names that should never be excluded (e.g., marker genes). Default NULL.}
 
 \item{fnr_maxiter}{numeric. Maximum number of iterations in EM estimation of expression posteriors.
 If 0, then FNR estimation is skipped entirely, and as a

@@ -17,4 +17,9 @@ the imputed expression matrix.
 \description{
 Null or no-op imputation
 }
+\examples{
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+imat = impute_null(mat)
+
+}
 

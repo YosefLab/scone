@@ -3,22 +3,32 @@
 \name{FQ_FN}
 \alias{FQT_FN}
 \alias{FQ_FN}
-\title{Full-Quantile normalization wrapper.}
+\title{Full-quantile normalization wrapper.}
 \usage{
 FQ_FN(ei)
 
 FQT_FN(ei)
 }
 \arguments{
-\item{ei}{= Numerical matrix. (rows = genes, cols = samples). Unique row.names are required.}
+\item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-FQ normalized matrix.
+Full-quantile normalized matrix.
 }
 \description{
-Full-Quantile normalization wrapper.
+Full-quantile normalization wrapper.
 }
 \details{
+SCONE "scaling" wrapper for \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
+
 FQT_FN handles ties carefully (see \code{\link[limma]{normalizeQuantiles}}).
+}
+\examples{
+ei <- matrix(0:20,nrow = 7)
+eo <- FQ_FN(ei)
+
+ei <- matrix(0:20,nrow = 7)
+eo <- FQT_FN(ei)
+
 }
 

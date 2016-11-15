@@ -1,5 +1,5 @@
 Package: scone
-Version: 0.0.8
+Version: 0.99.0
 Title: Single Cell Overview of Normalized Expression data
 Description: SCONE is an R package for comparing and ranking the performance of different normalization schemes for single-cell RNA-seq and other high-throughput analyses.
 Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
@@ -8,11 +8,15 @@ Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 	          role = c("aut", "cph")))
 Author: Michael Cole [aut, cre, cph], Davide Risso [aut, cph]
 Maintainer: Michael Cole <mbeloc@gmail.com>
-Date: 2016-09-27
-License: file LICENSE
+License: Artistic-2.0
 Depends:
-  R (>= 3.3)
+  R (>= 3.3),
+  methods,
+  SummarizedExperiment
 Imports:
+  graphics,
+  stats,
+  utils,
   aroma.light,
   BiocParallel,
   class,
@@ -26,7 +30,6 @@ Imports:
   grDevices,
   hexbin,
   limma,
-  MASS,
   matrixStats,
   mixtools,
   RColorBrewer,
@@ -40,12 +43,23 @@ Imports:
   ggplot2,
   plotly,
   reshape2,
+  scran,
   visNetwork
 Suggests:
+  BiocStyle,
+  scRNAseq,
   knitr,
   rmarkdown,
   testthat
 VignetteBuilder: knitr
 LazyLoad: yes
+biocViews:
+  Normalization,
+  Preprocessing,
+  QualityControl,
+  GeneExpression,
+  RNASeq,
+  Software,
+  Transcriptomics
 BugReports: https://github.com/YosefLab/scone/issues
 RoxygenNote: 5.0.1

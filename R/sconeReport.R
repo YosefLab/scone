@@ -3,14 +3,15 @@
 #' This function opens a shiny application session for visualizing performance
 #' of a variety of normalization schemes.
 #'
-#' @param scone_res list. SCONE output list from a scone(return_norm = "in_memory") call. Required.
-#' @param qc matrix. The QC metrics to be used for QC evaluation. Required.
-#' @param bio factor. The biological condition (variation to be preserved). Default NULL.
-#' @param batch factor. The known batch variable (variation to be removed). Default NULL.
-#' @param negcon character. The genes to be used as negative controls for
+#' @param x a \code{SconeExperiment} object
+#' @param methods character specifying the normalizations to report.
+#' @param qc matrix. QC metrics to be used for QC evaluation report. Required.
+#' @param bio factor. A biological condition (variation to be preserved). Default NULL.
+#' @param batch factor. A known batch variable (variation to be removed). Default NULL.
+#' @param negcon character. Genes to be used as negative controls for
 #'   evaluation. These genes should be expected not to change according to the
 #'   biological phenomenon of interest. Default empty character.
-#' @param poscon character. The genes to be used as positive controls for
+#' @param poscon character. Genes to be used as positive controls for
 #'   evaluation. These genes should be expected to change according to the
 #'   biological phenomenon of interest. Default empty character.
 #'   
@@ -23,11 +24,42 @@
 #' @importFrom NMF aheatmap
 #' @importFrom ggplot2 labs theme geom_point ylim ggplot geom_violin element_blank aes geom_bar coord_cartesian scale_fill_manual guides
 #' @export
-#'
-
-sconeReport = function(scone_res, qc, 
+#' 
+#' @return An object that represents the SCONE report app.
+#' 
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- sconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+#' rownames(qc) = colnames(mat)
+#' colnames(qc) = c("NCOUNTS","NGENES")
+#' \dontrun{
+#' sconeReport(res,rownames(get_params(res)), qc = qc)
+#' }
+#' 
+sconeReport = function(x, methods,
+                       qc, 
                        bio = NULL, batch = NULL,
                        poscon = character(), negcon = character()){
+  
+  
+  scone_res = list()
+  
+  # List of normalized matrices
+  scone_res$normalized_data = lapply(as.list(methods), 
+                                     FUN = function(z){get_normalized(x,method = z,log=TRUE)})
+  names(scone_res$normalized_data) = methods
+  
+  # Parameter matrix
+  scone_res$params = get_params(x)[methods,]
+  
+  # Merged score matrix
+  scone_res$scores = cbind(get_scores(x),get_score_ranks(x))[methods,]
+  colnames(scone_res$scores)[ncol(scone_res$scores)] = "mean_score_rank"
+  
   
   ## ----- If NULL classifications, Replace with NA ------
   
@@ -408,9 +440,13 @@ sconeReport = function(scone_res, qc,
     })
     
     output$plot3d_qc <- renderPlotly({
-      PC1 <- PC2 <- PC3 <- NULL
-      df <- setNames(data.frame(pc_obj_qc()$x[,1:3]), c("PC1", "PC2", "PC3"))
-      plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3, type = "scatter3d", mode = "markers",marker = list(color=pc_col() ))
+      if(ncol(pc_obj_qc()$x) >= 3){
+        PC1 <- PC2 <- PC3 <- NULL
+        df <- setNames(data.frame(pc_obj_qc()$x[,1:3]), c("PC1", "PC2", "PC3"))
+        plot_ly(df, x = ~PC1, y = ~PC2, z = ~PC3, type = "scatter3d", mode = "markers",marker = list(color=pc_col() ))
+      }else{
+        plot_ly(data.frame(), type = "scatter3d", mode = "markers")
+      }
     })
     
     ## ------ Silhouette Tab ------
