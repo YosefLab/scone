@@ -11,7 +11,7 @@ vignette: >
 ---
 
 <!--
-%\VignetteEngine{rmarkdown::render}
+%\VignetteEngine{knitr::rmarkdown}
 %\VignetteIndexEntry{scone Vignette}
 -->
 
