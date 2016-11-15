@@ -21,11 +21,15 @@ test_that("all back-ends work", {
                eval_kclust=2, bpparam=BiocParallel::SerialParam())
 
   # multicore
-  res2 <- scone(obj, imputation=list(none=impute_null),
-                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-                k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
-                evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                eval_kclust=2, bpparam=BiocParallel::MulticoreParam(2))
+  if(.Platform$OS.type == "unix") {
+    res2 <- scone(obj, imputation=list(none=impute_null),
+                  scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+                  k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
+                  evaluate=TRUE, run=TRUE, return_norm = "in_memory",
+                  eval_kclust=2, bpparam=BiocParallel::MulticoreParam(2))
+
+    expect_equal(res1, res2)
+  }
 
   # snow
   res3 <- scone(obj, imputation=list(none=impute_null),
@@ -40,7 +44,6 @@ test_that("all back-ends work", {
                 evaluate=TRUE, run=TRUE, return_norm = "in_memory",
                 eval_kclust=2, bpparam=BiocParallel::SnowParam(workers=2, type="FORK"))
 
-  expect_equal(res1, res2)
   expect_equal(res1, res3)
   expect_equal(res1, res4)
 
