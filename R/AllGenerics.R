@@ -36,7 +36,7 @@ setGeneric(
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, BiocParallel::SerialParam())
 #' norm = get_normalized(res,1)
 #'            
 #' 
@@ -66,7 +66,7 @@ setGeneric(
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, BiocParallel::SerialParam())
 #' null_design = get_design(res,1)
 #' 
 setGeneric(
@@ -96,7 +96,7 @@ setGeneric(
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, BiocParallel::SerialParam())
 #' select_res = select_methods(res,1:2)
 #'
 setGeneric(
@@ -172,7 +172,7 @@ setGeneric(
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2)
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, BiocParallel::SerialParam())
 #' scores = get_scores(res)
 #' score_ranks = get_score_ranks(res)
 #' 
