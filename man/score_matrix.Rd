@@ -21,7 +21,7 @@ If NULL, PCA is used for projection}
 \item{eval_proj_args}{list. List of arguments passed to projection function as eval_proj_args (see Details).}
 
 \item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam tightness (PAM_SIL) evaluation.
-If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL. 
+If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL.
 If NULL, PAM_SIL will be returned NA.}
 
 \item{bio}{factor. A known biological condition (variation to be preserved), NA is allowed.
@@ -39,11 +39,11 @@ If NULL, uv correlations, EXP_UV_COR, will be returned NA.}
 \item{wv_factors}{Factors of wanted variation derived from positive control genes (evaluation set).
 If NULL, wv correlations, EXP_WV_COR, will be returned NA.}
 
-\item{is_log}{logical. If TRUE the expr matrix is already logged and log transformation will not be 
+\item{is_log}{logical. If TRUE the expr matrix is already logged and log transformation will not be
 carried out prior to projection. Default FALSE.}
 
-\item{stratified_pam}{logical. If TRUE then maximum ASW is separately computed for each 
-biological-cross-batch stratum (accepting NAs), and a weighted average silhouette width 
+\item{stratified_pam}{logical. If TRUE then maximum ASW is separately computed for each
+biological-cross-batch stratum (accepting NAs), and a weighted average silhouette width
 is returned as PAM_SIL. Default FALSE.}
 }
 \value{
@@ -60,7 +60,7 @@ A list with the following metrics:
 }
 }
 \description{
-This function evaluates a (normalized) expression matrix using SCONE criteria, 
+This function evaluates a (normalized) expression matrix using SCONE criteria,
 producing 8 metrics based on i) Clustering, ii) Correlations and iii) Relative Expression.
 }
 \details{

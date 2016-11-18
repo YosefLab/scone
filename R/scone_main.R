@@ -112,19 +112,20 @@
 #'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
 #' @importFrom rhdf5 h5createFile h5write.default h5write H5close
+#' @importFrom rARPACK svds
 #' @export
-#' 
-#' 
+#'
+#'
 #' @examples
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' no_results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #'            run=FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
-#'            
+#'
 #' results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #'            run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
-#'            
+#'
 #' results_in_memory <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #'            k_ruv=0, k_qc=0, eval_kclust=2, return_norm = "in_memory", bpparam = BiocParallel::SerialParam())
 #'
@@ -414,11 +415,15 @@ setMethod(
     eval_poscon <- get_poscon(x)
 
     if(!is.null(eval_negcon)) {
-      uv_factors <- svd(scale(t(log1p(assay(x)[eval_negcon,])),center = TRUE,scale = TRUE),eval_pcs,0)$u
+      uv_factors <- svds(scale(t(log1p(assay(x)[eval_negcon,])),
+                               center = TRUE, scale = TRUE),
+                         k=eval_pcs, nu=eval_pcs, nv=0)$u
     }
 
     if(!is.null(eval_poscon)) {
-      wv_factors <- svd(scale(t(log1p(assay(x)[eval_poscon,])),center = TRUE,scale = TRUE),eval_pcs,0)$u
+      wv_factors <- svds(scale(t(log1p(assay(x)[eval_poscon,])),
+                               center = TRUE, scale = TRUE),
+                         k=eval_pcs, nu=eval_pcs, nv=0)$u
     }
 
   }
@@ -432,8 +437,8 @@ outlist <- bplapply(seq_len(NROW(params)), function(i) {
                               nested=(nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
     sc_name <- paste(params[i,1:2], collapse="_")
     adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
+
     if(evaluate) {
-      #cat(sprintf("scoring matrix: I am in method: %s", sc_name)) #debug message
       score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, eval_proj = eval_proj, eval_proj_args = eval_proj_args,
                             eval_kclust = eval_kclust, bio = bio, batch = batch,
                             qc_factors = qc_pcs, uv_factors = uv_factors, wv_factors = wv_factors,

@@ -1,6 +1,6 @@
 #' SCONE Evaluation: Evaluate an Expression Matrix
 #'
-#' This function evaluates a (normalized) expression matrix using SCONE criteria, 
+#' This function evaluates a (normalized) expression matrix using SCONE criteria,
 #' producing 8 metrics based on i) Clustering, ii) Correlations and iii) Relative Expression.
 #'
 #' @details Users may specify their own eval_proj function that will be used to compute
@@ -20,7 +20,7 @@
 #' If NULL, PCA is used for projection
 #' @param eval_proj_args list. List of arguments passed to projection function as eval_proj_args (see Details).
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam tightness (PAM_SIL) evaluation.
-#' If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL. 
+#' If an array of integers, largest average silhouette width (tightness) will be reported in PAM_SIL.
 #' If NULL, PAM_SIL will be returned NA.
 #' @param bio factor. A known biological condition (variation to be preserved), NA is allowed.
 #' If NULL, condition ASW, BIO_SIL, will be returned NA.
@@ -32,10 +32,10 @@
 #' If NULL, uv correlations, EXP_UV_COR, will be returned NA.
 #' @param wv_factors Factors of wanted variation derived from positive control genes (evaluation set).
 #' If NULL, wv correlations, EXP_WV_COR, will be returned NA.
-#' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be 
+#' @param is_log logical. If TRUE the expr matrix is already logged and log transformation will not be
 #' carried out prior to projection. Default FALSE.
-#' @param stratified_pam logical. If TRUE then maximum ASW is separately computed for each 
-#' biological-cross-batch stratum (accepting NAs), and a weighted average silhouette width 
+#' @param stratified_pam logical. If TRUE then maximum ASW is separately computed for each
+#' biological-cross-batch stratum (accepting NAs), and a weighted average silhouette width
 #' is returned as PAM_SIL. Default FALSE.
 #'
 #' @importFrom class knn
@@ -68,11 +68,11 @@ score_matrix <- function(expr, eval_pcs = 3,
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")
   }
-  
+
   if(!is_log) {
     expr <- log1p(expr)
   }
-  
+
   #The svd we do below on expr throws an exception if expr created by one of the normalizations has a constant feature (=gene, i.e. row)
   constantFeatures = apply(expr, 1, function(x) max(x)-min(x)) < 1e-3
   if(any(constantFeatures)) {
@@ -81,11 +81,13 @@ score_matrix <- function(expr, eval_pcs = 3,
   }
 
   if(is.null(eval_proj)){
-      proj = tryCatch({svd(scale(t(expr),center = TRUE,scale = TRUE),eval_pcs,0)$u},
+      proj = tryCatch({
+        svds(scale(t(expr), center = TRUE, scale = TRUE),
+             k=eval_pcs, nu=eval_pcs, nv=0)$u},
                       error = function(e) {
                         stop("scone_eval: svd failed")
                       })
-                      
+
   } else {
       proj = eval_proj(expr,eval_proj_args = eval_proj_args)
       eval_pcs = ncol(proj)
@@ -95,7 +97,7 @@ score_matrix <- function(expr, eval_pcs = 3,
   dd <- as.matrix(dist(proj))
 
   # Biological Condition
-  
+
   if( !is.null(bio) ) {
     if(!all(is.na(bio))) {
       if(length(unique(bio)) > 1) {
@@ -114,7 +116,7 @@ score_matrix <- function(expr, eval_pcs = 3,
   }
 
   # Batch Condition
-  
+
   if(!is.null(batch)) {
     if(!all(is.na(batch))) {
       if(length(unique(batch)) > 1) {
@@ -137,7 +139,7 @@ score_matrix <- function(expr, eval_pcs = 3,
   if ( !is.null(eval_kclust) ){
 
     # "Stratified" PAM
-    
+
     if(stratified_pam){
 
       biobatch = as.factor(paste(bio,batch,sep = "_"))
@@ -168,7 +170,7 @@ score_matrix <- function(expr, eval_pcs = 3,
       PAM_SIL = PAM_SIL/length(biobatch)
 
     # Traditional PAM
-      
+
     }else{
       pamk_object = pamk(proj,krange = eval_kclust)
       PAM_SIL = pamk_object$pamobject$silinfo$avg.width
@@ -203,13 +205,13 @@ score_matrix <- function(expr, eval_pcs = 3,
 
   ## ----- RLE Measures
   rle <- expr - rowMedians(expr)
-  
+
   # Non-Zero Median RLE
   RLE_MED <- mean(colMedians(rle)^2) # Variance of the median
-  
+
   # Variable IQR RLE
   RLE_IQR <- var(colIQRs(rle)) # Variance of the IQR
-  
+
   scores = c(BIO_SIL, BATCH_SIL, PAM_SIL,
              EXP_QC_COR, EXP_UV_COR, EXP_WV_COR,
              RLE_MED, RLE_IQR)

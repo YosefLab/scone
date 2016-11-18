@@ -32,21 +32,21 @@ test_that("Test with no real method (only identity)", {
   # add ruv
   expect_error(scone(obj, imputation=list(impute_null,impute_null),
                      scaling=list(identity, identity, identity),
-                     k_ruv=5, k_qc=0, evaluate=FALSE, run=FALSE),
+                     k_ruv=3, k_qc=0, evaluate=FALSE, run=FALSE),
                "negative controls must be specified")
 
   obj <- sconeExperiment(e, negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)))
   obj <- scone(obj, imputation=list(impute_null,impute_null),
-               scaling=list(identity, identity, identity), k_ruv=5,
+               scaling=list(identity, identity, identity), k_ruv=3,
                k_qc=0, evaluate=FALSE, run=FALSE)
   obj2 <- scone(obj, imputation=list(impute_null,impute_null),
-                scaling=list(identity, identity, identity), k_ruv=5,
+                scaling=list(identity, identity, identity), k_ruv=3,
                 k_qc=0, evaluate=FALSE, run=FALSE)
   expect_equal(obj, obj2)
 
   # add qc
   expect_error(scone(obj, imputation=list(impute_null,impute_null),
-                     scaling=list(identity, identity, identity), k_ruv=5,
+                     scaling=list(identity, identity, identity), k_ruv=3,
                      k_qc=5, evaluate=FALSE, run=FALSE),
                "QC metrics must be specified")
 
@@ -54,14 +54,14 @@ test_that("Test with no real method (only identity)", {
   obj <- sconeExperiment(e, qc=qc_mat, negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)))
 
   res <- scone(obj, imputation=list(impute_null,impute_null),
-               scaling=list(identity, identity, identity), k_ruv=5, k_qc=2,
+               scaling=list(identity, identity, identity), k_ruv=3, k_qc=2,
                evaluate=FALSE, run=TRUE)
 
   # add bio
   bio <- rep(1:2, each=5)
 
   expect_error(scone(obj, imputation=list(impute_null,impute_null),
-                     scaling=list(identity, identity, identity), k_ruv=5,
+                     scaling=list(identity, identity, identity), k_ruv=3,
                      k_qc=2, adjust_bio="yes", evaluate=FALSE, run=FALSE),
                "if adjust_bio is 'yes' or 'force', 'bio' must be specified")
 
@@ -70,17 +70,17 @@ test_that("Test with no real method (only identity)", {
                          bio = as.factor(bio))
 
   res <- scone(obj, imputation=list(impute_null,impute_null),
-               scaling=list(identity, identity, identity), k_ruv=5,
+               scaling=list(identity, identity, identity), k_ruv=3,
                k_qc=2, adjust_bio="yes", evaluate=FALSE, run=TRUE)
   res <- scone(obj, imputation=list(impute_null,impute_null),
-               scaling=list(identity, identity, identity), k_ruv=5,
+               scaling=list(identity, identity, identity), k_ruv=3,
                k_qc=2, adjust_bio="force", evaluate=FALSE, run=TRUE)
 
   # add batch
   batch <- rep(1:2, each=5)
 
   expect_error(scone(obj, imputation=list(impute_null,impute_null),
-                     scaling=list(identity, identity, identity), k_ruv=5,
+                     scaling=list(identity, identity, identity), k_ruv=3,
                      k_qc=2, adjust_bio="force", adjust_batch="yes",
                      evaluate=FALSE, run=FALSE),
                "if adjust_batch is 'yes' or 'force', 'batch' must be specified")
@@ -90,7 +90,7 @@ test_that("Test with no real method (only identity)", {
                          bio = as.factor(bio), batch=as.factor(batch))
 
   expect_error(scone(obj, imputation=list(impute_null,impute_null),
-                     scaling=list(identity, identity, identity), k_ruv=5,
+                     scaling=list(identity, identity, identity), k_ruv=3,
                      k_qc=2, adjust_bio="force", adjust_batch="yes",
                      evaluate=FALSE, run=FALSE),
                "Biological conditions and batches are confounded")
@@ -101,13 +101,13 @@ test_that("Test with no real method (only identity)", {
                          bio = as.factor(bio), batch=as.factor(batch))
   res <- scone(obj, imputation=list(a=impute_null, b=impute_null),
                scaling=list(a=identity, b=identity, c=identity),
-               k_ruv=5, k_qc=2, adjust_bio="force", adjust_batch="yes",
+               k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=FALSE, run=TRUE)
 
   ## add evaluation
   res <- scone(obj, imputation=list(a=impute_null, b=impute_null),
                scaling=list(a=identity, b=identity, c=identity),
-               k_ruv=5, k_qc=2, adjust_bio="force", adjust_batch="yes",
+               k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                evaluate=TRUE, run=TRUE, eval_kclust=5)
 
 })
@@ -159,7 +159,7 @@ test_that("Test imputation and scaling", {
 
   system.time(res <- scone(obj, imputation=list(none=impute_null),
                            scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-                           k_ruv=5, k_qc=2, adjust_bio="yes",
+                           k_ruv=3, k_qc=2, adjust_bio="yes",
                            adjust_batch="yes", run=TRUE, evaluate=TRUE,
                            eval_kclust = 2, verbose=FALSE,
                            return_norm = "in_memory"))
@@ -170,7 +170,7 @@ test_that("Test imputation and scaling", {
 
   res2 <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-               k_ruv=5, k_qc=2, adjust_bio="yes", adjust_batch="yes", run=TRUE,
+               k_ruv=3, k_qc=2, adjust_bio="yes", adjust_batch="yes", run=TRUE,
                evaluate=FALSE, eval_kclust = 2, verbose=FALSE,
                return_norm = "in_memory")
 
