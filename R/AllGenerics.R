@@ -7,36 +7,37 @@ setGeneric(
 )
 
 #' Retrieve Normalized Matrix
-#'
-#' Given a \code{SconeExperiment} object created by a call to scone, it will
+#' 
+#' Given a \code{SconeExperiment} object created by a call to scone, it will 
 #' return a matrix of normalized counts (in log scale if \code{log=TRUE}).
-#'
+#' 
 #' @details If \code{\link{scone}} was run with \code{return_norm="in_memory"},
-#'   this function simply retrieves the normalized data from the \code{assays}
+#'   this function simply retrieves the normalized data from the \code{assays} 
 #'   slote of \code{object}.
-#'
+#'   
 #' @details If \code{\link{scone}} was run with \code{return_norm="hdf5"}, this
 #'   function will read the normalized matrix from the specified hdf5 file.
-#'
-#' @details If \code{\link{scone}} was run with \code{return_norm="no"}, this
+#'   
+#' @details If \code{\link{scone}} was run with \code{return_norm="no"}, this 
 #'   function will compute the normalized matrix on the fly.
-#'
-#' @param x a \code{\link{sconeExperiment}} object containing the results of
+#'   
+#' @param x a \code{\link{sconeExperiment}} object containing the results of 
 #'   \code{\link{scone}}.
-#' @param method character or numeric. Either a string identifying the
-#'   normalization scheme to be retrieved, or a numeric index with the rank of
-#'   the normalization method to retrieve (according to scone ranking of
+#' @param method character or numeric. Either a string identifying the 
+#'   normalization scheme to be retrieved, or a numeric index with the rank of 
+#'   the normalization method to retrieve (according to scone ranking of 
 #'   normalizations).
 #' @param ... additional arguments for specific methods.
-#'
+#'   
 #' @return A matrix of normalized counts in log-scale.
-#' 
+#'   
 #' @examples
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, 
+#'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #' norm = get_normalized(res,1)
 #'            
 #' 
@@ -66,7 +67,8 @@ setGeneric(
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, 
+#'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #' null_design = get_design(res,1)
 #' 
 setGeneric(
@@ -77,28 +79,30 @@ setGeneric(
 )
 
 #' Get a subset of normalizations from a SconeExperiment object
-#'
+#' 
 #' @description This method let a user extract a subset of normalizations. This
-#'   is useful when the original dataset is large and/or many normalization
+#'   is useful when the original dataset is large and/or many normalization 
 #'   schemes have been applied.
-#'
-#' @description In such cases, the user may want to run scone in mode
-#'   \code{return_norm = "no"}, explore the results, and then select the top
+#'   
+#' @description In such cases, the user may want to run scone in mode 
+#'   \code{return_norm = "no"}, explore the results, and then select the top 
 #'   performing methods for additional exploration.
-#'
+#'   
 #' @param x a \code{SconeExperiment} object.
-#' @param methods either character or numeric specifying the normalizations to select.
-#' 
+#' @param methods either character or numeric specifying the normalizations to
+#'   select.
+#'   
 #' @return A \code{SconeExperiment} object with selected method data.
-#' 
+#'   
 #' @examples
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, 
+#'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #' select_res = select_methods(res,1:2)
-#'
+#' 
 setGeneric(
   name = "select_methods",
   def = function(x, methods) {
@@ -107,8 +111,8 @@ setGeneric(
 )
 
 #' Get Negative and Positive Controls
-#'
-#' @aliases get_negconeval get_poscon get_negconruv,SconeExperiment-method
+#' 
+#' @aliases get_negconeval get_poscon get_negconruv,SconeExperiment-method 
 #'   get_negconeval,SconeExperiment-method get_poscon,SconeExperiment-method
 setGeneric(
   name = "get_negconruv",
@@ -134,7 +138,7 @@ setGeneric(
 )
 
 #' Get Quality Control Matrix
-#'
+#' 
 #' @aliases get_qc,SconeExperiment-method
 setGeneric(
   name = "get_qc",
@@ -163,8 +167,8 @@ setGeneric(
 )
 
 #' Extract scone scores
-#'
-#' @aliases get_scores get_score,SconeExperiment-method get_score_ranks
+#' 
+#' @aliases get_scores get_score,SconeExperiment-method get_score_ranks 
 #'   get_score_ranks,SconeExperiment-method
 #'   
 #' @examples
@@ -172,7 +176,8 @@ setGeneric(
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- sconeExperiment(mat)
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, 
+#'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #' scores = get_scores(res)
 #' score_ranks = get_score_ranks(res)
 #' 
@@ -192,7 +197,7 @@ setGeneric(
 )
 
 #' Extract scone parameters
-#'
+#' 
 #' @aliases get_params get_params,SconeExperiment-method
 #' @examples
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)

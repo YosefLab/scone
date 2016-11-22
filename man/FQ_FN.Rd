@@ -19,9 +19,11 @@ Full-quantile normalized matrix.
 Full-quantile normalization wrapper.
 }
 \details{
-SCONE "scaling" wrapper for \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
+SCONE "scaling" wrapper for
+  \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
 
-FQT_FN handles ties carefully (see \code{\link[limma]{normalizeQuantiles}}).
+FQT_FN handles ties carefully (see
+  \code{\link[limma]{normalizeQuantiles}}).
 }
 \examples{
 ei <- matrix(0:20,nrow = 7)

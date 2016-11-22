@@ -16,7 +16,8 @@ Upper-quartile (positive) normalized matrix.
 Upper-quartile normalization derived from positive data.
 }
 \details{
-SCONE scaling function scales expression data by upper quartile of positive data.
+SCONE scaling function scales expression data by upper quartile of
+  positive data.
 }
 \examples{
 ei <- matrix(0:20,nrow = 7)

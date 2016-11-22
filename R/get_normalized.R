@@ -1,13 +1,15 @@
-#' @describeIn get_normalized If \code{method} is a character, it will return
-#'   the normalized matrix corresponding to the normalization scheme specified
-#'   by the character string. The string must be one of the \code{row.names} of
-#'   the slot \code{scone_params}.
-#'
+#' @describeIn get_normalized 
+#'   If 
+#'   \code{method} is a character, it will return the normalized
+#'   matrix corresponding to the normalization scheme specified
+#'   by the character string.The string must be one of the 
+#'   \code{row.names} of the slot \code{scone_params}.
+#'   
 #' @importFrom rhdf5 h5ls h5read
 #' @export
-#'
+#' 
 #' @param log logical. Should the data be returned in log-scale
-#'
+#'   
 setMethod(
   f = "get_normalized",
   signature = signature(x = "SconeExperiment", method = "character"),
@@ -61,9 +63,12 @@ setMethod(
 
       }
 
-      parsed <- .parse_row(params, get_bio(x), get_batch(x), ruv_factors, qc_factors)
+      parsed <- .parse_row(params, get_bio(x), 
+                           get_batch(x), ruv_factors, qc_factors)
       design_mat <- make_design(parsed$bio, parsed$batch, parsed$W,
-                                nested=(x@nested & !is.null(parsed$bio) & !is.null(parsed$batch)))
+                                nested=(x@nested &
+                                          !is.null(parsed$bio) &
+                                          !is.null(parsed$batch)))
       adjusted <- lm_adjust(log1p(scaled), design_mat, get_batch(x))
       retval <- expm1(adjusted)
     }
@@ -77,18 +82,21 @@ setMethod(
 )
 
 
-#' @describeIn get_normalized If \code{method} is a numeric, it will return the
-#'   normalized matrix according to the scone ranking.
-#'
-#' @details The numeric method will always return the normalization
+#' @describeIn get_normalized 
+#'   If 
+#'   \code{method} is a numeric, it will return the normalized
+#'   matrix according to the scone ranking.
+#'   
+#' @details The numeric method will always return the normalization 
 #'   corresponding to row \code{method} of the \code{scone_params} slot. This
-#'   means that if \code{\link{scone}} was run with \code{eval=TRUE},
-#'   \code{get_normalized(x, 1)} will return the top ranked method. If
-#'   \code{\link{scone}} was run with \code{eval=FALSE}, \code{get_normalized(x,
-#'   1)} will return the first normalization in the order saved by scone.
-#'
+#'   means that if \code{\link{scone}} was run with \code{eval=TRUE}, 
+#'   \code{get_normalized(x, 1)} will return the top ranked method. If 
+#'   \code{\link{scone}} was run with \code{eval=FALSE}, 
+#'   \code{get_normalized(x,1)} will return the first normalization
+#'   in the order saved by scone.
+#'   
 #' @export
-#'
+#' 
 setMethod(
   f = "get_normalized",
   signature = signature(x = "SconeExperiment", method = "numeric"),

@@ -32,14 +32,14 @@ imputation. By default only scone::impute_null is included.}
 scaling normalization.}
 
 \item{k_ruv}{numeric. The maximum number of factors of unwanted variation
-(the function will adjust for 1 to k_ruv factors of unwanted variation). If
-0, RUV will not be performed.}
+(the function will adjust for 1 to k_ruv factors of unwanted variation).
+If 0, RUV will not be performed.}
 
 \item{k_qc}{numeric. The maximum number of quality metric PCs (the function
 will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.}
 
-\item{adjust_bio}{character. If 'no' it will not be included in the model; if
-'yes', both models with and without 'bio' will be run; if 'force', only
+\item{adjust_bio}{character. If 'no' it will not be included in the model;
+if 'yes', both models with and without 'bio' will be run; if 'force', only
 models with 'bio' will be run.}
 
 \item{adjust_batch}{character. If 'no' it will not be included in the model;
@@ -56,8 +56,8 @@ evaluated (faster).}
 \item{eval_pcs}{numeric. The number of principal components to use for
 evaluation. Ignored if evaluation=FALSE.}
 
-\item{eval_proj}{function. Projection function for evaluation  (see
-\code{\link{score_matrix}} for details). If NULL, PCA is used for
+\item{eval_proj}{function. Projection function for evaluation  (see 
+\code{\link{score_matrix}} for details). If NULL, PCA is used for 
 projection.}
 
 \item{eval_proj_args}{list. List of args passed to projection function as
@@ -65,7 +65,8 @@ eval_proj_args.}
 
 \item{eval_kclust}{numeric. The number of clusters (> 1) to be used for pam
 tightness evaluation. If an array of integers, largest average silhouette
-width (tightness) will be reported. If NULL, tightness will be returned NA.}
+width (tightness) will be reported. 
+If NULL, tightness will be returned NA.}
 
 \item{verbose}{logical. If TRUE some messagges are printed.}
 
@@ -79,17 +80,18 @@ large datasets and/or when many combinations are compared. If "in_memory"
 the normalized values will be returned as part of the output. If "hdf5"
 they will be written on file using the \code{rhdf5} package.}
 
-\item{hdf5file}{character. If \code{return_norm="hdf5"}, the name of the file
-onto which to save the normalized matrices.}
+\item{hdf5file}{character. If \code{return_norm="hdf5"}, the name of the
+file onto which to save the normalized matrices.}
 
 \item{bpparam}{object of class \code{bpparamClass} that specifies the
-back-end to be used for computations. See
+back-end to be used for computations. See 
 \code{\link[BiocParallel]{bpparam}} for details.}
 }
 \value{
-A \code{\link{SconeExperiment}} object with the
-  log-scaled normalized data matrix as elements of the \code{assays} slot, if
-  \code{return_norm} is "in_memory", and with the performance metrics and scores.
+A \code{\link{SconeExperiment}} object with the log-scaled
+  normalized data matrix as elements of the \code{assays} slot, if
+  \code{return_norm} is "in_memory", and with the performance 
+  metrics and scores.
 }
 \description{
 This function is a high-level wrapper function for applying and evaluating a
@@ -99,62 +101,69 @@ variety of normalization schemes to a specified expression matrix.
 Each normalization consists of three main steps: \itemize{ \item{Impute:}{
 Replace observations of zeroes with expected expression values. }
 \item{Scale:}{ Match sample-specific expression scales or quantiles. }
-\item{Adjust:}{ Adjust for sample-level batch factors / unwanted variation. }
+\item{Adjust:}{ Adjust for sample-level batch factors / unwanted variation.}
 } Following completion of each step, the normalized expression matrix is
 scored based on SCONE's data-driven evaluation criteria.
 
 If \code{x} has a non-empty \code{scone_params} slot, only the
-  normalizations specified in \code{scone_params} are performed and evaluated.
-
-
+  normalizations specified in \code{scone_params} are performed and
+  evaluated.
+  
+  
 
 Evaluation metrics are defined in \code{\link{score_matrix}}. Each
-  metric is assigned a signature for conversion to scores: Positive-signature
-  metrics increase with improving performance, including BIO_SIL, PAM_SIL,
-  and EXP_WV_COR. Negative-signature metrics decrease with improving
-  performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RLE_MED, and
-  RLE_IQR. Scores are computed so that higer-performing methods are assigned
-  higher scores.
+  metric is assigned a signature for conversion to scores: Positive-
+  signature metrics increase with improving performance, including BIO_SIL,
+  PAM_SIL, and EXP_WV_COR. Negative-signature metrics decrease with
+  improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR,
+  RLE_MED, and RLE_IQR. Scores are computed so that higer-performing methods
+  are assigned higher scores.
+  
 
+Note that if one wants to include the unnormalized data in the 
+  final comparison of normalized matrices, the identity function must be
+  included in the scaling list argument. Analogously, if one wants to
+  include non-imputed data in the comparison, the scone::impute_null
+  function must be included.
+  
 
-Note that if one wants to include the unnormalized data in the final
-  comparison of normalized matrices, the identity function must be included
-  in the scaling list argument. Analogously, if one wants to include non-
-  imputed data in the comparison, the scone::impute_null function must be
-  included.
-
-
-If \code{run=FALSE} only the \code{scone_params} slot is populated
-  with a \code{data.frame} with each row corresponding to a set of
+If \code{run=FALSE} only the \code{scone_params} slot is populated 
+  with a \code{data.frame} with each row corresponding to a set of 
   normalization parameters.
+  
 
+If \code{return_norm="hdf5"}, the normalized matrices will be 
+  written to the \code{hdf5file} file. This must be a string specifying (a 
+  path to) a new file. If the file already exists, it will return error. In 
+  this case, the \code{\link{SconeExperiment}} object will not contain the
+  normalized counts.
+  
 
-If \code{return_norm="hdf5"}, the normalized matrices will be
-  written to the \code{hdf5file} file. This must be a string specifying (a
-  path to) a new file. If the file already exists, it will return error. In
-  this case, the \code{\link{SconeExperiment}} object will not
-  contain the normalized counts.
-
-
-If \code{return_norm="no"} the normalized matrices are computed to
+If \code{return_norm="no"} the normalized matrices are computed to 
   copmute the scores and then discarded.
+  
 
-
-In all cases, the normalized matrices can be retrieved via the
+In all cases, the normalized matrices can be retrieved via the 
   \code{\link{get_normalized}} function.
 }
 \examples{
 mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- sconeExperiment(mat)
-no_results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+no_results <- scone(obj, scaling=list(none=identity,
+           uq=UQ_FN, deseq=DESEQ_FN),
            run=FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
            
-results <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-           run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+results <- scone(obj, scaling=list(none=identity,
+           uq=UQ_FN, deseq=DESEQ_FN),
+           run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,
+           bpparam = BiocParallel::SerialParam())
            
-results_in_memory <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-           k_ruv=0, k_qc=0, eval_kclust=2, return_norm = "in_memory", bpparam = BiocParallel::SerialParam())
+results_in_memory <- scone(obj, scaling=list(none=identity,
+           uq=UQ_FN, deseq=DESEQ_FN),
+           k_ruv=0, k_qc=0, eval_kclust=2,
+           return_norm = "in_memory",
+           bpparam = BiocParallel::SerialParam())
 
 }
 \seealso{

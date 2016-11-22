@@ -1,10 +1,12 @@
-#' @describeIn select_methods If \code{methods} is a character, it will return
-#'   the subset of methods named in \code{methods} (only perfect match). The
+#' @describeIn select_methods 
+#'   If 
+#'   \code{methods} is a character, it will return the subset of
+#'   methods named in \code{methods} (only perfect match). The 
 #'   string must be a subset of the \code{row.names} of the slot
 #'   \code{scone_params}.
-#'
+#'   
 #' @export
-#'
+#' 
 setMethod(
   f = "select_methods",
   signature = signature(x = "SconeExperiment", methods = "character"),
@@ -32,18 +34,20 @@ setMethod(
   }
 )
 
-#' @describeIn select_methods If \code{methods} is a numeric, it will return the
-#'   subset of methods according to the scone ranking.
-#'
-#' @details The numeric method will always return the normalization
-#'   corresponding to the \code{methods} rows of the \code{scone_params} slot.
-#'   This means that if \code{\link{scone}} was run with \code{eval=TRUE},
-#'   \code{select_methods(x, 1:3)} will return the top three ranked method. If
-#'   \code{\link{scone}} was run with \code{eval=FALSE}, it will return the
+#' @describeIn select_methods 
+#'  If
+#'  \code{methods} is a numeric, it will return the subset of methods
+#'  according to the scone ranking.
+#'   
+#' @details The numeric method will always return the normalization 
+#'   corresponding to the \code{methods} rows of the \code{scone_params} slot. 
+#'   This means that if \code{\link{scone}} was run with \code{eval=TRUE}, 
+#'   \code{select_methods(x, 1:3)} will return the top three ranked method. If 
+#'   \code{\link{scone}} was run with \code{eval=FALSE}, it will return the 
 #'   first three normalization in the order saved by scone.
-#'
+#'   
 #' @export
-#'
+#' 
 setMethod(
   f = "select_methods",
   signature = signature(x = "SconeExperiment", methods = "numeric"),
