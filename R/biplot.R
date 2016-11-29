@@ -1,33 +1,38 @@
-#' Function for biplotting with no point labels and with points color-coded according 
-#' to a quantitative variable. For example: the rank of normalization performance.
-#'
+#' Function for biplotting with no point labels and with
+#' points color-coded according to a quantitative variable.
+#' For example: the rank of normalization performance.
+#' 
 #' This function implements biplot for \code{\link[stats]{prcomp}} objects.
-#'
+#' 
 #' @param x \code{\link[stats]{prcomp}} object.
-#' @param y numeric. Quantitative values used to color the points. 
-#' If rank is FALSE, all values must be positive integers and less than or equal to the length of y.
-#' @param rank logical. If TRUE (default) y will be transformed by the rank() function
+#' @param y numeric. Quantitative values used to color the points. If rank is 
+#'   FALSE, all values must be positive integers and less than or equal to the 
+#'   length of y.
+#' @param rank logical. If TRUE (default) y will be transformed by the rank() 
+#'   function
 #' @param ties_method character. ties.method used by the rank() function
-#' @param choices numeric. 2 principal components to plot. Default to first two PCs.
-#' @param expand numeric. value used to adjust the spread of the arrows relative
-#'   to the points.
+#' @param choices numeric. 2 principal components to plot. Default to first two
+#'   PCs.
+#' @param expand numeric. value used to adjust the spread of the arrows
+#'   relative to the points.
 #' @param ... arguments passed to plot.
-#'
+#'   
 #' @importFrom grDevices colorRampPalette
 #' @export
 #' 
 #' @return Invisibly returns scaled point coordinates used in plot.
-#'
+#'   
 #' @examples
 #' mat <- matrix(rnorm(1000), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#'
+#' 
 #' pc <- prcomp(mat)
-#'
+#' 
 #' biplot_color(pc, rank(pc$x[,1]))
-#'
+#' 
 biplot_color <- function(x, y, rank = TRUE, 
-                         ties_method = c("max", "min", "first", "last", "random"),  
+                         ties_method = c("max", "min", 
+                                         "first", "last", "random"),
                          choices = 1:2, expand = 1, ...) {
 
   if(rank){

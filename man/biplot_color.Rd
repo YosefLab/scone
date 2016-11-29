@@ -2,8 +2,9 @@
 % Please edit documentation in R/biplot.R
 \name{biplot_color}
 \alias{biplot_color}
-\title{Function for biplotting with no point labels and with points color-coded according 
-to a quantitative variable. For example: the rank of normalization performance.}
+\title{Function for biplotting with no point labels and with
+points color-coded according to a quantitative variable.
+For example: the rank of normalization performance.}
 \usage{
 biplot_color(x, y, rank = TRUE, ties_method = c("max", "min", "first",
   "last", "random"), choices = 1:2, expand = 1, ...)
@@ -11,17 +12,20 @@ biplot_color(x, y, rank = TRUE, ties_method = c("max", "min", "first",
 \arguments{
 \item{x}{\code{\link[stats]{prcomp}} object.}
 
-\item{y}{numeric. Quantitative values used to color the points. 
-If rank is FALSE, all values must be positive integers and less than or equal to the length of y.}
+\item{y}{numeric. Quantitative values used to color the points. If rank is 
+FALSE, all values must be positive integers and less than or equal to the 
+length of y.}
 
-\item{rank}{logical. If TRUE (default) y will be transformed by the rank() function}
+\item{rank}{logical. If TRUE (default) y will be transformed by the rank() 
+function}
 
 \item{ties_method}{character. ties.method used by the rank() function}
 
-\item{choices}{numeric. 2 principal components to plot. Default to first two PCs.}
+\item{choices}{numeric. 2 principal components to plot. Default to first two
+PCs.}
 
-\item{expand}{numeric. value used to adjust the spread of the arrows relative
-to the points.}
+\item{expand}{numeric. value used to adjust the spread of the arrows
+relative to the points.}
 
 \item{...}{arguments passed to plot.}
 }

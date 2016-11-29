@@ -16,7 +16,8 @@ Upper-quartile normalized matrix.
 Upper-quartile normalization wrapper.
 }
 \details{
-SCONE scaling wrapper for \code{\link[EDASeq]{betweenLaneNormalization}}).
+SCONE scaling wrapper for
+  \code{\link[EDASeq]{betweenLaneNormalization}}).
 }
 \examples{
 ei <- matrix(0:20,nrow = 7)

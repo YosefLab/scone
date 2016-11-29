@@ -28,14 +28,14 @@ get_poscon(x)
 \value{
 NULL or a logical vector.
 
-For \code{get_negconruv} the returned vector indicates which genes are negative controls
- to be used for RUV.
+For \code{get_negconruv} the returned vector indicates which genes
+  are negative controls to be used for RUV.
 
-For \code{get_negconeval} the returned vector indicates which genes are negative controls
- to be used for evaluation.
+For \code{get_negconeval} the returned vector indicates which genes
+  are negative controls to be used for evaluation.
 
-For \code{get_poscon} the returned vector indicates which genes are positive controls
- to be used for evaluation.
+For \code{get_poscon} the returned vector indicates which genes are 
+  positive controls to be used for evaluation.
 }
 \description{
 Get Negative and Positive Controls

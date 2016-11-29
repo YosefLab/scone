@@ -1,71 +1,72 @@
 #' Class SconeExperiment
-#'
-#' @description Objects of this class store, at minimum, a gene
-#'   expression matrix and a set of covariates (sample metadata) useful for
-#'   running \code{\link{scone}}. These include, the quality control (QC)
-#'   metrics, batch information, and biological classes of interest (if
-#'   available).
-#'
-#' @description The typical way of creating \code{SconeExperiment} objects is
-#'   via a call to the \code{\link{sconeExperiment}} function or to the
-#'   \code{\link{scone}} function. If the object is a result to a
-#'   \code{\link{scone}} call, it will contain the results, e.g., the
-#'   performance metrics, scores, and normalization workflow comparisons. (See
+#' 
+#' @description Objects of this class store, at minimum, a gene expression 
+#'   matrix and a set of covariates (sample metadata) useful for running 
+#'   \code{\link{scone}}. These include, the quality control (QC) metrics,
+#'   batch information, and biological classes of interest (if available).
+#'   
+#' @description The typical way of creating \code{SconeExperiment} objects is 
+#'   via a call to the \code{\link{sconeExperiment}} function or to the 
+#'   \code{\link{scone}} function. If the object is a result to a 
+#'   \code{\link{scone}} call, it will contain the results, e.g., the 
+#'   performance metrics, scores, and normalization workflow comparisons. (See 
 #'   Slots for a full list).
-#'
-#' @description This object extends the
+#'   
+#' @description This object extends the 
 #'   \code{\linkS4class{SummarizedExperiment}} class.
-#'
-#' @details The QC matrix, biological class, and batch information are stored as
-#'   elements of the `colData` of the object.
-#' @details The positive and negative control genes are stored as elements of
-#'   the `rowData` of the object.
-#'
+#'   
+#' @details The QC matrix, biological class, and batch information are 
+#'   stored as elements of the `colData` of the object.
+#' @details The positive and negative control genes are stored as 
+#'   elements of the `rowData` of the object.
+#'   
 #' @import methods
 #' @import SummarizedExperiment
 #' @importClassesFrom SummarizedExperiment SummarizedExperiment
-#'
+#'   
 #' @name SconeExperiment-class
 #' @import methods
 #' @aliases SconeExperiment
-#'
+#'   
 #' @export
-#'
-#' @slot which_qc integer. Index of columns of `colData` that contain the QC
-#'   metrics.
-#' @slot which_bio integer. Index of the column of `colData` that contains the
-#'   biological classes information (it must be a factor).
-#' @slot which_batch integer. Index of the column of `colData` that contains the
-#'   batch information (it must be a factor).
-#' @slot which_negconruv integer. Index of the column of `rowData` that contains
-#'   a logical vector indicating which genes to use as negative controls to
-#'   infer the factors of unwanted variation in RUV.
-#' @slot which_negconeval integer. Index of the column of `rowData` that
+#' 
+#' @slot which_qc integer. Index of columns of `colData` that contain the
+#'   QC metrics.
+#' @slot which_bio integer. Index of the column of `colData` that contains
+#'   the biological classes information (it must be a factor).
+#' @slot which_batch integer. Index of the column of `colData`
+#'   that contains the batch information (it must be a factor).
+#' @slot which_negconruv integer. Index of the column of `rowData` that
 #'   contains a logical vector indicating which genes to use as negative
+#'   controls to infer the factors of unwanted variation in RUV.
+#' @slot which_negconeval integer. Index of the column of `rowData` that 
+#'   contains a logical vector indicating which genes to use as negative 
 #'   controls to evaluate the performance of the normalizations.
-#' @slot which_poscon integer. Index of the column of `rowData` that contains a
-#'   logical vector indicating which genes to use as positive controls to
-#'   evaluate the performance of the normalizations.
-#' @slot hdf5_pointer character. A string specifying to which file to write /
-#'   read the normalized data.
-#' @slot imputation_fn list of functions used by scone for the imputation step.
+#' @slot which_poscon integer. Index of the column of `rowData` that
+#'   contains a logical vector indicating which genes to use as positive
+#'   controls to evaluate the performance of the normalizations.
+#' @slot hdf5_pointer character. A string specifying to which 
+#'   file to write / read the normalized data.
+#' @slot imputation_fn list of functions used by scone for 
+#'   the imputation step.
 #' @slot scaling_fn list of functions used by scone for the scaling step.
-#' @slot scone_metrics matrix. Matrix containing the "raw" performance metrics.
-#'   See \code{\link{scone}} for a description of each metric.
-#' @slot scone_scores matrix. Matrix containing the performance scores
-#'   (transformed metrics). See \code{\link{scone}} for a discussion on the
+#' @slot scone_metrics matrix. Matrix containing the "raw" 
+#'   performance metrics. See \code{\link{scone}} for a 
+#'   description of each metric.
+#' @slot scone_scores matrix. Matrix containing the performance scores 
+#'   (transformed metrics). See \code{\link{scone}} for a discussion on the 
 #'   difference between scores and metrics.
-#' @slot scone_params data.frame. A data frame containing the normalization
-#'   schemes applied to the data and compared.
-#' @slot scone_run character. Whether \code{\link{scone}} was run and in
-#'   which mode ("no", "in_memory", "hdf5").
+#' @slot scone_params data.frame. A data frame containing
+#'   the normalization schemes applied to the data and compared.
+#' @slot scone_run character. Whether \code{\link{scone}} was 
+#'   run and in which mode ("no", "in_memory", "hdf5").
 #' @slot is_log logical. Are the expression data in log scale?
-#' @slot nested logical. Is batch nested within bio? (Automatically set by
-#'   \code{\link{scone}}).
-#' @slot rezero logical. TRUE if \code{\link{scone}} was run with
+#' @slot nested logical. Is batch nested within bio? 
+#'   (Automatically set by \code{\link{scone}}).
+#' @slot rezero logical. TRUE if \code{\link{scone}} was run with 
 #'   \code{rezero=TRUE}.
 #' @slot impute_args list. Arguments passed to all imputation functions.
-#'
+#'   
 setClass(
   Class = "SconeExperiment",
   contains = "SummarizedExperiment",
@@ -130,7 +131,8 @@ setValidity("SconeExperiment", function(object) {
     return("Only one set of negative controls for RUV can be specified.")
   }
   if(length(object@which_negconeval) > 1) {
-    return("Only one set of negative controls for evaluation can be specified.")
+    return(paste0("Only one set of negative controls ",
+                  "for evaluation can be specified."))
   }
   if(length(object@which_poscon) > 1) {
     return("Only one set of positive controls can be specified.")
@@ -180,7 +182,8 @@ setValidity("SconeExperiment", function(object) {
       return(paste0("File ", object@hdf5_pointer, " not found."))
     }
     if(object@scone_run == "no" && file.exists(object@hdf5_pointer)) {
-      return(paste0("File ", object@hdf5_pointer, " exists. Please specify a new file."))
+      return(paste0("File ", object@hdf5_pointer,
+                    " exists. Please specify a new file."))
     }
   }
 
@@ -191,17 +194,17 @@ setValidity("SconeExperiment", function(object) {
 ## Constructor
 
 #' @rdname SconeExperiment-class
-#'
+#'   
 #' @description The constructor \code{sconeExperiment} creates an object of the
 #'   class \code{SconeExperiment}.
-#'
-#' @param object Either a matrix or a \code{\link{SummarizedExperiment}}
+#'   
+#' @param object Either a matrix or a \code{\link{SummarizedExperiment}} 
 #'   containing the raw gene expression.
 #' @param ... see specific S4 methods for additional arguments.
 #' @export
-#'
+#' 
 #' @examples
-#'
+#' 
 #' nrows <- 200
 #' ncols <- 6
 #' counts <- matrix(rpois(nrows * ncols, lambda=10), nrows)
@@ -209,12 +212,12 @@ setValidity("SconeExperiment", function(object) {
 #' coldata <- data.frame(bio=gl(2, 3))
 #' se <- SummarizedExperiment(assays=SimpleList(counts=counts),
 #'                           rowData=rowdata, colData=coldata)
-#'
+#' 
 #' scone1 <- sconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
-#'
+#' 
 #' scone2 <- sconeExperiment(se, which_bio=1L, which_poscon=1L)
-#'
-#'
+#' 
+#' 
 setGeneric(
   name = "sconeExperiment",
   def = function(object, ...) {
@@ -223,22 +226,22 @@ setGeneric(
 )
 
 #' @rdname SconeExperiment-class
-#'
-#' @param which_qc index that specifies which columns of `colData` correspond to
-#'   QC measures.
-#' @param which_bio index that specifies which column of `colData` corresponds
-#'   to `bio`.
-#' @param which_batch index that specifies which column of `colData` corresponds
-#'   to `batch`.
-#' @param which_negconruv index that specifies which column of `rowData` has
-#'   information on negative controls for RUV.
-#' @param which_negconeval index that specifies which column of `rowData` has
-#'   information on negative controls for evaluation.
-#' @param which_poscon index that specifies which column of `rowData` has
+#'   
+#' @param which_qc index that specifies which columns of `colData` 
+#'   correspond to QC measures.
+#' @param which_bio index that specifies which column of `colData`
+#'   corresponds to `bio`.
+#' @param which_batch index that specifies which column of `colData`
+#'   corresponds to `batch`.
+#' @param which_negconruv index that specifies which column of `rowData`
+#'   has information on negative controls for RUV.
+#' @param which_negconeval index that specifies which column of `rowData`
+#'   has information on negative controls for evaluation.
+#' @param which_poscon index that specifies which column of `rowData` has 
 #'   information on positive controls.
 #' @param is_log are the expression data in log scale?
 #' @export
-#'
+#' 
 setMethod(
   f = "sconeExperiment",
   signature = signature("SummarizedExperiment"),
@@ -275,18 +278,21 @@ setMethod(
 
 
 #' @rdname SconeExperiment-class
-#'
+#'   
 #' @param qc numeric matrix with the QC measures.
 #' @param bio factor with the biological class of interest.
 #' @param batch factor with the batch information.
-#' @param negcon_ruv a logical vector indicating which genes to use as negative controls for RUV.
-#' @param negcon_eval a logical vector indicating which genes to use as negative controls for evaluation.
-#' @param poscon a logical vector indicating which genes to use as positive controls.
-#'
+#' @param negcon_ruv a logical vector indicating which genes to use as negative
+#'   controls for RUV.
+#' @param negcon_eval a logical vector indicating which genes to use as 
+#'   negative controls for evaluation.
+#' @param poscon a logical vector indicating which genes to use as positive
+#'   controls.
+#'   
 #' @export
 #' 
 #' @return A \code{\link{sconeExperiment}} object.
-#'
+#'   
 setMethod(
   f = "sconeExperiment",
   signature = signature("matrix"),

@@ -1,10 +1,11 @@
 #' Upper-quartile normalization wrapper.
 #' @importFrom EDASeq betweenLaneNormalization
-#' @details SCONE scaling wrapper for \code{\link[EDASeq]{betweenLaneNormalization}}).
+#' @details SCONE scaling wrapper for
+#'   \code{\link[EDASeq]{betweenLaneNormalization}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Upper-quartile normalized matrix.
-#' 
+#'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- UQ_FN(ei)
@@ -15,11 +16,12 @@ UQ_FN = function(ei){
 }
 
 #' Upper-quartile normalization derived from positive data.
-#' @details SCONE scaling function scales expression data by upper quartile of positive data.
+#' @details SCONE scaling function scales expression data by upper quartile of
+#'   positive data.
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Upper-quartile (positive) normalized matrix.
-#' 
+#'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' ei[1:3,] <- 0
@@ -40,11 +42,12 @@ UQ_FN_POS = function(ei){
 
 #' Full-quantile normalization wrapper.
 #' @importFrom aroma.light normalizeQuantileRank.matrix
-#' @details SCONE "scaling" wrapper for \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
+#' @details SCONE "scaling" wrapper for
+#'   \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Full-quantile normalized matrix.
-#' 
+#'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- FQ_FN(ei)
@@ -55,7 +58,8 @@ FQ_FN = function(ei){
 }
 
 #' @rdname FQ_FN
-#' @details FQT_FN handles ties carefully (see \code{\link[limma]{normalizeQuantiles}}).
+#' @details FQT_FN handles ties carefully (see
+#'   \code{\link[limma]{normalizeQuantiles}}).
 #' @export
 #' 
 #' @examples
@@ -69,11 +73,12 @@ FQT_FN = function(ei){
 
 #' DESeq size factor normalization wrapper.
 #' @importFrom DESeq estimateSizeFactorsForMatrix
-#' @details SCONE scaling wrapper for \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
+#' @details SCONE scaling wrapper for
+#'   \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return DESeq size factor normalized matrix.
-#' 
+#'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- DESEQ_FN(ei)
@@ -85,11 +90,12 @@ DESEQ_FN = function(ei){
 }
 
 #' DESeq size factor normalization derived from positive data.
-#' @details SCONE scaling function scales expression data by DESeq size factor derived from positive data.
+#' @details SCONE scaling function scales expression data by DESeq size factor
+#'   derived from positive data.
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return DESeq size factor (positive) normalized matrix.
-#' 
+#'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' ei[1:3,] <- 0
@@ -101,7 +107,10 @@ DESEQ_FN_POS = function(ei){
   if(!is.null(dim(ei))){
     y = ei
     y[y == 0] = NA # Matrix with zeroes replaced w/ NA
-    geom_mean = exp(apply(log(y),1,sum,na.rm = TRUE)/rowSums(!is.na(y))) # Compute Geometric Mean of Expression for Each Gene (Use positive data only)
+    geom_mean = exp(apply(log(y),1,sum,na.rm = TRUE)/rowSums(!is.na(y)))
+    # Compute Geometric Mean of Expression
+    # for Each Gene (Use positive data only)
+    
   }else{stop("Null imput matrix dimension.")}
   if(!any(geom_mean > 0)){stop("Geometric mean non-positive for all genes.")}
 
@@ -128,32 +137,13 @@ DESEQ_FN_POS = function(ei){
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return TMM normalized matrix.
-#' 
+#'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- TMM_FN(ei)
 #' 
 TMM_FN = function(ei){
   size_fac = calcNormFactors(ei,method = "TMM")
-  eo = t(t(ei)/size_fac)
-  return(eo)
-}
-
-#' Pooled Sample normalization wrapper.
-#'
-#' @description SCONE scaling wrapper for \code{\link[scran]{computeSumFactors}}
-#'   with clusters from \code{\link[scran]{quickCluster}}.
-#'
-#' @importFrom scran computeSumFactors
-#' @importFrom scran quickCluster
-#' @export
-#' @param ei Numerical matrix. (rows = genes, cols = samples).
-#' @return SCRAN size factor normalized matrix.
-#' 
-
-SCRAN_FN = function(ei){
-  clusters <- quickCluster(ei, min.size = 20)
-  size_fac = computeSumFactors(ei, cluster=clusters)
   eo = t(t(ei)/size_fac)
   return(eo)
 }

@@ -16,7 +16,8 @@ DESeq size factor (positive) normalized matrix.
 DESeq size factor normalization derived from positive data.
 }
 \details{
-SCONE scaling function scales expression data by DESeq size factor derived from positive data.
+SCONE scaling function scales expression data by DESeq size factor
+  derived from positive data.
 }
 \examples{
 ei <- matrix(0:20,nrow = 7)

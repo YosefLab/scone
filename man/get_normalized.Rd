@@ -14,12 +14,12 @@ get_normalized(x, method, ...)
 \S4method{get_normalized}{SconeExperiment,numeric}(x, method, log = FALSE)
 }
 \arguments{
-\item{x}{a \code{\link{sconeExperiment}} object containing the results of
+\item{x}{a \code{\link{sconeExperiment}} object containing the results of 
 \code{\link{scone}}.}
 
-\item{method}{character or numeric. Either a string identifying the
-normalization scheme to be retrieved, or a numeric index with the rank of
-the normalization method to retrieve (according to scone ranking of
+\item{method}{character or numeric. Either a string identifying the 
+normalization scheme to be retrieved, or a numeric index with the rank of 
+the normalization method to retrieve (according to scone ranking of 
 normalizations).}
 
 \item{...}{additional arguments for specific methods.}
@@ -30,43 +30,47 @@ normalizations).}
 A matrix of normalized counts in log-scale.
 }
 \description{
-Given a \code{SconeExperiment} object created by a call to scone, it will
+Given a \code{SconeExperiment} object created by a call to scone, it will 
 return a matrix of normalized counts (in log scale if \code{log=TRUE}).
 }
 \details{
 If \code{\link{scone}} was run with \code{return_norm="in_memory"},
-  this function simply retrieves the normalized data from the \code{assays}
+  this function simply retrieves the normalized data from the \code{assays} 
   slote of \code{object}.
 
 If \code{\link{scone}} was run with \code{return_norm="hdf5"}, this
   function will read the normalized matrix from the specified hdf5 file.
 
-If \code{\link{scone}} was run with \code{return_norm="no"}, this
+If \code{\link{scone}} was run with \code{return_norm="no"}, this 
   function will compute the normalized matrix on the fly.
 
-The numeric method will always return the normalization
+The numeric method will always return the normalization 
   corresponding to row \code{method} of the \code{scone_params} slot. This
-  means that if \code{\link{scone}} was run with \code{eval=TRUE},
-  \code{get_normalized(x, 1)} will return the top ranked method. If
-  \code{\link{scone}} was run with \code{eval=FALSE}, \code{get_normalized(x,
-  1)} will return the first normalization in the order saved by scone.
+  means that if \code{\link{scone}} was run with \code{eval=TRUE}, 
+  \code{get_normalized(x, 1)} will return the top ranked method. If 
+  \code{\link{scone}} was run with \code{eval=FALSE}, 
+  \code{get_normalized(x,1)} will return the first normalization
+  in the order saved by scone.
 }
 \section{Methods (by class)}{
 \itemize{
-\item \code{x = SconeExperiment,method = character}: If \code{method} is a character, it will return
-the normalized matrix corresponding to the normalization scheme specified
-by the character string. The string must be one of the \code{row.names} of
-the slot \code{scone_params}.
+\item \code{x = SconeExperiment,method = character}: If 
+\code{method} is a character, it will return the normalized
+matrix corresponding to the normalization scheme specified
+by the character string.The string must be one of the 
+\code{row.names} of the slot \code{scone_params}.
 
-\item \code{x = SconeExperiment,method = numeric}: If \code{method} is a numeric, it will return the
-normalized matrix according to the scone ranking.
+\item \code{x = SconeExperiment,method = numeric}: If 
+\code{method} is a numeric, it will return the normalized
+matrix according to the scone ranking.
 }}
 \examples{
 mat <- matrix(rpois(500, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- sconeExperiment(mat)
 res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-           evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+           evaluate=TRUE, k_ruv=0, k_qc=0, 
+           eval_kclust=2, bpparam = BiocParallel::SerialParam())
 norm = get_normalized(res,1)
            
 

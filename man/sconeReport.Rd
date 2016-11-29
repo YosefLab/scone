@@ -14,31 +14,35 @@ sconeReport(x, methods, qc, bio = NULL, batch = NULL,
 
 \item{qc}{matrix. QC metrics to be used for QC evaluation report. Required.}
 
-\item{bio}{factor. A biological condition (variation to be preserved). Default NULL.}
+\item{bio}{factor. A biological condition (variation to be preserved).
+Default NULL.}
 
-\item{batch}{factor. A known batch variable (variation to be removed). Default NULL.}
+\item{batch}{factor. A known batch variable (variation to be removed).
+Default NULL.}
 
-\item{poscon}{character. Genes to be used as positive controls for
-evaluation. These genes should be expected to change according to the
+\item{poscon}{character. Genes to be used as positive controls for 
+evaluation. These genes should be expected to change according to the 
 biological phenomenon of interest. Default empty character.}
 
-\item{negcon}{character. Genes to be used as negative controls for
-evaluation. These genes should be expected not to change according to the
+\item{negcon}{character. Genes to be used as negative controls for 
+evaluation. These genes should be expected not to change according to the 
 biological phenomenon of interest. Default empty character.}
 }
 \value{
 An object that represents the SCONE report app.
 }
 \description{
-This function opens a shiny application session for visualizing performance
+This function opens a shiny application session for visualizing performance 
 of a variety of normalization schemes.
 }
 \examples{
+set.seed(101)
 mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- sconeExperiment(mat)
 res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-           evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, bpparam = BiocParallel::SerialParam())
+           evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, 
+           bpparam = BiocParallel::SerialParam())
 qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
 rownames(qc) = colnames(mat)
 colnames(qc) = c("NCOUNTS","NGENES")

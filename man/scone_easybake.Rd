@@ -16,102 +16,104 @@ scone_easybake(expr, qc, bio = NULL, batch = NULL, negcon = NULL,
   eval_stratified_pam = TRUE, report_num = 13, out_rda = FALSE, ...)
 }
 \arguments{
-\item{expr}{matrix. The expression data matrix (genes in rows, cells in columns).}
+\item{expr}{matrix. The expression data matrix (genes in rows, cells in
+columns).}
 
-\item{qc}{data frame. The quality control (QC) matrix (cells in rows, metrics in columns)
-to be used for filtering, normalization, and evaluation.}
+\item{qc}{data frame. The quality control (QC) matrix (cells in rows, 
+metrics in columns) to be used for filtering, normalization,
+and evaluation.}
 
-\item{bio}{factor. The biological condition to be modeled in the Adjustment Step
-as variation to be preserved. If adjust_bio="no", it will not be used
+\item{bio}{factor. The biological condition to be modeled in the Adjustment
+Step as variation to be preserved. If adjust_bio="no", it will not be used
 for normalization, but only for evaluation.}
 
-\item{batch}{factor. The known batch variable to be included in the
+\item{batch}{factor. The known batch variable to be included in the 
 adjustment model as variation to be removed. If adjust_batch="no", it will
 not be used for normalization, but only for evaluation.}
 
-\item{negcon}{character. The genes to be used as negative controls for filtering, 
-normalization, and evaluation. These genes should be expressed uniformily across
-the biological phenomenon of interest.
-Default NULL.}
+\item{negcon}{character. The genes to be used as negative controls for
+filtering, normalization, and evaluation. These genes should be expressed
+uniformily across the biological phenomenon of interest. Default NULL.}
 
-\item{verbose}{character. Verbosity level: higher level is more verbose.
+\item{verbose}{character. Verbosity level: higher level is more verbose. 
 Default "0".}
 
-\item{out_dir}{character. Output directory. 
-Default getwd().}
+\item{out_dir}{character. Output directory. Default getwd().}
 
-\item{seed}{numeric. Random seed. 
-Default 112233.}
+\item{seed}{numeric. Random seed. Default 112233.}
 
-\item{filt_cells}{logical. Should cells be filtered? Set to FALSE if low quality cells have already been excluded. If cells are not filtered, then initial gene filtering (the one that is done prior to cell filtering) is disabled as it becomes redundant with the gene filtering that is done after cell filtering.
+\item{filt_cells}{logical. Should cells be filtered? Set to FALSE if low
+quality cells have already been excluded. If cells are not filtered, then
+initial gene filtering (the one that is done prior to cell filtering) is
+disabled as it becomes redundant with the gene filtering that is done 
+after cell filtering. Default TRUE.}
+
+\item{filt_genes}{logical. Should genes be filtered post-sample filtering? 
 Default TRUE.}
 
-\item{filt_genes}{logical. Should genes be filtered post-sample filtering?
-Default TRUE.}
+\item{always_keep_genes}{logical. A character vector of gene names that
+should never be excluded (e.g., marker genes). Default NULL.}
 
-\item{always_keep_genes}{logical. A character vector of gene names that should never be excluded (e.g., marker genes). Default NULL.}
+\item{fnr_maxiter}{numeric. Maximum number of iterations in EM estimation of
+expression posteriors. If 0, then FNR estimation is skipped entirely, and
+as a consequence no imputation will be performed, disregarding the value
+of the "norm_impute" argument. Default 1000.}
 
-\item{fnr_maxiter}{numeric. Maximum number of iterations in EM estimation of expression posteriors.
-If 0, then FNR estimation is skipped entirely, and as a
- consequence no imputation will be performed, disregarding 
- the value of the "norm_impute" argument. Default 1000.}
+\item{norm_impute}{character. Should imputation be included in the
+comparison? If 'force', only imputed normalizations will be run. Default
+"yes."}
 
-\item{norm_impute}{character. Should imputation be included in the comparison? 
-If 'force', only imputed normalizations will be run.
-Default "yes."}
+\item{norm_scaling}{character. Scaling options to be included in the Scaling
+Step. Default c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"). See
+details.}
 
-\item{norm_scaling}{character. Scaling options to be included in the Scaling Step. 
-Default c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"). See details.}
+\item{norm_rezero}{logical. Restore imputed zeroes to zero following the
+Scaling Step? Default TRUE.}
 
-\item{norm_rezero}{logical. Restore imputed zeroes to zero following the Scaling Step?
-Default TRUE.}
+\item{norm_k_max}{numeric. Max number (norm_k_max) of factors of unwanted
+variation modeled in the Adjustment Step. Default NULL.}
 
-\item{norm_k_max}{numeric. Maximum number (norm_k_max) of factors of unwanted variation modeled
-in the Adjustment Step.
-Default NULL.}
-
-\item{norm_qc_expl}{numeric. In automatic selection of norm_k_max, what
-fraction of variation must be explained by the first norm_k_max PCs of qc? 
+\item{norm_qc_expl}{numeric. In automatic selection of norm_k_max, what 
+fraction of variation must be explained by the first norm_k_max PCs of qc?
 Default 0.5. Ignored if norm_k_max is not NULL.}
 
-\item{norm_adjust_bio}{character. If 'no' it will not be included in the model; if
-'yes', both models with and without 'bio' will be run; if 'force', only
-models with 'bio' will be run.
-Default "yes."}
+\item{norm_adjust_bio}{character. If 'no' it will not be included in the
+model; if 'yes', both models with and without 'bio' will be run; if
+'force', only models with 'bio' will be run. Default "yes."}
 
-\item{norm_adjust_batch}{character. If 'no' it will not be modeled in the Adjustment Step;
-if 'yes', both models with and without 'batch' will be run; if 'force',
-only models with 'batch' will be run.
-Default "yes."}
+\item{norm_adjust_batch}{character. If 'no' it will not be modeled in the
+Adjustment Step; if 'yes', both models with and without 'batch' will be
+run; if 'force', only models with 'batch' will be run. Default "yes."}
 
-\item{eval_dim}{numeric. The number of principal components to use for evaluation.
-Default NULL.}
+\item{eval_dim}{numeric. The number of principal components to use for
+evaluation. Default NULL.}
 
-\item{eval_expr_expl}{numeric. In automatic selection of eval_dim, what
-fraction of variation must be explained by the first eval_dim PCs of expr? 
+\item{eval_expr_expl}{numeric. In automatic selection of eval_dim, what 
+fraction of variation must be explained by the first eval_dim PCs of expr?
 Default 0.1. Ignored if eval_dim is not NULL.}
 
-\item{eval_poscon}{character. The genes to be used as positive controls for
-evaluation. These genes should be expected to change according to the
+\item{eval_poscon}{character. The genes to be used as positive controls for 
+evaluation. These genes should be expected to change according to the 
 biological phenomenon of interest.}
 
-\item{eval_negcon}{character. Alternative negative control gene list for evaluation only.}
+\item{eval_negcon}{character. Alternative negative control gene list for
+evaluation only.}
 
-\item{eval_max_kclust}{numeric. The max number of clusters (> 1) to be used for pam
-tightness evaluation. If NULL, tightness will be returned NA.}
+\item{eval_max_kclust}{numeric. The max number of clusters (> 1) to be used
+for pam tightness evaluation. If NULL, tightness will be returned NA.}
 
-\item{eval_stratified_pam}{logical. If TRUE then maximum ASW for PAM_SIL is
-separately computed for each biological-cross-batch condition (accepting
-NAs), and a weighted average is returned as PAM_SIL.
-Default TRUE.}
+\item{eval_stratified_pam}{logical. If TRUE then maximum ASW for PAM_SIL is 
+separately computed for each biological-cross-batch condition (accepting 
+NAs), and a weighted average is returned as PAM_SIL. Default TRUE.}
 
-\item{report_num}{numeric. Number of top methods to report.
-Default 13.}
+\item{report_num}{numeric. Number of top methods to report. Default 13.}
 
-\item{out_rda}{logical. If TRUE, a sconeResults.Rda file with the object that the scone function returns is saved in the out_dir (may be very large for large datasets, but useful for post-processing)
-Default FALSE.}
+\item{out_rda}{logical. If TRUE, sconeResults.Rda file with the object that
+the scone function returns is saved in the out_dir (may be very large for
+large datasets, but useful for post-processing) Default FALSE.}
 
-\item{...}{extra params passed to the metric_sample_filter and scone when they're called by easybake}
+\item{...}{extra params passed to the metric_sample_filter and scone when
+they're called by easybake}
 }
 \value{
 Directory structure "ADD DESCRIPTION"
@@ -121,5 +123,25 @@ Wrapper for Running Essential SCONE Modules
 }
 \details{
 "ADD DESCRIPTION"
+}
+\examples{
+set.seed(101)
+mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- sconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+           evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2, 
+           bpparam = BiocParallel::SerialParam())
+qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+rownames(qc) = colnames(mat)
+colnames(qc) = c("NREADS","RALIGN")
+\dontrun{
+scone_easybake(mat, qc = as.data.frame(qc), verbose = "2", 
+   norm_adjust_bio= "no",
+   norm_adjust_batch= "no", norm_k_max = 0,
+   fnr_maxiter = 0, filt_cells=FALSE, filt_genes=FALSE,
+   eval_stratified_pam = FALSE,
+   out_dir="~/scone_out")
+}
 }
 
