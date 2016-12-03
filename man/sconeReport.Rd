@@ -5,7 +5,8 @@
 \title{SCONE Report Browser: Browse Evaluation of Normalization Performance}
 \usage{
 sconeReport(x, methods, qc, bio = NULL, batch = NULL,
-  poscon = character(), negcon = character())
+  poscon = character(), negcon = character(), eval_proj = NULL,
+  eval_proj_args = NULL)
 }
 \arguments{
 \item{x}{a \code{SconeExperiment} object}
@@ -27,6 +28,13 @@ biological phenomenon of interest. Default empty character.}
 \item{negcon}{character. Genes to be used as negative controls for 
 evaluation. These genes should be expected not to change according to the 
 biological phenomenon of interest. Default empty character.}
+
+\item{eval_proj}{function. Projection function for evaluation  (see 
+\code{\link{score_matrix}} for details). If NULL, PCA is used for 
+projection.}
+
+\item{eval_proj_args}{list. List of args passed to projection function as
+eval_proj_args.}
 }
 \value{
 An object that represents the SCONE report app.
