@@ -16,6 +16,7 @@
 #'   imputation. By default only scone::impute_null is included.
 #' @param impute_args arguments passed to all imputation functions.
 #' @param rezero Restore zeroes following scaling step? Default FALSE.
+#' @param fixzero Restore zeroes following adjustment step? Default FALSE.
 #' @param scaling list or function. (A list of) function(s) to be used for
 #'   scaling normalization.
 #' @param k_ruv numeric. The maximum number of factors of unwanted variation
@@ -146,7 +147,7 @@ setMethod(
   signature = signature(x = "SconeExperiment"),
   definition = function(x, imputation=list(none=impute_null),
                         impute_args = NULL,
-                        rezero = FALSE, scaling, k_ruv=5, k_qc=5,
+                        rezero = FALSE, fixzero = FALSE, scaling, k_ruv=5, k_qc=5,
                         adjust_bio=c("no", "yes", "force"),
                         adjust_batch=c("no", "yes", "force"),
                         run=TRUE, evaluate=TRUE, eval_pcs=3, 
@@ -419,7 +420,10 @@ setMethod(
     if(rezero){
       if(verbose) message("Re-zero step...")
       toz = assay(x) <= 0
-      scaled <- lapply(scaled,function(x) x - x*toz)
+      scaled <- lapply(scaled,function(x,toz){
+        x[toz] = 0
+        x
+      },toz = toz)
       x@rezero <- TRUE
     }
 
@@ -481,6 +485,11 @@ setMethod(
     
     if(verbose) message("Factor adjustment and evaluation...")
     
+    if(fixzero){
+      if(verbose) message("...including re-zero step...")
+      x@fixzero <- TRUE
+    }
+    
     outlist <- bplapply(seq_len(NROW(params)), function(i) {
       
       parsed <- .parse_row(params[i,], bio, batch, ruv_factors, qc_pcs)
@@ -491,6 +500,12 @@ setMethod(
                                           !is.null(parsed$batch)))
       sc_name <- paste(params[i,1:2], collapse="_")
       adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
+      
+      if(fixzero){
+        toz = assay(x) <= 0
+        adjusted[toz] = 0
+      }
+      
       if(evaluate) {
         score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, 
                               eval_proj = eval_proj, 

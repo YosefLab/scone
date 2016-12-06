@@ -9,12 +9,13 @@
 scone(x, ...)
 
 \S4method{scone}{SconeExperiment}(x, imputation = list(none = impute_null),
-  impute_args = NULL, rezero = FALSE, scaling, k_ruv = 5, k_qc = 5,
-  adjust_bio = c("no", "yes", "force"), adjust_batch = c("no", "yes",
-  "force"), run = TRUE, evaluate = TRUE, eval_pcs = 3, eval_proj = NULL,
-  eval_proj_args = NULL, eval_kclust = 2:10, verbose = FALSE,
-  stratified_pam = FALSE, return_norm = c("no", "in_memory", "hdf5"),
-  hdf5file, bpparam = BiocParallel::bpparam())
+  impute_args = NULL, rezero = FALSE, fixzero = FALSE, scaling,
+  k_ruv = 5, k_qc = 5, adjust_bio = c("no", "yes", "force"),
+  adjust_batch = c("no", "yes", "force"), run = TRUE, evaluate = TRUE,
+  eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
+  eval_kclust = 2:10, verbose = FALSE, stratified_pam = FALSE,
+  return_norm = c("no", "in_memory", "hdf5"), hdf5file,
+  bpparam = BiocParallel::bpparam())
 }
 \arguments{
 \item{x}{a \code{\link{SconeExperiment}} object.}
@@ -27,6 +28,8 @@ imputation. By default only scone::impute_null is included.}
 \item{impute_args}{arguments passed to all imputation functions.}
 
 \item{rezero}{Restore zeroes following scaling step? Default FALSE.}
+
+\item{fixzero}{Restore zeroes following adjustment step? Default FALSE.}
 
 \item{scaling}{list or function. (A list of) function(s) to be used for
 scaling normalization.}

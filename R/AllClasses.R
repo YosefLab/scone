@@ -65,6 +65,8 @@
 #'   (Automatically set by \code{\link{scone}}).
 #' @slot rezero logical. TRUE if \code{\link{scone}} was run with 
 #'   \code{rezero=TRUE}.
+#' @slot fixzero logical. TRUE if \code{\link{scone}} was run with 
+#'   \code{fixzero=TRUE}.
 #' @slot impute_args list. Arguments passed to all imputation functions.
 #'   
 setClass(
@@ -87,6 +89,7 @@ setClass(
     is_log = "logical",
     nested = "logical",
     rezero = "logical",
+    fixzero = "logical",
     impute_args = "list"
   )
 )
@@ -268,6 +271,7 @@ setMethod(
                is_log = is_log,
                nested = FALSE,
                rezero = FALSE,
+               fixzero = FALSE,
                impute_args = list()
                )
 
