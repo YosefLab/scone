@@ -1,6 +1,6 @@
 #' @rdname get_params
 #'   
-#' @param x an object of class \code{\link{sconeExperiment}}.
+#' @param x an object of class \code{\link{SconeExperiment}}.
 #'   
 #' @return A data.frame containing workflow parameters for each scone workflow.
 #'   
@@ -15,7 +15,7 @@ setMethod(
 
 #' @rdname get_scores
 #'   
-#' @param x an object of class \code{\link{sconeExperiment}}.
+#' @param x an object of class \code{\link{SconeExperiment}}.
 #'   
 #' @return \code{get_scores} returns a matrix with all (non-missing) scone 
 #'   scores, ordered by average score rank.
@@ -46,12 +46,15 @@ setMethod(
 
 #' @rdname get_negconruv
 #'   
-#' @param x an object of class \code{\link{sconeExperiment}}.
+#' @param x an object of class \code{\link{SconeExperiment}}.
 #'   
 #' @return NULL or a logical vector.
 #'   
 #' @return For \code{get_negconruv} the returned vector indicates which genes
 #'   are negative controls to be used for RUV.
+#'   
+#' @export
+#' 
 setMethod(
   f = "get_negconruv",
   signature = signature(x = "SconeExperiment"),
@@ -68,6 +71,9 @@ setMethod(
 #'   
 #' @return For \code{get_negconeval} the returned vector indicates which genes
 #'   are negative controls to be used for evaluation.
+#'
+#' @export
+#' 
 setMethod(
   f = "get_negconeval",
   signature = signature(x = "SconeExperiment"),
@@ -84,6 +90,9 @@ setMethod(
 #'   
 #' @return For \code{get_poscon} the returned vector indicates which genes are 
 #'   positive controls to be used for evaluation.
+#'
+#' @export
+#'
 setMethod(
   f = "get_poscon",
   signature = signature(x = "SconeExperiment"),
@@ -98,9 +107,12 @@ setMethod(
 
 #' @rdname get_qc
 #'   
-#' @param x an object of class \code{\link{sconeExperiment}}.
+#' @param x an object of class \code{\link{SconeExperiment}}.
 #'   
 #' @return NULL or the quality control (QC) metric matrix.
+#'
+#' @export
+#'
 setMethod(
   f = "get_qc",
   signature = signature(x = "SconeExperiment"),
@@ -116,9 +128,12 @@ setMethod(
 
 #' @rdname get_bio
 #'   
-#' @param x an object of class \code{\link{sconeExperiment}}.
+#' @param x an object of class \code{\link{SconeExperiment}}.
 #'   
 #' @return NULL or a factor containing bio or batch covariate.
+#'
+#' @export
+#'
 setMethod(
   f = "get_bio",
   signature = signature(x = "SconeExperiment"),
@@ -132,6 +147,9 @@ setMethod(
 )
 
 #' @rdname get_bio
+#'
+#' @export
+#'
 setMethod(
   f = "get_batch",
   signature = signature(x = "SconeExperiment"),

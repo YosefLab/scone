@@ -17,12 +17,22 @@ get_batch(x)
 \S4method{get_batch}{SconeExperiment}(x)
 }
 \arguments{
-\item{x}{an object of class \code{\link{sconeExperiment}}.}
+\item{x}{an object of class \code{\link{SconeExperiment}}.}
 }
 \value{
 NULL or a factor containing bio or batch covariate.
 }
 \description{
 Get Factor of Biological Conditions and Batch
+}
+\examples{
+set.seed(42)
+mat <- matrix(rpois(500, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- SconeExperiment(mat, bio = factor(rep(c(1,2),each = 5)),
+           batch = factor(rep(c(1,2),times = 5)))
+bio = get_bio(obj)
+batch = get_batch(obj)
+
 }
 

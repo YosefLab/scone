@@ -7,12 +7,12 @@
 biplot_interactive(x, ...)
 }
 \arguments{
-\item{x}{a \code{\link{sconeExperiment}} object.}
+\item{x}{a \code{\link{SconeExperiment}} object.}
 
 \item{...}{passed to \code{\link{biplot_color}}.}
 }
 \value{
-A \code{\link{sconeExperiment}} object representing 
+A \code{\link{SconeExperiment}} object representing 
   selected methods.
 }
 \description{
@@ -27,7 +27,7 @@ Since this is based on the shiny gadget feature, it will not work
 \examples{
 mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-obj <- sconeExperiment(mat)
+obj <- SconeExperiment(mat)
 res <- scone(obj, scaling=list(none=identity,
    uq=UQ_FN, deseq=DESEQ_FN,  fq=FQT_FN),
 evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,

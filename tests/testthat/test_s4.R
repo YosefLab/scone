@@ -10,10 +10,10 @@ se <- SummarizedExperiment(assays=SimpleList(counts=counts),
                            rowData=rowdata, colData=coldata)
 
 test_that("The two constructors are equivalent", {
-  expect_equal(sconeExperiment(assay(se)), sconeExperiment(assay(se)))
+  expect_equal(SconeExperiment(assay(se)), SconeExperiment(assay(se)))
 
-  scone1 <- sconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
-  scone2 <- sconeExperiment(se, which_bio=1L, which_poscon=1L)
+  scone1 <- SconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
+  scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 
   expect_equal(scone1, scone2)
   }

@@ -11,7 +11,7 @@ get_params(x)
 \S4method{get_params}{SconeExperiment}(x)
 }
 \arguments{
-\item{x}{an object of class \code{\link{sconeExperiment}}.}
+\item{x}{an object of class \code{\link{SconeExperiment}}.}
 }
 \value{
 A data.frame containing workflow parameters for each scone workflow.
@@ -20,10 +20,11 @@ A data.frame containing workflow parameters for each scone workflow.
 Extract scone parameters
 }
 \examples{
+set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-obj <- sconeExperiment(mat)
-res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+obj <- SconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
            run = FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
 params = get_params(res)
 

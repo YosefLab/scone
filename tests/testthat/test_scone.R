@@ -6,7 +6,7 @@ test_that("Test with no real method (only identity)", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
   colnames(e) <- paste0("Sample", 1:ncol(e))
-  obj <- sconeExperiment(e)
+  obj <- SconeExperiment(e)
 
   # one combination
   res <- scone(obj, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0,
@@ -35,7 +35,7 @@ test_that("Test with no real method (only identity)", {
                      k_ruv=5, k_qc=0, evaluate=FALSE, run=FALSE),
                "negative controls must be specified")
 
-  obj <- sconeExperiment(e, negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)))
+  obj <- SconeExperiment(e, negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)))
   obj <- scone(obj, imputation=list(impute_null,impute_null),
                scaling=list(identity, identity, identity), k_ruv=5,
                k_qc=0, evaluate=FALSE, run=FALSE)
@@ -51,7 +51,7 @@ test_that("Test with no real method (only identity)", {
                "QC metrics must be specified")
 
   qc_mat <- matrix(rnorm(20), nrow=10)
-  obj <- sconeExperiment(e, qc=qc_mat, negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)))
+  obj <- SconeExperiment(e, qc=qc_mat, negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)))
 
   res <- scone(obj, imputation=list(impute_null,impute_null),
                scaling=list(identity, identity, identity), k_ruv=5, k_qc=2,
@@ -65,7 +65,7 @@ test_that("Test with no real method (only identity)", {
                      k_qc=2, adjust_bio="yes", evaluate=FALSE, run=FALSE),
                "if adjust_bio is 'yes' or 'force', 'bio' must be specified")
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio))
 
@@ -85,7 +85,7 @@ test_that("Test with no real method (only identity)", {
                      evaluate=FALSE, run=FALSE),
                "if adjust_batch is 'yes' or 'force', 'batch' must be specified")
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
@@ -96,7 +96,7 @@ test_that("Test with no real method (only identity)", {
                "Biological conditions and batches are confounded")
 
   batch <- as.factor(rep(1:2, 5))
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
   res <- scone(obj, imputation=list(a=impute_null, b=impute_null),
@@ -121,7 +121,7 @@ test_that("Test imputation and scaling", {
   bio <- gl(2, 5)
   batch <- as.factor(rep(1:2, 5))
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
@@ -133,7 +133,7 @@ test_that("Test imputation and scaling", {
 
   # nested
   batch <- as.factor(c(1, 2, 1, 2, 1, 3, 4, 3, 4, 3))
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
@@ -153,7 +153,7 @@ test_that("Test imputation and scaling", {
   ruv_negcon[1:10] <- TRUE
   eval_negcon[11:20] <- TRUE
   eval_poscon[21:30] <- TRUE
-  obj <- sconeExperiment(e, qc=qc_mat, negcon_ruv=ruv_negcon,
+  obj <- SconeExperiment(e, qc=qc_mat, negcon_ruv=ruv_negcon,
                          negcon_eval=eval_negcon, poscon=eval_poscon,
                          bio=as.factor(bio), batch=as.factor(batch))
 
@@ -184,7 +184,7 @@ test_that("scone works with only one normalization",{
   e <-  matrix(rpois(1000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
   colnames(e) <- paste0("Sample", 1:ncol(e))
-  obj <- sconeExperiment(e)
+  obj <- SconeExperiment(e)
 
   res <- scone(obj, imputation=list(none=impute_null),
                scaling=list(none=identity),
@@ -206,7 +206,7 @@ test_that("conditional PAM",{
   eval_negcon[11:20] <- TRUE
   eval_poscon[21:30] <- TRUE
 
-  obj <- sconeExperiment(e, qc=qc_mat, bio=bio,
+  obj <- SconeExperiment(e, qc=qc_mat, bio=bio,
                          negcon_eval = eval_negcon, poscon=eval_poscon)
 
   res <- scone(obj, imputation=list(none=impute_null),
@@ -214,7 +214,7 @@ test_that("conditional PAM",{
                k_ruv=0, k_qc=0, adjust_bio="yes", run=FALSE,
                evaluate=TRUE, eval_kclust = 2, stratified_pam = TRUE)
 
-  obj <- sconeExperiment(e, qc=qc_mat, bio=bio, batch=batch,
+  obj <- SconeExperiment(e, qc=qc_mat, bio=bio, batch=batch,
                          negcon_eval = eval_negcon, poscon=eval_poscon)
 
   expect_error(res <- scone(obj, imputation=list(none=impute_null),
@@ -223,7 +223,7 @@ test_that("conditional PAM",{
                evaluate=TRUE, eval_kclust = 6, stratified_pam = TRUE),
                "For stratified_pam, max 'eval_kclust' must be smaller than bio-cross-batch stratum size")
 
-  obj <- sconeExperiment(e, qc=qc_mat, negcon_eval = eval_negcon, poscon=eval_poscon)
+  obj <- SconeExperiment(e, qc=qc_mat, negcon_eval = eval_negcon, poscon=eval_poscon)
 
   expect_error(res <- scone(obj, imputation=list(none=impute_null),
                             scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
@@ -240,8 +240,8 @@ test_that("if bio=no bio is ignored", {
   rownames(e) <- as.character(1:nrow(e))
   colnames(e) <- paste0("Sample", 1:ncol(e))
   bio <- gl(2, 5)
-  obj1 <- sconeExperiment(e)
-  obj2 <- sconeExperiment(e, bio=bio)
+  obj1 <- SconeExperiment(e)
+  obj2 <- SconeExperiment(e, bio=bio)
 
   res1 <- scone(obj1, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0,
                adjust_bio = "no",  eval_kclust = 3, return_norm = "in_memory")
@@ -257,8 +257,8 @@ test_that("if batch=no batch is ignored", {
   rownames(e) <- as.character(1:nrow(e))
   colnames(e) <- paste0("Sample", 1:ncol(e))
   batch <- gl(2, 5)
-  obj1 <- sconeExperiment(e)
-  obj2 <- sconeExperiment(e, batch=batch)
+  obj1 <- SconeExperiment(e)
+  obj2 <- SconeExperiment(e, batch=batch)
 
   res1 <- scone(obj1, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0,
                 adjust_batch = "no", eval_kclust = 3, return_norm = "in_memory")
@@ -273,7 +273,7 @@ test_that("batch and bio can be confounded if at least one of adjust_bio or adju
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
   colnames(e) <- paste0("Sample", 1:ncol(e))
-  obj <- sconeExperiment(e, batch=gl(2, 5), bio=gl(2, 5))
+  obj <- SconeExperiment(e, batch=gl(2, 5), bio=gl(2, 5))
 
   expect_warning(scone(obj, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0,
                 adjust_batch = "yes", eval_kclust = 3),
@@ -290,13 +290,13 @@ test_that("batch and bio can contain NA", {
   colnames(e) <- paste0("Sample", 1:ncol(e))
   batch <- gl(2, 5)
   bio <- gl(5, 2)
-  obj <- sconeExperiment(e, batch=batch, bio=bio)
+  obj <- SconeExperiment(e, batch=batch, bio=bio)
   res1 <- scone(obj, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0, evaluate = TRUE,
                adjust_batch = "no", eval_kclust = 3)
 
   batch[1] <- NA
   bio[2] <- NA
-  obj <- sconeExperiment(e, batch=batch, bio=bio)
+  obj <- SconeExperiment(e, batch=batch, bio=bio)
 
   res2 <- scone(obj, imputation=impute_null, scaling=identity, k_ruv=0, k_qc=0, evaluate = TRUE,
         adjust_batch = "no", eval_kclust = 3)

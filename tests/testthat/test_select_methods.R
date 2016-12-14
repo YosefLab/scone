@@ -10,7 +10,7 @@ test_that("select_methods works in all three modes", {
   bio <- gl(2, 5)
   batch <- as.factor(rep(1:2, 5))
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
@@ -45,7 +45,7 @@ test_that("get_normalized subsets score matrix", {
   bio <- gl(2, 5)
   batch <- as.factor(rep(1:2, 5))
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 

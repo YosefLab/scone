@@ -12,7 +12,7 @@ test_that("hd5 checks", {
   batch <- as.factor(rep(1:2, 5))
   negcon_ruv <- c(rep(TRUE, 100), rep(FALSE, NROW(e)-100))
 
-  obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
+  obj <- SconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # factorial
   expect_error(scone(obj, imputation=list(none=impute_null),
@@ -38,7 +38,7 @@ test_that("return_norm in memory", {
 
   negcon_ruv <- c(rep(TRUE, 100), rep(FALSE, NROW(e)-100))
 
-  obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
+  obj <- SconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # factorial
   res <- scone(obj, imputation=list(none=impute_null),
@@ -59,7 +59,7 @@ test_that("do not return_norm", {
 
   negcon_ruv <- c(rep(TRUE, 100), rep(FALSE, NROW(e)-100))
 
-  obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
+  obj <- SconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # factorial
   res <- scone(obj, imputation=list(none=impute_null),

@@ -11,12 +11,21 @@ get_qc(x)
 \S4method{get_qc}{SconeExperiment}(x)
 }
 \arguments{
-\item{x}{an object of class \code{\link{sconeExperiment}}.}
+\item{x}{an object of class \code{\link{SconeExperiment}}.}
 }
 \value{
 NULL or the quality control (QC) metric matrix.
 }
 \description{
 Get Quality Control Matrix
+}
+\examples{
+set.seed(42)
+mat <- matrix(rpois(500, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- SconeExperiment(mat,
+         qc = cbind(colSums(mat),colSums(mat > 0)))
+qc = get_qc(obj)
+
 }
 

@@ -14,7 +14,7 @@ get_normalized(x, method, ...)
 \S4method{get_normalized}{SconeExperiment,numeric}(x, method, log = FALSE)
 }
 \arguments{
-\item{x}{a \code{\link{sconeExperiment}} object containing the results of 
+\item{x}{a \code{\link{SconeExperiment}} object containing the results of 
 \code{\link{scone}}.}
 
 \item{method}{character or numeric. Either a string identifying the 
@@ -65,13 +65,14 @@ by the character string.The string must be one of the
 matrix according to the scone ranking.
 }}
 \examples{
+set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-obj <- sconeExperiment(mat)
-res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+obj <- SconeExperiment(mat)
+res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
            evaluate=TRUE, k_ruv=0, k_qc=0, 
            eval_kclust=2, bpparam = BiocParallel::SerialParam())
-norm = get_normalized(res,1)
+top_norm = get_normalized(res,1)
            
 
 }

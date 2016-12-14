@@ -23,7 +23,7 @@ get_poscon(x)
 \S4method{get_poscon}{SconeExperiment}(x)
 }
 \arguments{
-\item{x}{an object of class \code{\link{sconeExperiment}}.}
+\item{x}{an object of class \code{\link{SconeExperiment}}.}
 }
 \value{
 NULL or a logical vector.
@@ -39,5 +39,17 @@ For \code{get_poscon} the returned vector indicates which genes are
 }
 \description{
 Get Negative and Positive Controls
+}
+\examples{
+set.seed(42)
+mat <- matrix(rpois(500, lambda = 5), ncol=10)
+colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+obj <- SconeExperiment(mat,negcon_ruv = 1:50 \%in\% 1:10,
+           negcon_eval = 1:50 \%in\% 11:20,
+           poscon = 1:50 \%in\% 21:30)
+negcon_ruv = get_negconruv(obj)
+negcon_eval = get_negconeval(obj)
+poscon = get_poscon(obj)
+
 }
 

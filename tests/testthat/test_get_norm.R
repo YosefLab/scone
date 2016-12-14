@@ -10,7 +10,7 @@ test_that("get_normalized works in all three modes", {
   bio <- gl(2, 5)
   batch <- as.factor(rep(1:2, 5))
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
@@ -68,7 +68,7 @@ test_that("get_normalized works in all three modes with nested model", {
   bio <- gl(2, 5)
   batch <- as.factor(c(1,2,1,2,1,3,4,3,4,3))
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
@@ -129,7 +129,7 @@ test_that("get_normalized works with rezero", {
   bio <- gl(2, 5)
   batch <- as.factor(rep(1:2, 5))
 
-  obj <- sconeExperiment(e, qc=qc_mat,
+  obj <- SconeExperiment(e, qc=qc_mat,
                          negcon_ruv=c(rep(TRUE, 100), rep(FALSE, NROW(e)-100)),
                          bio = as.factor(bio), batch=as.factor(batch))
 
