@@ -1,0 +1,79 @@
+Changes in version 0.99.0 (2016-11-14)
+========================
+* Major release: many changes due to porting to S4.
+* Widespread updates to documentation, including examples.
+* Compatibility with Bioconductor format, including biocViews.
+* Updated cell-cycle genes.
+* Default BPPARAM value, now passed as argument to scone.
+* Removed zinb function.
+* Test different parallel back ends.
+* Added class SconeExperiment based on SummarizedExperiment.
+* Added constructor sconeExperiment to create SconeExperiment objects.
+* Added many helper methods to retrieve content of slots.
+* Wrapper get_normalized() to extract/compute single normalization from scone object.
+* Wrapper get_design() to extract the design matrix associated with a given normalization.
+* Method select_methods() to get a smaller SconeExperiment object containing only the requested normalization schemes.
+* biplot_interactive() now works with SconeExperiment objects.
+* Dropped date from DESCRIPTION as better practice is to add date to NEWS file.
+* Added wrapper for scran normalization, removed FQP.
+
+Changes in version 0.0.8 (2016-09-26)
+========================
+
+* Added sconeReport() function for shiny browser of SCONE results.
+* scone() outputs are now sorted according to mean *rank* of scores rather than mean scores. Although this is a relative measure it accounts for differing variability of metrics.
+* RLE_IQR now quantifies the variability of the IQR RLE across samples, rather than the mean.
+* Bug Fix: Previously imputation could be applied to the wrong subset of params rows when user passed params arguments. Imputation functions are now indexed by name to avoid this error.
+* Bug Fix: Negative infinity expected likelihood is temporarily permitted in the ziber loop.
+* "ezbake" script and scone_easybake() function added for pipelined SCONE commands.
+* Revised documentation and removed old scripts.
+* Various other bug fixes.
+
+Changes in version 0.0.6 (2016-07-22)
+========================
+
+* Added option for restoring zeroes after scaling step.
+* New argument format for imputation via impute_args.
+* Simplified ziber fnr estimation function - requires control genes.
+* Fixed bug when using plot functionality of filtering functions.
+* "Conditional" pam replaced with "Stratified" pam, clustering each bio-cross-batch condition separately, rather than simply each bio condition.
+* Simple FNR for filtering is now based on medians of natural log expression in "expressing" cells / robust to convergence issues.
+* Removed all sufficient thresholds for metric sample filter.
+* Added option to write normalized matrices to HDF5 file.
+* Added wrapper function get_normalized() to retrieve normalized data.
+* New biplot_interactive function to explore the results.
+
+Changes in version 0.0.5
+========================
+
+* Modified biplot to handle general coloring schemes.
+* Limit number of WV and UV factors to eval_pcs in computing WV and UV scores.
+* Updated dependencies.
+* Added error-handling to sample filter.
+* Removed var preserved measure due to length of running time.
+
+Changes in version 0.0.4
+========================
+
+* Fixed a few bugs and documentation mismatches.
+* Removed stability evaluation (redundant with sil width and slow).
+* Removed clusterExperiment dependency.
+* Removed RUV correlation score. UV correlation now takes ruv control genes as default.
+* Added RLE measures to scone evaluation.
+* Added FQT_FN to implement careful ties handling by FQ.
+* Better handling of plots in sample filter functions.
+* Mean score rather than median rank to evaluate normalizations.
+* Default value for imputation.
+* Minor optimizations to evaluation functions.
+
+Changes in version 0.0.3
+========================
+
+* Fixed various bugs.
+* Added “compactness” measure for stability evaluation.
+* Compute RUV factors only when needed.
+* Fixed Github issues #11, #12, #13, #14, #21, #28.
+* zinb now works for non-integer whole numbers.
+* Updated tests.
+* Added documentation for datasets.
+* Added biplot_colored function.
