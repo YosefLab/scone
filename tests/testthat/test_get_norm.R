@@ -137,13 +137,13 @@ test_that("get_normalized works with rezero", {
   res1 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
-                evaluate=FALSE, run=TRUE, rezero=TRUE)
+                evaluate=FALSE, run=TRUE, zero="preadjust")
 
   # return_norm = in_memory
   res2 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
-                evaluate=FALSE, run=TRUE, return_norm="in_memory", rezero=TRUE)
+                evaluate=FALSE, run=TRUE, return_norm="in_memory", zero="preadjust")
 
   all1 <- lapply(seq_len(10), function(i) get_normalized(res1, i))
   all2 <- lapply(seq_len(10), function(i) get_normalized(res2, i))

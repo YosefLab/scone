@@ -10,7 +10,7 @@
 
 <meta name="author" content="Michael Cole and Davide Risso" />
 
-<meta name="date" content="2016-12-05" />
+<meta name="date" content="2017-01-09" />
 
 <title>Introduction to SCONE</title>
 
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <div id="header">
 <h1 class="title">Introduction to SCONE</h1>
 <h4 class="author"><em>Michael Cole and Davide Risso</em></h4>
-<h4 class="date"><em>2016-12-05</em></h4>
+<h4 class="date"><em>2017-01-09</em></h4>
 </div>
 
 <h1>Contents</h1>
@@ -483,13 +483,13 @@ my_scone &lt;- scone(my_scone,
                   run=TRUE,
                   eval_kclust = 2:6,stratified_pam = TRUE,
                   return_norm = &quot;in_memory&quot;,
-                  rezero = TRUE)</code></pre>
+                  zero = &quot;preadjust&quot;)</code></pre>
 <p>In the call above, we have set the following parameter arguments:</p>
 <ul>
 <li>eval_kclust = 2:6. For PAM_SIL, range of k (# of clusters) to use when computing maximum average silhouette width of PAM clusterings.</li>
 <li>stratified_pam = TRUE. For PAM_SIL, apply separate PAM clusterings to each biological batch rather than across all batches. Average is weighted by batch group size.</li>
 <li>return_norm = “in_memory”. Store all normalized matrices in addition to evaluation data. Otherwise normalized data is not returned in the resulting object.</li>
-<li>rezero = TRUE. Restore data entries that are originally zeroes back to zero after the scaling step.</li>
+<li>zero = “preadjust”. Restore data entries that are originally zeroes back to zero after the scaling step.</li>
 </ul>
 <p>The output will contain various updated elements:</p>
 <pre class="r"><code># View Metric Scores
@@ -568,9 +568,9 @@ sconeReport(my_scone,methods = scone_methods,
 <div id="session-info" class="section level1">
 <h1><span class="header-section-number">5</span> Session Info</h1>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 3.3.1 (2016-06-21)
+<pre><code>## R version 3.3.2 (2016-10-31)
 ## Platform: x86_64-apple-darwin13.4.0 (64-bit)
-## Running under: OS X 10.12.1 (Sierra)
+## Running under: macOS Sierra 10.12.2
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -595,7 +595,7 @@ sconeReport(my_scone,methods = scone_methods,
 ##   [9] flexmix_2.3-13          DT_0.2                 
 ##  [11] RSpectra_0.12-0         AnnotationDbi_1.34.4   
 ##  [13] mvtnorm_1.0-5           codetools_0.2-15       
-##  [15] splines_3.3.1           R.methodsS3_1.7.1      
+##  [15] splines_3.3.2           R.methodsS3_1.7.1      
 ##  [17] doParallel_1.0.10       DESeq_1.24.0           
 ##  [19] robustbase_0.92-6       geneplotter_1.50.0     
 ##  [21] knitr_1.15              jsonlite_1.1           
@@ -606,7 +606,7 @@ sconeReport(my_scone,methods = scone_methods,
 ##  [31] assertthat_0.1          Matrix_1.2-7.1         
 ##  [33] lazyeval_0.2.0          limma_3.28.21          
 ##  [35] visNetwork_1.0.2        htmltools_0.3.5        
-##  [37] tools_3.3.1             gtable_0.2.0           
+##  [37] tools_3.3.2             gtable_0.2.0           
 ##  [39] reshape2_1.4.2          dplyr_0.5.0            
 ##  [41] ShortRead_1.30.0        Rcpp_0.12.7            
 ##  [43] NMF_0.20.6              trimcluster_0.1-2      
@@ -633,12 +633,12 @@ sconeReport(my_scone,methods = scone_methods,
 ##  [85] htmlwidgets_0.8         plyr_1.8.4             
 ##  [87] magrittr_1.5            R6_2.2.0               
 ##  [89] gplots_3.0.1            DBI_0.5-1              
-##  [91] mixtools_1.0.4          survival_2.40-1        
+##  [91] mixtools_1.0.4          survival_2.39-5        
 ##  [93] RCurl_1.95-4.8          nnet_7.3-12            
 ##  [95] tibble_1.2              EDASeq_2.6.2           
 ##  [97] rARPACK_0.11-0          KernSmooth_2.23-15     
 ##  [99] plotly_4.5.6            rmarkdown_1.1          
-## [101] grid_3.3.1              digest_0.6.10          
+## [101] grid_3.3.2              digest_0.6.10          
 ## [103] diptest_0.75-7          xtable_1.8-2           
 ## [105] tidyr_0.6.0             httpuv_1.3.3           
 ## [107] R.utils_2.5.0           munsell_0.4.3          

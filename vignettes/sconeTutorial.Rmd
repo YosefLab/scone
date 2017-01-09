@@ -660,7 +660,7 @@ my_scone <- scone(my_scone,
                   run=TRUE,
                   eval_kclust = 2:6,stratified_pam = TRUE,
                   return_norm = "in_memory",
-                  rezero = TRUE)
+                  zero = "preadjust")
 
 ```
 
@@ -677,7 +677,7 @@ In the call above, we have set the following parameter arguments:
   Store all normalized matrices in addition to evaluation data. 
   Otherwise normalized data is not returned in the resulting 
   object.
-* rezero = TRUE. 
+* zero = "preadjust". 
   Restore data entries that are originally zeroes back to zero
   after the scaling step.
 

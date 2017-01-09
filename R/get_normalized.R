@@ -74,6 +74,7 @@ setMethod(
       if(x@fixzero) {
         toz = assay(x) <= 0
         adjusted[toz] = 0
+        adjusted[adjusted <= 0] = 0
       }
       
       retval <- expm1(adjusted)

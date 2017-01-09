@@ -64,9 +64,9 @@
 #' @slot nested logical. Is batch nested within bio? 
 #'   (Automatically set by \code{\link{scone}}).
 #' @slot rezero logical. TRUE if \code{\link{scone}} was run with 
-#'   \code{rezero=TRUE}.
+#'   \code{zero="preadjust"} or \code{zero="strong"}.
 #' @slot fixzero logical. TRUE if \code{\link{scone}} was run with 
-#'   \code{fixzero=TRUE}.
+#'   \code{zero="postadjust"} or \code{zero="strong"}.
 #' @slot impute_args list. Arguments passed to all imputation functions.
 #'   
 setClass(

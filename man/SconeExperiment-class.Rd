@@ -141,10 +141,10 @@ run and in which mode ("no", "in_memory", "hdf5").}
 (Automatically set by \code{\link{scone}}).}
 
 \item{\code{rezero}}{logical. TRUE if \code{\link{scone}} was run with 
-\code{rezero=TRUE}.}
+\code{zero="preadjust"} or \code{zero="strong"}.}
 
 \item{\code{fixzero}}{logical. TRUE if \code{\link{scone}} was run with 
-\code{fixzero=TRUE}.}
+\code{zero="postadjust"} or \code{zero="strong"}.}
 
 \item{\code{impute_args}}{list. Arguments passed to all imputation functions.}
 }}

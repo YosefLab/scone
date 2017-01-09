@@ -9,7 +9,7 @@ scone_easybake(expr, qc, bio = NULL, batch = NULL, negcon = NULL,
   filt_cells = TRUE, filt_genes = TRUE, always_keep_genes = NULL,
   fnr_maxiter = 1000, norm_impute = c("yes", "no", "force"),
   norm_scaling = c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"),
-  norm_rezero = TRUE, norm_k_max = NULL, norm_qc_expl = 0.5,
+  norm_rezero = FALSE, norm_k_max = NULL, norm_qc_expl = 0.5,
   norm_adjust_bio = c("yes", "no", "force"), norm_adjust_batch = c("yes",
   "no", "force"), eval_dim = NULL, eval_expr_expl = 0.1,
   eval_poscon = NULL, eval_negcon = negcon, eval_max_kclust = 10,
@@ -67,8 +67,8 @@ comparison? If 'force', only imputed normalizations will be run. Default
 Step. Default c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"). See
 details.}
 
-\item{norm_rezero}{logical. Restore imputed zeroes to zero following the
-Scaling Step? Default TRUE.}
+\item{norm_rezero}{logical. Restore prior zeroes and negative values to zero
+following normalization. Default FALSE.}
 
 \item{norm_k_max}{numeric. Max number (norm_k_max) of factors of unwanted
 variation modeled in the Adjustment Step. Default NULL.}
