@@ -11,7 +11,7 @@ test_that("all back-ends work", {
 
   negcon_ruv <- c(rep(TRUE, 100), rep(FALSE, NROW(e)-100))
 
-  obj <- sconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
+  obj <- SconeExperiment(e, bio=bio, batch=batch, qc=qc_mat, negcon_ruv=negcon_ruv)
 
   # serial
   res1 <- scone(obj, imputation=list(none=impute_null),

@@ -21,7 +21,7 @@ setGeneric(
 #' @details If \code{\link{scone}} was run with \code{return_norm="no"}, this 
 #'   function will compute the normalized matrix on the fly.
 #'   
-#' @param x a \code{\link{sconeExperiment}} object containing the results of 
+#' @param x a \code{\link{SconeExperiment}} object containing the results of 
 #'   \code{\link{scone}}.
 #' @param method character or numeric. Either a string identifying the 
 #'   normalization scheme to be retrieved, or a numeric index with the rank of 
@@ -32,13 +32,14 @@ setGeneric(
 #' @return A matrix of normalized counts in log-scale.
 #'   
 #' @examples
+#' set.seed(42)
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- sconeExperiment(mat)
-#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#' obj <- SconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 #'            evaluate=TRUE, k_ruv=0, k_qc=0, 
 #'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
-#' norm = get_normalized(res,1)
+#' top_norm = get_normalized(res,1)
 #'            
 #' 
 setGeneric(
@@ -53,7 +54,7 @@ setGeneric(
 #' Given a \code{SconeExperiment} object created by a call to scone, it will
 #' return the design matrix of the selected method.
 #'
-#' @param x a \code{\link{sconeExperiment}} object containing the results of
+#' @param x a \code{\link{SconeExperiment}} object containing the results of
 #'   \code{\link{scone}}.
 #' @param method character or numeric. Either a string identifying the
 #'   normalization scheme to be retrieved, or a numeric index with the rank of
@@ -63,13 +64,16 @@ setGeneric(
 #' @return The design matrix.
 #' 
 #' @examples
+#' set.seed(42)
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- sconeExperiment(mat)
-#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#' obj <- SconeExperiment(mat, bio = factor(rep(c(1,2),each = 5)),
+#'            batch = factor(rep(c(1,2),times = 5)))
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 #'            evaluate=TRUE, k_ruv=0, k_qc=0, 
+#'            adjust_batch = "yes", adjust_bio = "yes",
 #'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
-#' null_design = get_design(res,1)
+#' design_top = get_design(res,1)
 #' 
 setGeneric(
   name = "get_design",
@@ -95,10 +99,11 @@ setGeneric(
 #' @return A \code{SconeExperiment} object with selected method data.
 #'   
 #' @examples
+#' set.seed(42)
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- sconeExperiment(mat)
-#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#' obj <- SconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 #'            evaluate=TRUE, k_ruv=0, k_qc=0, 
 #'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #' select_res = select_methods(res,1:2)
@@ -114,6 +119,18 @@ setGeneric(
 #' 
 #' @aliases get_negconeval get_poscon get_negconruv,SconeExperiment-method 
 #'   get_negconeval,SconeExperiment-method get_poscon,SconeExperiment-method
+#' 
+#' @examples
+#' set.seed(42)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- SconeExperiment(mat,negcon_ruv = 1:50 %in% 1:10,
+#'            negcon_eval = 1:50 %in% 11:20,
+#'            poscon = 1:50 %in% 21:30)
+#' negcon_ruv = get_negconruv(obj)
+#' negcon_eval = get_negconeval(obj)
+#' poscon = get_poscon(obj)
+#'
 setGeneric(
   name = "get_negconruv",
   def = function(x) {
@@ -139,6 +156,14 @@ setGeneric(
 
 #' Get Quality Control Matrix
 #' 
+#' @examples
+#' set.seed(42)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- SconeExperiment(mat,
+#'          qc = cbind(colSums(mat),colSums(mat > 0)))
+#' qc = get_qc(obj)
+#'
 #' @aliases get_qc,SconeExperiment-method
 setGeneric(
   name = "get_qc",
@@ -149,8 +174,18 @@ setGeneric(
 
 #' Get Factor of Biological Conditions and Batch
 #'
-#' @aliases get_batch get_bio,SconeExperiment-method
+#' @aliases get_bio get_batch get_bio,SconeExperiment-method
 #'   get_batch,SconeExperiment-method
+#'   
+#' @examples 
+#' set.seed(42)
+#' mat <- matrix(rpois(500, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- SconeExperiment(mat, bio = factor(rep(c(1,2),each = 5)),
+#'            batch = factor(rep(c(1,2),times = 5)))
+#' bio = get_bio(obj)
+#' batch = get_batch(obj)
+#' 
 setGeneric(
   name = "get_bio",
   def = function(x) {
@@ -168,14 +203,15 @@ setGeneric(
 
 #' Extract scone scores
 #' 
-#' @aliases get_scores get_score,SconeExperiment-method get_score_ranks 
+#' @aliases get_scores get_scores,SconeExperiment-method get_score_ranks 
 #'   get_score_ranks,SconeExperiment-method
 #'   
 #' @examples
+#' set.seed(42)
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- sconeExperiment(mat)
-#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#' obj <- SconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 #'            evaluate=TRUE, k_ruv=0, k_qc=0, 
 #'            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 #' scores = get_scores(res)
@@ -199,11 +235,13 @@ setGeneric(
 #' Extract scone parameters
 #' 
 #' @aliases get_params get_params,SconeExperiment-method
+#' 
 #' @examples
+#' set.seed(42)
 #' mat <- matrix(rpois(500, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- sconeExperiment(mat)
-#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#' obj <- SconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 #'            run = FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
 #' params = get_params(res)
 #' 

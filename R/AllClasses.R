@@ -6,7 +6,7 @@
 #'   batch information, and biological classes of interest (if available).
 #'   
 #' @description The typical way of creating \code{SconeExperiment} objects is 
-#'   via a call to the \code{\link{sconeExperiment}} function or to the 
+#'   via a call to the \code{\link{SconeExperiment}} function or to the 
 #'   \code{\link{scone}} function. If the object is a result to a 
 #'   \code{\link{scone}} call, it will contain the results, e.g., the 
 #'   performance metrics, scores, and normalization workflow comparisons. (See 
@@ -68,6 +68,14 @@
 #' @slot fixzero logical. TRUE if \code{\link{scone}} was run with 
 #'   \code{zero="postadjust"} or \code{zero="strong"}.
 #' @slot impute_args list. Arguments passed to all imputation functions.
+#' 
+#' @seealso \code{\link{get_normalized}}, \code{\link{get_params}},
+#' \code{\link{get_batch}}, \code{\link{get_bio}}, \code{\link{get_design}},
+#' \code{\link{get_negconeval}}, \code{\link{get_negconruv}},
+#' \code{\link{get_poscon}}, \code{\link{get_qc}}, 
+#' \code{\link{get_scores}}, and \code{\link{get_score_ranks}} 
+#' to access internal fields, \code{\link{select_methods}} for subsetting
+#' by method, and \code{\link{scone}} for running scone workflows.
 #'   
 setClass(
   Class = "SconeExperiment",
@@ -143,38 +151,38 @@ setValidity("SconeExperiment", function(object) {
 
   ## check that all QC columns are numeric
   if(length(object@which_qc) > 0) {
-    if(any(lapply(colData(object)[,object@which_qc], class) != "numeric")) {
+    if(any(lapply(get_qc(object), class) != "numeric")) {
       return("Only numeric QC metrics are allowed.")
     }
   }
 
   ## check that bio is a factor
   if(length(object@which_bio) > 0) {
-    if(!is.factor(colData(object)[,object@which_bio])) {
+    if(!is.factor(get_bio(object))) {
       return("`bio` must be a factor.")
     }
   }
 
   ## check that batch is a factor
   if(length(object@which_batch) > 0) {
-    if(!is.factor(colData(object)[,object@which_batch])) {
+    if(!is.factor(get_batch(object))) {
       return("`batch` must be a factor.")
     }
   }
 
   ## check that poscon and negcon are logical
   if(length(object@which_negconruv) > 0) {
-    if(!is.logical(rowData(object)[,object@which_negconruv])) {
+    if(!is.logical(get_negconruv(object))) {
       return("`negconruv` must be a logical vector.")
     }
   }
   if(length(object@which_negconeval) > 0) {
-    if(!is.logical(rowData(object)[,object@which_negconeval])) {
+    if(!is.logical(get_negconeval(object))) {
       return("`negconeval` must be a logical vector.")
     }
   }
   if(length(object@which_poscon) > 0) {
-    if(!is.logical(rowData(object)[,object@which_poscon])) {
+    if(!is.logical(get_poscon(object))) {
       return("`poscon` must be a logical vector.")
     }
   }
@@ -198,7 +206,7 @@ setValidity("SconeExperiment", function(object) {
 
 #' @rdname SconeExperiment-class
 #'   
-#' @description The constructor \code{sconeExperiment} creates an object of the
+#' @description The constructor \code{SconeExperiment} creates an object of the
 #'   class \code{SconeExperiment}.
 #'   
 #' @param object Either a matrix or a \code{\link{SummarizedExperiment}} 
@@ -207,7 +215,7 @@ setValidity("SconeExperiment", function(object) {
 #' @export
 #' 
 #' @examples
-#' 
+#' set.seed(42)
 #' nrows <- 200
 #' ncols <- 6
 #' counts <- matrix(rpois(nrows * ncols, lambda=10), nrows)
@@ -216,15 +224,15 @@ setValidity("SconeExperiment", function(object) {
 #' se <- SummarizedExperiment(assays=SimpleList(counts=counts),
 #'                           rowData=rowdata, colData=coldata)
 #' 
-#' scone1 <- sconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
+#' scone1 <- SconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
 #' 
-#' scone2 <- sconeExperiment(se, which_bio=1L, which_poscon=1L)
+#' scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 #' 
 #' 
 setGeneric(
-  name = "sconeExperiment",
+  name = "SconeExperiment",
   def = function(object, ...) {
-    standardGeneric("sconeExperiment")
+    standardGeneric("SconeExperiment")
   }
 )
 
@@ -246,7 +254,7 @@ setGeneric(
 #' @export
 #' 
 setMethod(
-  f = "sconeExperiment",
+  f = "SconeExperiment",
   signature = signature("SummarizedExperiment"),
   definition = function(object, which_qc=integer(), which_bio=integer(),
                         which_batch=integer(),
@@ -295,10 +303,10 @@ setMethod(
 #'   
 #' @export
 #' 
-#' @return A \code{\link{sconeExperiment}} object.
+#' @return A \code{\link{SconeExperiment}} object.
 #'   
 setMethod(
-  f = "sconeExperiment",
+  f = "SconeExperiment",
   signature = signature("matrix"),
   definition = function(object, qc, bio, batch,
                         negcon_ruv=NULL, negcon_eval=negcon_ruv,
@@ -342,7 +350,7 @@ setMethod(
     }
 
     se <- SummarizedExperiment(object, rowData=rowdata, colData=coldata)
-    sconeExperiment(se,  which_qc, which_bio, which_batch,
+    SconeExperiment(se,  which_qc, which_bio, which_batch,
                     which_negconruv, which_negconeval, which_poscon, is_log)
   }
 )

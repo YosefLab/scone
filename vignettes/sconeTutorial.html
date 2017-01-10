@@ -78,7 +78,9 @@ document.addEventListener("DOMContentLoaded", function() {
 </ul>
 </div>
 
-<!-- %\VignetteEngine{knitr::rmarkdown} %\VignetteIndexEntry{scone Vignette}
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{scone Vignette}
 -->
 <div id="introduction" class="section level1">
 <h1><span class="header-section-number">1</span> Introduction</h1>
@@ -315,7 +317,7 @@ is_quality = rowSums(assay(fluidigm) &gt;= num_reads ) &gt;= num_cells</code></p
 <p>Not only does <code>scone</code> normalize expression data, but it also provides a framework for evaluating the performance of normalization workflows.</p>
 <div id="creating-a-sconeexperiment-object" class="section level2">
 <h2><span class="header-section-number">3.1</span> Creating a SconeExperiment Object</h2>
-<p>Prior to running main <code>scone</code> function we will want to define a <code>sconeExperiment</code> object that contains the primary expression data, experimental metadata, and control gene sets.</p>
+<p>Prior to running main <code>scone</code> function we will want to define a <code>SconeExperiment</code> object that contains the primary expression data, experimental metadata, and control gene sets.</p>
 <pre class="r"><code># Expression Data (Required)
 expr = assay(goodDat)[is_quality,]
 
@@ -342,7 +344,7 @@ poscon = intersect(rownames(expr),strsplit(paste0(&quot;ALS2, CDK5R1, CYFIP1,&qu
 negcon = intersect(rownames(expr),hk)
 
 # Creating a SconeExperiment Object
-my_scone &lt;- sconeExperiment(expr,
+my_scone &lt;- SconeExperiment(expr,
                 qc=ppq, bio = bio,
                 negcon_ruv = rownames(expr) %in% negcon,
                 poscon = rownames(expr) %in% poscon
@@ -406,7 +408,7 @@ my_scone &lt;- scone(my_scone,
 </div>
 <div id="selecting-scone-workflows" class="section level2">
 <h2><span class="header-section-number">3.3</span> Selecting SCONE Workflows</h2>
-<p>The main <code>scone</code> method arguments allow for a lot of flexibility, but a user may choose to run very specific combinations of modules. For this purpose, <code>scone</code> can be run in <code>run=FALSE</code> mode, generating a list of workflows to be performed and storing this list within a <code>sconeExperiment</code> object. After running this command the list can be extracted using the <code>get_params</code> method.</p>
+<p>The main <code>scone</code> method arguments allow for a lot of flexibility, but a user may choose to run very specific combinations of modules. For this purpose, <code>scone</code> can be run in <code>run=FALSE</code> mode, generating a list of workflows to be performed and storing this list within a <code>SconeExperiment</code> object. After running this command the list can be extracted using the <code>get_params</code> method.</p>
 <pre class="r"><code>my_scone &lt;- scone(my_scone,
                 scaling=scaling,
                 k_qc=3, k_ruv = 3,
@@ -451,7 +453,7 @@ head(get_params(my_scone))</code></pre>
 ## 
 ## $adjust_batch
 ## [1] &quot;no_batch&quot;</code></pre>
-<p>Some scaling methods, such as scaling by gene detection rate (<code>EFF_FN()</code>), will not make sense within the context of imputed data, as imputation replaces zeroes with non-zero values. We can use the <code>select_methods</code> method to produce a <code>sconeExperiment</code> object initialized to run only meaningful normalization workflows.</p>
+<p>Some scaling methods, such as scaling by gene detection rate (<code>EFF_FN()</code>), will not make sense within the context of imputed data, as imputation replaces zeroes with non-zero values. We can use the <code>select_methods</code> method to produce a <code>SconeExperiment</code> object initialized to run only meaningful normalization workflows.</p>
 <pre class="r"><code>is_screened = ((get_params(my_scone)$imputation_method == &quot;expect&quot;) &amp;
                  (get_params(my_scone)$scaling_method %in% c(&quot;none&quot;,
                                                              &quot;deseqp&quot;,
@@ -581,7 +583,7 @@ sconeReport(my_scone,methods = scone_methods,
 ## 
 ## other attached packages:
 ##  [1] scRNAseq_0.99.0            RColorBrewer_1.1-2        
-##  [3] scone_0.99.2               SummarizedExperiment_1.2.3
+##  [3] scone_0.99.6               SummarizedExperiment_1.2.3
 ##  [5] Biobase_2.32.0             GenomicRanges_1.24.3      
 ##  [7] GenomeInfoDb_1.8.7         IRanges_2.6.1             
 ##  [9] S4Vectors_0.10.3           BiocGenerics_0.18.0       

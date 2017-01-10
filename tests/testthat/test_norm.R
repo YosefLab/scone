@@ -8,7 +8,7 @@ test_that("Upper-quartile normalization works the same as in the EDASeq package"
   colnames(e) <- paste0("Sample", 1:ncol(e))
 
   negcon_ruv <- c(rep(TRUE, 100), rep(FALSE, NROW(e)-100))
-  obj <- sconeExperiment(e, negcon_ruv=negcon_ruv)
+  obj <- SconeExperiment(e, negcon_ruv=negcon_ruv)
 
   # UQ + RUV
 
@@ -26,7 +26,7 @@ test_that("Upper-quartile normalization works the same as in the EDASeq package"
 
   # UQ + QC
   qc_mat <- matrix(rnorm(20), nrow=10)
-  obj <- sconeExperiment(e, negcon_ruv=negcon_ruv, qc=qc_mat)
+  obj <- SconeExperiment(e, negcon_ruv=negcon_ruv, qc=qc_mat)
 
   res <- scone(obj, imputation=impute_null, scaling=UQ_FN, k_ruv=0, k_qc=2,
                evaluate=FALSE, run=TRUE, return_norm = "in_memory")

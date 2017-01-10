@@ -17,4 +17,6 @@ biocLite("devtools")
 biocLite("YosefLab/scone", dependencies=TRUE)
 ```
 
-Note that SCONE requires R (>= 3.3) and Bioconductor (>= 3.3). You can download the latest version of R from [CRAN](https://cran.r-project.org). To update Bioconductor to its latest release, follow the instructions [here](https://www.bioconductor.org/install/#update-bioconductor-packages).
+Note that SCONE is currently under consideration in Bioconductor and hence requires R-devel (>= 3.4) and Bioconductor devel. 
+
+You can download the latest release of SCONE for R 3.3 [here](https://github.com/YosefLab/scone/releases/tag/v0.99.0).

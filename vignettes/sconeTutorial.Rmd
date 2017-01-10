@@ -10,7 +10,9 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-<!-- %\VignetteEngine{knitr::rmarkdown} %\VignetteIndexEntry{scone Vignette}
+<!--
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteIndexEntry{scone Vignette}
 -->
 
 ```{r options, include=FALSE, cache=FALSE, results='hide', message=FALSE}
@@ -436,7 +438,7 @@ framework for evaluating the performance of normalization workflows.
 ## Creating a SconeExperiment Object
 
 Prior to running main `scone` function we will want to define a
-`sconeExperiment` object that contains the primary expression data,
+`SconeExperiment` object that contains the primary expression data,
 experimental metadata, and control gene sets.
 
 ```{r scone_init}
@@ -468,7 +470,7 @@ poscon = intersect(rownames(expr),strsplit(paste0("ALS2, CDK5R1, CYFIP1,",
 negcon = intersect(rownames(expr),hk)
 
 # Creating a SconeExperiment Object
-my_scone <- sconeExperiment(expr,
+my_scone <- SconeExperiment(expr,
                 qc=ppq, bio = bio,
                 negcon_ruv = rownames(expr) %in% negcon,
                 poscon = rownames(expr) %in% poscon
@@ -553,7 +555,7 @@ but will run scone without imputation.
 The main `scone` method arguments allow for a lot of flexibility, but a user
 may choose to run very specific combinations of modules. For this purpose,
 `scone` can be run in `run=FALSE` mode, generating a list of workflows to be
-performed and storing this list within a `sconeExperiment` object. After
+performed and storing this list within a `SconeExperiment` object. After
 running this command the list can be extracted using the `get_params` method.
 
 ```{r scone_params}
@@ -589,7 +591,7 @@ apply(get_params(my_scone),2,unique)
 Some scaling methods, such as scaling by gene detection rate (`EFF_FN()`), will
 not make sense within the context of imputed data, as imputation replaces
 zeroes with non-zero values. We can use the `select_methods` method to produce
-a `sconeExperiment` object initialized to run only meaningful normalization
+a `SconeExperiment` object initialized to run only meaningful normalization
 workflows.
 
 ```{r scone_params_filt, eval=FALSE}

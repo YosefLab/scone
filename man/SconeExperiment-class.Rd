@@ -3,20 +3,19 @@
 \docType{class}
 \name{SconeExperiment-class}
 \alias{SconeExperiment}
+\alias{SconeExperiment,SummarizedExperiment-method}
+\alias{SconeExperiment,matrix-method}
 \alias{SconeExperiment-class}
-\alias{sconeExperiment}
-\alias{sconeExperiment,SummarizedExperiment-method}
-\alias{sconeExperiment,matrix-method}
 \title{Class SconeExperiment}
 \usage{
-sconeExperiment(object, ...)
+SconeExperiment(object, ...)
 
-\S4method{sconeExperiment}{SummarizedExperiment}(object, which_qc = integer(),
+\S4method{SconeExperiment}{SummarizedExperiment}(object, which_qc = integer(),
   which_bio = integer(), which_batch = integer(),
   which_negconruv = integer(), which_negconeval = integer(),
   which_poscon = integer(), is_log = FALSE)
 
-\S4method{sconeExperiment}{matrix}(object, qc, bio, batch, negcon_ruv = NULL,
+\S4method{SconeExperiment}{matrix}(object, qc, bio, batch, negcon_ruv = NULL,
   negcon_eval = negcon_ruv, poscon = NULL, is_log = FALSE)
 }
 \arguments{
@@ -61,7 +60,7 @@ negative controls for evaluation.}
 controls.}
 }
 \value{
-A \code{\link{sconeExperiment}} object.
+A \code{\link{SconeExperiment}} object.
 }
 \description{
 Objects of this class store, at minimum, a gene expression 
@@ -70,7 +69,7 @@ Objects of this class store, at minimum, a gene expression
   batch information, and biological classes of interest (if available).
 
 The typical way of creating \code{SconeExperiment} objects is 
-  via a call to the \code{\link{sconeExperiment}} function or to the 
+  via a call to the \code{\link{SconeExperiment}} function or to the 
   \code{\link{scone}} function. If the object is a result to a 
   \code{\link{scone}} call, it will contain the results, e.g., the 
   performance metrics, scores, and normalization workflow comparisons. (See 
@@ -79,7 +78,7 @@ The typical way of creating \code{SconeExperiment} objects is
 This object extends the 
   \code{\linkS4class{SummarizedExperiment}} class.
 
-The constructor \code{sconeExperiment} creates an object of the
+The constructor \code{SconeExperiment} creates an object of the
   class \code{SconeExperiment}.
 }
 \details{
@@ -149,7 +148,7 @@ run and in which mode ("no", "in_memory", "hdf5").}
 \item{\code{impute_args}}{list. Arguments passed to all imputation functions.}
 }}
 \examples{
-
+set.seed(42)
 nrows <- 200
 ncols <- 6
 counts <- matrix(rpois(nrows * ncols, lambda=10), nrows)
@@ -158,10 +157,19 @@ coldata <- data.frame(bio=gl(2, 3))
 se <- SummarizedExperiment(assays=SimpleList(counts=counts),
                           rowData=rowdata, colData=coldata)
 
-scone1 <- sconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
+scone1 <- SconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
 
-scone2 <- sconeExperiment(se, which_bio=1L, which_poscon=1L)
+scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 
 
+}
+\seealso{
+\code{\link{get_normalized}}, \code{\link{get_params}},
+\code{\link{get_batch}}, \code{\link{get_bio}}, \code{\link{get_design}},
+\code{\link{get_negconeval}}, \code{\link{get_negconruv}},
+\code{\link{get_poscon}}, \code{\link{get_qc}}, 
+\code{\link{get_scores}}, and \code{\link{get_score_ranks}} 
+to access internal fields, \code{\link{select_methods}} for subsetting
+by method, and \code{\link{scone}} for running scone workflows.
 }
 
