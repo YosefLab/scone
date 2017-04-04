@@ -144,4 +144,3 @@ scone_easybake(mat, qc = as.data.frame(qc), verbose = "2",
    out_dir="~/scone_out")
 }
 }
-

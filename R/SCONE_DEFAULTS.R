@@ -63,7 +63,7 @@ RLE_FN = function(ei) {
 #' eo <- UQ_FN(ei)
 #' 
 UQ_FN = function(ei) {
-  size_fac = edgeR::calcNormFactors(ei, method = "upperquartile")
+  size_fac = calcNormFactors(ei, method = "upperquartile")
   scales = (colSums(ei) * size_fac)
   eo = t(t(ei) * mean(scales) / scales)
   return(eo)

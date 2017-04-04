@@ -44,4 +44,3 @@ pc <- prcomp(mat)
 biplot_color(pc, rank(pc$x[,1]))
 
 }
-

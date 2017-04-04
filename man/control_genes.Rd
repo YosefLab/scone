@@ -2,11 +2,11 @@
 % Please edit documentation in R/data.R
 \docType{data}
 \name{control_genes}
-\alias{cellcycle_genes}
 \alias{control_genes}
 \alias{cortical_markers}
 \alias{housekeeping}
 \alias{housekeeping_revised}
+\alias{cellcycle_genes}
 \title{Data: Positive and Negative Control Genes}
 \description{
 Sets of "positive" and "negative" control genes, useful arguments for 
@@ -81,4 +81,3 @@ Macosko, E. Z., et al. Highly parallel genome-wide expression
   profiling of individual cells using nanoliter droplets. Cell, 2015, 
   161.5:1202-1214.
 }
-

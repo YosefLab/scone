@@ -2,7 +2,7 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{DESEQ_FN}
 \alias{DESEQ_FN}
-\title{DESeq size factor normalization wrapper.}
+\title{DESeq size factor scaling normalization wrapper function}
 \usage{
 DESEQ_FN(ei)
 }
@@ -13,10 +13,10 @@ DESEQ_FN(ei)
 DESeq size factor normalized matrix.
 }
 \description{
-DESeq size factor normalization wrapper.
+DESeq size factor scaling normalization wrapper function
 }
 \details{
-SCONE scaling wrapper for
+SCONE scaling wrapper for 
   \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
 }
 \examples{
@@ -24,4 +24,3 @@ ei <- matrix(0:20,nrow = 7)
 eo <- DESEQ_FN(ei)
 
 }
-

@@ -45,4 +45,3 @@ adjusted_log_expr = lm_adjust(log_expr = log_expr,
   batch = batch)
 
 }
-

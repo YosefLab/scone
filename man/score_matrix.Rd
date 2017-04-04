@@ -92,4 +92,3 @@ scone_metrics = score_matrix(log_expr,
    eval_kclust = 2, is_log = TRUE)
 
 }
-

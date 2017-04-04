@@ -67,4 +67,4 @@ biocViews:
   SingleCell,
   Coverage
 BugReports: https://github.com/YosefLab/scone/issues
-RoxygenNote: 5.0.1
+RoxygenNote: 6.0.1

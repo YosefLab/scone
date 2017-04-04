@@ -3,6 +3,7 @@
 \docType{methods}
 \name{scone}
 \alias{scone}
+\alias{scone}
 \alias{scone,SconeExperiment-method}
 \title{Normalize Expression Data and Evaluate Normalization Performance}
 \usage{
@@ -175,4 +176,3 @@ results_in_memory <- scone(obj, scaling=list(none=identity,
 \seealso{
 \code{\link{get_normalized}}, \code{\link{get_design}}
 }
-

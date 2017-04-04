@@ -59,4 +59,3 @@ sconeReport(res,rownames(get_params(res)), qc = qc)
 }
 
 }
-

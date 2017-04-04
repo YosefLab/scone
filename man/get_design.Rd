@@ -50,6 +50,7 @@ by the character string. The string must be one of the
 \code{method} is a numeric, it will return the design matrix
 according to the scone ranking.
 }}
+
 \examples{
 set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)
@@ -63,4 +64,3 @@ res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 design_top = get_design(res,1)
 
 }
-

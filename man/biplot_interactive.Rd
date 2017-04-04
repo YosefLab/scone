@@ -37,4 +37,3 @@ biplot_interactive(res)
 }
 
 }
-
