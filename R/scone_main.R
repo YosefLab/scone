@@ -181,8 +181,9 @@ setMethod(
       stop("At the moment, scone is implemented only for non-log counts.")
     }
     
-    if(any(apply(assay(x),1,sd) == 0)){
-      stop("Standard deviation of a gene cannot be numerically zero.")
+    if (any(apply(assay(x), 1, function(x)
+      max(x) - min(x)) < 1e-3)) {
+      stop("Expression data can't contain constant features, range < 1e-3.")
     }
     
     return_norm <- match.arg(return_norm)
