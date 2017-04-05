@@ -121,3 +121,20 @@ CLR_FN = function (ei)
   eo = t(t(ei) * mean(scales) / scales)
   return(eo)
 }
+
+#' Simple deconvolution normalization wrapper
+#' @importFrom scran computeSumFactors
+#' @details SCONE scaling wrapper for \code{\link[scran]{computeSumFactors}}).
+#' @export
+#' @param ei Numerical matrix. (rows = genes, cols = samples).
+#' @return scran normalized matrix.
+#'   
+#' @examples
+#' ei <- matrix(0:76,nrow = 7)
+#' eo <- SCRAN_FN(ei)
+#' 
+SCRAN_FN = function(ei){
+  scales = computeSumFactors(ei, sizes = ceiling(sqrt(ncol(ei))))
+  eo = t(t(ei) * mean(scales) / scales)
+  return(eo)
+}
