@@ -2,7 +2,7 @@ context("Test normalization functions")
 set.seed(1021)
 BiocParallel::register(BiocParallel::bpparam("SerialParam"))
 
-test_that("Upper-quartile normalization works the same as in the EDASeq package", {
+test_that("Upper-quartile normalization works the same as in the edgeR package", {
   e <-  matrix(rpois(10000, lambda = 5), ncol=10)
   rownames(e) <- as.character(1:nrow(e))
   colnames(e) <- paste0("Sample", 1:ncol(e))
@@ -14,8 +14,11 @@ test_that("Upper-quartile normalization works the same as in the EDASeq package"
 
   res <- scone(obj, imputation=impute_null, scaling=UQ_FN, k_ruv=5, k_qc=0,
                evaluate=FALSE, run=TRUE, return_norm = "in_memory")
+  
+  size_fac = calcNormFactors(e, method = "upperquartile")
+  scales = (colSums(e) * size_fac)
+  uq = t(t(e) * mean(scales) / scales)
 
-  uq <- EDASeq::betweenLaneNormalization(e, which="upper", round=FALSE)
   rs <- lapply(1:5, function(i) RUVSeq::RUVg(log1p(uq), as.character(1:100), k=i, round=FALSE, isLog=TRUE)$norm)
 
   expect_equal(assay(res), uq)
