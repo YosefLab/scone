@@ -180,6 +180,11 @@ setMethod(
     if(x@is_log) {
       stop("At the moment, scone is implemented only for non-log counts.")
     }
+    
+    if(any(apply(assay(x),1,sd) == 0)){
+      stop("Standard deviation of a gene cannot be numerically zero.")
+    }
+    
     return_norm <- match.arg(return_norm)
     x@scone_run <- return_norm
     
