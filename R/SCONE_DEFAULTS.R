@@ -33,7 +33,7 @@ TMM_FN = function(ei) {
   return(eo)
 }
 
-#' Relative log-expression (RLE) scaling normalization wrapper function
+#' Relative log-expression (RLE; DESeq) scaling normalization wrapper function
 #' @importFrom edgeR calcNormFactors
 #' @details SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
 #' @export
@@ -42,9 +42,9 @@ TMM_FN = function(ei) {
 #'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
-#' eo <- RLE_FN(ei)
+#' eo <- DESEQ_FN(ei)
 #' 
-RLE_FN = function(ei) {
+DESEQ_FN = function(ei) {
   size_fac = calcNormFactors(ei, method = "RLE")
   scales = (colSums(ei) * size_fac)
   eo = t(t(ei) * mean(scales) / scales)
@@ -100,20 +100,24 @@ FQT_FN = function(ei) {
   return(eo)
 }
 
-#' DESeq size factor scaling normalization wrapper function
-#' @importFrom DESeq estimateSizeFactorsForMatrix
+#' Centered log-ratio (CLR) normalization wrapper function
+#' @importFrom compositions clr
+#' @importFrom matrixStats colMedians
 #' @details SCONE scaling wrapper for 
-#'   \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
+#'   \code{\link[compositions]{clr}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
-#' @return DESeq size factor normalized matrix.
+#' @return CLR normalized matrix.
 #'   
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
-#' eo <- DESEQ_FN(ei)
+#' eo <- CLR_FN(ei)
 #' 
-DESEQ_FN = function(ei) {
-  size_fac = estimateSizeFactorsForMatrix(ei)
-  eo = t(t(ei) / size_fac)
+CLR_FN = function (ei)
+{
+  scale_mat <- t(clr(t(ei))) - log(ei)
+  scale_mat[ei == 0] = NA
+  scales = exp(-colMedians(scale_mat, na.rm = TRUE))
+  eo = t(t(ei) * mean(scales) / scales)
   return(eo)
 }
