@@ -1,8 +1,7 @@
 #' Normalize Expression Data and Evaluate Normalization Performance
 #' 
-#' This function is a high-level wrapper function for applying and evaluating a
-#' variety of normalization schemes to a specified expression matrix.
-#' 
+#' This function applies and evaluates a variety of normalization schemes
+#' with respect to a specified SconeExperiment containing scRNA-Seq data.
 #' Each normalization consists of three main steps: \itemize{ \item{Impute:}{
 #' Replace observations of zeroes with expected expression values. }
 #' \item{Scale:}{ Match sample-specific expression scales or quantiles. }
@@ -12,48 +11,56 @@
 #' 
 #' @param x a \code{\link{SconeExperiment}} object.
 #' @param ... see specific S4 methods for additional arguments.
+#' 
 #' @param imputation list or function. (A list of) function(s) to be used for
 #'   imputation. By default only scone::impute_null is included.
 #' @param impute_args arguments passed to all imputation functions.
-#' @param rezero Restore zeroes following scaling step? Default FALSE.
+#' 
+#' @param zero character. Zero-handling option, see Details.
+#' 
 #' @param scaling list or function. (A list of) function(s) to be used for
-#'   scaling normalization.
-#' @param k_ruv numeric. The maximum number of factors of unwanted variation
-#'   (the function will adjust for 1 to k_ruv factors of unwanted variation).
-#'   If 0, RUV will not be performed.
-#' @param k_qc numeric. The maximum number of quality metric PCs (the function
-#'   will adjust for 1 to k_qc PCs). If 0, QC adjustment will not be performed.
-#' @param adjust_bio character. If 'no' it will not be included in the model;
-#'   if 'yes', both models with and without 'bio' will be run; if 'force', only
-#'   models with 'bio' will be run.
-#' @param adjust_batch character. If 'no' it will not be included in the model;
-#'   if 'yes', both models with and without 'batch' will be run; if 'force',
-#'   only models with 'batch' will be run.
+#'   scaling normalization step.
+#'   
+#' @param k_ruv numeric. The maximum number of factors of unwanted variation.
+#'   Adjustment step models will include a range of 1 to k_ruv factors of
+#'   unwanted variation. If 0, RUV adjustment will not be performed.
+#' @param k_qc numeric. The maximum number of quality metric PCs.
+#'   Adjustment step models will include a range of 1 to k_qc quality metric
+#'   PCs. If 0, QC factor adjustment will not be performed.
+#' @param adjust_bio character. If 'no', bio will not be included in Adjustment
+#'   step models; if 'yes', both models with and without 'bio' will be run; if
+#'   'force', only models with 'bio' will be run.
+#' @param adjust_batch character. If 'no', batch will not be included in 
+#'   Adjustment step models; if 'yes', both models with and without 'batch'
+#'   will be run; if 'force', only models with 'batch' will be run.
+#'   
 #' @param evaluate logical. If FALSE the normalization methods will not be
-#'   evaluated (faster).
+#'   evaluated.
 #' @param eval_pcs numeric. The number of principal components to use for
-#'   evaluation. Ignored if evaluation=FALSE.
+#'   evaluation. Ignored if evaluate=FALSE.
 #' @param eval_proj function. Projection function for evaluation  (see 
 #'   \code{\link{score_matrix}} for details). If NULL, PCA is used for 
 #'   projection.
-#' @param eval_proj_args list. List of args passed to projection function as
-#'   eval_proj_args.
+#' @param eval_proj_args list. List of arguments passed to projection function
+#'   as eval_proj_args.
 #' @param eval_kclust numeric. The number of clusters (> 1) to be used for pam
 #'   tightness evaluation. If an array of integers, largest average silhouette
 #'   width (tightness) will be reported. 
 #'   If NULL, tightness will be returned NA.
-#' @param verbose logical. If TRUE some messagges are printed.
 #' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
 #'   separately computed for each biological-cross-batch stratum (accepting
 #'   NAs), and a weighted average is returned as PAM_SIL.
+#'   
+#' @param verbose logical. If TRUE some messagges are printed.
 #' @param run logical. If FALSE the normalization and evaluation are not run,
-#'   but the function returns a data.frame of parameters that will be run for
+#'   but normalization parameters are returned in the output object for 
 #'   inspection by the user.
 #' @param return_norm character. If "no" the normalized values will not be
-#'   returned. This will create a much smaller object and may be useful for
-#'   large datasets and/or when many combinations are compared. If "in_memory"
-#'   the normalized values will be returned as part of the output. If "hdf5"
-#'   they will be written on file using the \code{rhdf5} package.
+#'   returned with the output object. This will create a much smaller object
+#'   and may be useful for large datasets and/or when many combinations are
+#'   compared. If "in_memory" the normalized values will be returned as part
+#'   of the output. If "hdf5" they will be written on file using the 
+#'   \code{rhdf5} package.
 #' @param hdf5file character. If \code{return_norm="hdf5"}, the name of the
 #'   file onto which to save the normalized matrices.
 #' @param bpparam object of class \code{bpparamClass} that specifies the
@@ -65,13 +72,26 @@
 #'   \code{return_norm} is "in_memory", and with the performance 
 #'   metrics and scores.
 #'   
+#' @details If \code{run=FALSE} only the \code{scone_params} slot of the
+#'   output object is populated with a \code{data.frame}, each row 
+#'   corresponding to a set of normalization parameters.
+#'   
 #' @details If \code{x} has a non-empty \code{scone_params} slot, only the
-#'   normalizations specified in \code{scone_params} are performed and
-#'   evaluated.
+#'   subset of normalizations specified in \code{scone_params} are performed
+#'   and evaluated.
 #'   
-#'   
+#' @details The \code{zero} arguments supports 3 zero-handling options:
+#' \itemize{ 
+#' \item{none:}{ Default. No special zero-handling.}
+#' \item{preadjust:}{ Restore prior zero observations to zero following
+#' Impute and Scale steps.}
+#' \item{postadjust:}{ Set prior zero observations and all negative
+#' expression values to zero following the Adjust Step. }
+#' \item{strong:}{ Apply both preadjust and postadjust options.}
+#' }
+#' 
 #' @details Evaluation metrics are defined in \code{\link{score_matrix}}. Each
-#'   metric is assigned a signature for conversion to scores: Positive-
+#'   metric is assigned a +/- signature for conversion to scores: Positive-
 #'   signature metrics increase with improving performance, including BIO_SIL,
 #'   PAM_SIL, and EXP_WV_COR. Negative-signature metrics decrease with
 #'   improving performance, including BATCH_SIL, EXP_QC_COR, EXP_UV_COR,
@@ -83,10 +103,6 @@
 #'   included in the scaling list argument. Analogously, if one wants to
 #'   include non-imputed data in the comparison, the scone::impute_null
 #'   function must be included.
-#'   
-#' @details If \code{run=FALSE} only the \code{scone_params} slot is populated 
-#'   with a \code{data.frame} with each row corresponding to a set of 
-#'   normalization parameters.
 #'   
 #' @details If \code{return_norm="hdf5"}, the normalized matrices will be 
 #'   written to the \code{hdf5file} file. This must be a string specifying (a 
@@ -115,10 +131,12 @@
 #'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
 #' @importFrom rhdf5 h5createFile h5write.default h5write H5close
+#' @importFrom rARPACK svds
 #' @export
-#' 
-#' 
+#'
+#'
 #' @examples
+#' 
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 #' obj <- SconeExperiment(mat)
@@ -137,12 +155,14 @@
 #'            return_norm = "in_memory",
 #'            bpparam = BiocParallel::SerialParam())
 #' 
+
 setMethod(
   f = "scone",
   signature = signature(x = "SconeExperiment"),
   definition = function(x, imputation=list(none=impute_null),
                         impute_args = NULL,
-                        rezero = FALSE, scaling, k_ruv=5, k_qc=5,
+                        zero = c("none", "preadjust","postadjust","strong"),
+                        scaling, k_ruv=5, k_qc=5,
                         adjust_bio=c("no", "yes", "force"),
                         adjust_batch=c("no", "yes", "force"),
                         run=TRUE, evaluate=TRUE, eval_pcs=3, 
@@ -153,10 +173,19 @@ setMethod(
                         hdf5file,
                         bpparam=BiocParallel::bpparam()) {
     
-    # browser()
+    
+    rezero = (zero %in% c("preadjust","strong"))
+    fixzero = (zero %in% c("postadjust","strong"))
+    
     if(x@is_log) {
       stop("At the moment, scone is implemented only for non-log counts.")
     }
+    
+    if (any(apply(assay(x), 1, function(x)
+      max(x) - min(x)) < 1e-3)) {
+      stop("Expression data can't contain constant features, range < 1e-3.")
+    }
+    
     return_norm <- match.arg(return_norm)
     x@scone_run <- return_norm
     
@@ -415,9 +444,13 @@ setMethod(
     if(rezero){
       if(verbose) message("Re-zero step...")
       toz = assay(x) <= 0
-      scaled <- lapply(scaled,function(x) x - x*toz)
+      scaled <- lapply(scaled,function(x,toz){
+        x[toz] = 0
+        x
+      },toz = toz)
       x@rezero <- TRUE
     }
+
     names(scaled) <- apply(sc_params, 1, paste, collapse="_")
     # output: a list of normalized expression matrices
     
@@ -459,22 +492,27 @@ setMethod(
       eval_poscon <- get_poscon(x)
       
       if(!is.null(eval_negcon)) {
-        uv_factors <- svd(scale(t(log1p(assay(x)[eval_negcon,])),
+        uv_factors <- svds(scale(t(log1p(assay(x)[eval_negcon,])),
                                 center = TRUE,
                                 scale = TRUE),
-                          eval_pcs,0)$u
+                           k=eval_pcs, nu=eval_pcs, nv=0)$u
       }
       
       if(!is.null(eval_poscon)) {
-        wv_factors <- svd(scale(t(log1p(assay(x)[eval_poscon,])),
+        wv_factors <- svds(scale(t(log1p(assay(x)[eval_poscon,])),
                                 center = TRUE,
                                 scale = TRUE),
-                          eval_pcs,0)$u
+                           k=eval_pcs, nu=eval_pcs, nv=0)$u
       }
       
     }
     
     if(verbose) message("Factor adjustment and evaluation...")
+    
+    if(fixzero){
+      if(verbose) message("...including re-zero step...")
+      x@fixzero <- TRUE
+    }
     
     outlist <- bplapply(seq_len(NROW(params)), function(i) {
       
@@ -486,8 +524,14 @@ setMethod(
                                           !is.null(parsed$batch)))
       sc_name <- paste(params[i,1:2], collapse="_")
       adjusted <- lm_adjust(log1p(scaled[[sc_name]]), design_mat, batch)
+      
+      if(fixzero){
+        toz = assay(x) <= 0
+        adjusted[toz] = 0
+        adjusted[adjusted <= 0] = 0
+      }
+      
       if(evaluate) {
-        #cat(sprintf("scoring matrix: I am in method: %s", sc_name))
         score <- score_matrix(expr=adjusted, eval_pcs = eval_pcs, 
                               eval_proj = eval_proj, 
                               eval_proj_args = eval_proj_args,

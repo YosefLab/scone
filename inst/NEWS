@@ -1,3 +1,12 @@
+Changes in version 1.0.0 (2017-4-6)
+========================
+* Faster SVD with rARPACK.
+* New zero mode options in scone.
+* Newly exported get functions.
+* Updated scone scaling function defaults.
+* Error handling and documentation updates.
+* Bug fixes to sample filtering functions.
+
 Changes in version 0.99.0 (2016-11-14)
 ========================
 * Major release: many changes due to porting to S4.

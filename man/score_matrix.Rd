@@ -48,7 +48,7 @@ will be returned NA.}
 transformation will not be carried out prior to projection. Default FALSE.}
 
 \item{stratified_pam}{logical. If TRUE then maximum ASW is separately 
-computed for each biological-cross-batch stratum (accepting NAs), and a 
+computed for each biological-cross-batch stratum (accepts NAs), and a 
 weighted average silhouette width is returned as PAM_SIL. Default FALSE.}
 }
 \value{
@@ -85,10 +85,10 @@ Users may specify their own eval_proj function that will be used to
 set.seed(141)
 bio = as.factor(rep(c(1,2),each = 2))
 batch = as.factor(rep(c(1,2),2))
-
 log_expr = matrix(rnorm(20),ncol = 4)
-scone_metrics = score_matrix(log_expr, bio = bio,
-  eval_kclust = 2,batch = batch,is_log = TRUE)
+
+scone_metrics = score_matrix(log_expr, 
+   bio = bio, batch = batch,
+   eval_kclust = 2, is_log = TRUE)
 
 }
-

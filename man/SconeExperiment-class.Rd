@@ -2,10 +2,11 @@
 % Please edit documentation in R/AllClasses.R
 \docType{class}
 \name{SconeExperiment-class}
+\alias{SconeExperiment-class}
+\alias{SconeExperiment}
 \alias{SconeExperiment}
 \alias{SconeExperiment,SummarizedExperiment-method}
 \alias{SconeExperiment,matrix-method}
-\alias{SconeExperiment-class}
 \title{Class SconeExperiment}
 \usage{
 SconeExperiment(object, ...)
@@ -140,10 +141,14 @@ run and in which mode ("no", "in_memory", "hdf5").}
 (Automatically set by \code{\link{scone}}).}
 
 \item{\code{rezero}}{logical. TRUE if \code{\link{scone}} was run with 
-\code{rezero=TRUE}.}
+\code{zero="preadjust"} or \code{zero="strong"}.}
+
+\item{\code{fixzero}}{logical. TRUE if \code{\link{scone}} was run with 
+\code{zero="postadjust"} or \code{zero="strong"}.}
 
 \item{\code{impute_args}}{list. Arguments passed to all imputation functions.}
 }}
+
 \examples{
 set.seed(42)
 nrows <- 200
@@ -169,4 +174,3 @@ scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 to access internal fields, \code{\link{select_methods}} for subsetting
 by method, and \code{\link{scone}} for running scone workflows.
 }
-

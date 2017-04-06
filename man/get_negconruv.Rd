@@ -2,11 +2,16 @@
 % Please edit documentation in R/AllGenerics.R, R/helper.R
 \docType{methods}
 \name{get_negconruv}
-\alias{get_negconeval}
-\alias{get_negconeval,SconeExperiment-method}
 \alias{get_negconruv}
-\alias{get_negconruv,SconeExperiment-method}
+\alias{get_negconeval}
 \alias{get_poscon}
+\alias{get_negconruv,SconeExperiment-method}
+\alias{get_negconeval,SconeExperiment-method}
+\alias{get_poscon,SconeExperiment-method}
+\alias{get_negconeval}
+\alias{get_poscon}
+\alias{get_negconruv,SconeExperiment-method}
+\alias{get_negconeval,SconeExperiment-method}
 \alias{get_poscon,SconeExperiment-method}
 \title{Get Negative and Positive Controls}
 \usage{
@@ -52,4 +57,3 @@ negcon_eval = get_negconeval(obj)
 poscon = get_poscon(obj)
 
 }
-

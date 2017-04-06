@@ -4,6 +4,7 @@
 \name{get_params}
 \alias{get_params}
 \alias{get_params,SconeExperiment-method}
+\alias{get_params,SconeExperiment-method}
 \title{Extract scone parameters}
 \usage{
 get_params(x)
@@ -29,4 +30,3 @@ res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 params = get_params(res)
 
 }
-

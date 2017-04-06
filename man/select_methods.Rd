@@ -51,6 +51,7 @@ string must be a subset of the \code{row.names} of the slot
 \code{methods} is a numeric, it will return the subset of methods
 according to the scone ranking.
 }}
+
 \examples{
 set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)
@@ -62,4 +63,3 @@ res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
 select_res = select_methods(res,1:2)
 
 }
-

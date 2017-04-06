@@ -2,7 +2,7 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{UQ_FN}
 \alias{UQ_FN}
-\title{Upper-quartile normalization wrapper.}
+\title{Upper-quartile (UQ) scaling normalization wrapper function}
 \usage{
 UQ_FN(ei)
 }
@@ -10,18 +10,16 @@ UQ_FN(ei)
 \item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-Upper-quartile normalized matrix.
+UQ normalized matrix.
 }
 \description{
-Upper-quartile normalization wrapper.
+Upper-quartile (UQ) scaling normalization wrapper function
 }
 \details{
-SCONE scaling wrapper for
-  \code{\link[EDASeq]{betweenLaneNormalization}}).
+SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
 }
 \examples{
 ei <- matrix(0:20,nrow = 7)
 eo <- UQ_FN(ei)
 
 }
-

@@ -2,10 +2,13 @@
 % Please edit documentation in R/AllGenerics.R, R/helper.R
 \docType{methods}
 \name{get_scores}
-\alias{get_score_ranks}
-\alias{get_score_ranks,SconeExperiment-method}
 \alias{get_scores}
 \alias{get_scores,SconeExperiment-method}
+\alias{get_score_ranks}
+\alias{get_score_ranks,SconeExperiment-method}
+\alias{get_score_ranks}
+\alias{get_scores,SconeExperiment-method}
+\alias{get_score_ranks,SconeExperiment-method}
 \title{Extract scone scores}
 \usage{
 get_scores(x)
@@ -40,4 +43,3 @@ scores = get_scores(res)
 score_ranks = get_score_ranks(res)
 
 }
-

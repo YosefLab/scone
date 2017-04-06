@@ -43,7 +43,7 @@ setMethod(
 
       if(x@rezero) {
         toz = assay(x) <= 0
-        scaled <- scaled - scaled*toz
+        scaled[toz] = 0
       }
 
       ruv_factors <- qc_factors <- NULL
@@ -70,6 +70,13 @@ setMethod(
                                           !is.null(parsed$bio) &
                                           !is.null(parsed$batch)))
       adjusted <- lm_adjust(log1p(scaled), design_mat, get_batch(x))
+      
+      if(x@fixzero) {
+        toz = assay(x) <= 0
+        adjusted[toz] = 0
+        adjusted[adjusted <= 0] = 0
+      }
+      
       retval <- expm1(adjusted)
     }
 

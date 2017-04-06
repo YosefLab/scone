@@ -486,16 +486,7 @@ the comparison of normalizations:
 
 ```{r scone_in2}
 
-## ----- User-defined function 1: Dividing by total read count -----
-
-SUM_FN = function (ei)
-{
-  sums = colSums(ei)
-  eo = t(t(ei)*mean(sums)/sums)
-  return(eo)
-}
-
-## ----- User-defined function 2: Dividing by number of detected genes -----
+## ----- User-defined function: Dividing by number of detected genes -----
 
 EFF_FN = function (ei)
 {
@@ -508,16 +499,13 @@ EFF_FN = function (ei)
 
 scaling=list(none=identity, # Identity - do nothing
 
-             sum = SUM_FN,  # User-defined functions
-             eff = EFF_FN,
+             eff = EFF_FN, # User-defined function
 
-
-             tmm = TMM_FN, # SCONE library wrappers...
+             sum = SUM_FN, # SCONE library wrappers...
+             tmm = TMM_FN, 
              uq = UQ_FN,
-             uqp = UQ_FN_POS,
              fq = FQT_FN,
-             deseq=DESEQ_FN,
-             deseqp=DESEQ_FN_POS)
+             deseq = DESEQ_FN)
 
 ```
 
@@ -598,8 +586,6 @@ workflows.
 
 is_screened = ((get_params(my_scone)$imputation_method == "expect") &
                  (get_params(my_scone)$scaling_method %in% c("none",
-                                                             "deseqp",
-                                                             "uqp",
                                                              "eff")))
 
 my_scone = select_methods(my_scone,
@@ -662,7 +648,7 @@ my_scone <- scone(my_scone,
                   run=TRUE,
                   eval_kclust = 2:6,stratified_pam = TRUE,
                   return_norm = "in_memory",
-                  rezero = TRUE)
+                  zero = "preadjust")
 
 ```
 
@@ -679,7 +665,7 @@ In the call above, we have set the following parameter arguments:
   Store all normalized matrices in addition to evaluation data. 
   Otherwise normalized data is not returned in the resulting 
   object.
-* rezero = TRUE. 
+* zero = "preadjust". 
   Restore data entries that are originally zeroes back to zero
   after the scaling step.
 
