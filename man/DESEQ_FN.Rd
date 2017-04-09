@@ -2,7 +2,7 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{DESEQ_FN}
 \alias{DESEQ_FN}
-\title{DESeq size factor normalization wrapper.}
+\title{Relative log-expression (RLE; DESeq) scaling normalization wrapper function}
 \usage{
 DESEQ_FN(ei)
 }
@@ -10,18 +10,16 @@ DESEQ_FN(ei)
 \item{ei}{Numerical matrix. (rows = genes, cols = samples).}
 }
 \value{
-DESeq size factor normalized matrix.
+RLE normalized matrix.
 }
 \description{
-DESeq size factor normalization wrapper.
+Relative log-expression (RLE; DESeq) scaling normalization wrapper function
 }
 \details{
-SCONE scaling wrapper for
-  \code{\link[DESeq]{estimateSizeFactorsForMatrix}}).
+SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
 }
 \examples{
 ei <- matrix(0:20,nrow = 7)
 eo <- DESEQ_FN(ei)
 
 }
-

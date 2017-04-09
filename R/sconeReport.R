@@ -16,6 +16,11 @@
 #' @param poscon character. Genes to be used as positive controls for 
 #'   evaluation. These genes should be expected to change according to the 
 #'   biological phenomenon of interest. Default empty character.
+#' @param eval_proj function. Projection function for evaluation  (see 
+#'   \code{\link{score_matrix}} for details). If NULL, PCA is used for 
+#'   projection.
+#' @param eval_proj_args list. List of args passed to projection function as
+#'   eval_proj_args.
 #'   
 #' @importFrom shiny fluidPage downloadLink br titlePanel tableOutput helpText
 #'   downloadHandler column h5 h6 updateSelectInput plotOutput tabsetPanel
@@ -30,6 +35,7 @@
 #' @importFrom NMF aheatmap
 #' @importFrom ggplot2 labs theme geom_point ylim ggplot geom_violin
 #'   element_blank aes geom_bar coord_cartesian scale_fill_manual guides
+#' @importFrom rARPACK svds
 #' @export
 #' 
 #' @return An object that represents the SCONE report app.
@@ -52,7 +58,9 @@
 sconeReport = function(x, methods,
                        qc, 
                        bio = NULL, batch = NULL,
-                       poscon = character(), negcon = character()){
+                       poscon = character(), negcon = character(),
+                       eval_proj = NULL,
+                       eval_proj_args = NULL){
   
   
   scone_res = list()
@@ -532,12 +540,48 @@ sconeReport = function(x, methods,
     })
     
     pc_obj_base <- reactive({
-      prcomp(t(normle()),center = TRUE, scale = TRUE)
+      
+      # If user has not provided evaluation projection
+      if(is.null(eval_proj)){
+        
+        prcomp(t(normle()),
+               center = TRUE, scale = TRUE)
+        
+      } else {
+        
+        proj = eval_proj(normle(),
+                         eval_proj_args = eval_proj_args)
+        colnames(proj) = paste0("PC",1:ncol(proj))
+        
+        pc_out = list(x = proj, sdev = apply(proj,2,sd))
+        
+        pc_out
+        
+      }
+      
     })
     
     pc_obj_select <- reactive({
       if(length(pc_gene()) > 0){
-        prcomp(t(normle()[pc_gene(),]),center = TRUE, scale = TRUE)
+        
+        # If user has not provided evaluation projection
+        if(is.null(eval_proj)){
+          
+          prcomp(t(normle()[pc_gene(),]),
+                 center = TRUE, scale = TRUE)
+          
+        } else {
+          
+          proj = eval_proj(normle()[pc_gene(),],
+                           eval_proj_args = eval_proj_args)
+          colnames(proj) = paste0("PC",1:ncol(proj))
+          
+          pc_out = list(x = proj, sdev = apply(proj,2,sd))
+          
+          pc_out
+          
+        }
+        
       }else{
         list()
       }
@@ -792,9 +836,26 @@ sconeReport = function(x, methods,
     
     pc_obj_select2 <- reactive({
       
+      # If selected genes exist
       if(length(pc_gene2()) > 0){
         
-        prcomp(t(normle()[pc_gene2(),]),center = TRUE, scale = TRUE)
+        # If user has not provided evaluation projection
+        if(is.null(eval_proj)){
+          
+          prcomp(t(normle()[pc_gene2(),]),
+                 center = TRUE, scale = TRUE)
+          
+        } else {
+          
+          proj = eval_proj(normle()[pc_gene2(),],
+                           eval_proj_args = eval_proj_args)
+          colnames(proj) = paste0("PC",1:ncol(proj))
+          
+          pc_out = list(x = proj, sdev = apply(proj,2,sd))
+          
+          pc_out
+          
+        }
         
       }else{
         list()

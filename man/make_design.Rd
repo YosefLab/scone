@@ -38,4 +38,3 @@ batch = as.factor(rep(c(1,2),2))
 design_mat = make_design(bio,batch, W = NULL)
 
 }
-

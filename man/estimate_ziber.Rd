@@ -58,4 +58,3 @@ ziber_out = suppressWarnings(estimate_ziber(mat,
    pos_controls = 1:10))
 
 }
-

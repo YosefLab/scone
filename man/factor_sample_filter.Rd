@@ -2,7 +2,7 @@
 % Please edit documentation in R/sample_filtering.R
 \name{factor_sample_filter}
 \alias{factor_sample_filter}
-\title{factor-based sample filtering: function to filter single-cell RNA-Seq
+\title{Factor-based Sample Filtering: Function to filter single-cell RNA-Seq 
 libraries.}
 \usage{
 factor_sample_filter(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
@@ -13,38 +13,38 @@ factor_sample_filter(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}
 
-\item{qual}{matrix Quality metric data matrix (cells in rows, metrics in
+\item{qual}{matrix Quality metric data matrix (cells in rows, metrics in 
 columns).}
 
-\item{gene_filter}{Logical vector indexing genes that will be used for PCA.
+\item{gene_filter}{Logical vector indexing genes that will be used for PCA. 
 If NULL, all genes are used.}
 
-\item{max_exp_pcs}{numeric number of expression PCs used in quality metric
+\item{max_exp_pcs}{numeric number of expression PCs used in quality metric 
 selection. Default 5.}
 
 \item{qual_select_q_thresh}{numeric. q-value threshold for 
 quality/expression correlation significance tests. Default 0.01}
 
-\item{force_metrics}{logical. If not NULL, indexes quality metric to be
+\item{force_metrics}{logical. If not NULL, indexes quality metric to be 
 forcefully included in quality PCA.}
 
-\item{good_metrics}{logical. If not NULL, indexes quality metric that
+\item{good_metrics}{logical. If not NULL, indexes quality metric that 
 indicate better quality when of higher value.}
 
-\item{min_qual_variance}{numeric. Minimum proportion of selected quality
+\item{min_qual_variance}{numeric. Minimum proportion of selected quality 
 variance addressed in filtering. Default 0.70}
 
-\item{zcut}{A numeric value determining threshold Z-score for sd, mad, and
+\item{zcut}{A numeric value determining threshold Z-score for sd, mad, and 
 mixture sub-criteria. Default 1.}
 
-\item{mixture}{A logical value determining whether mixture modeling
-sub-criterion will be applied per primary criterion (quality score). If
-true, a dip test will be applied to each quality score. If a metric is
-multimodal, it is fit to a two-component normal mixture model. Samples
-deviating zcut sd's from optimal mean (in the inferior direction), have
+\item{mixture}{A logical value determining whether mixture modeling 
+sub-criterion will be applied per primary criterion (quality score). If 
+true, a dip test will be applied to each quality score. If a metric is 
+multimodal, it is fit to a two-component normal mixture model. Samples 
+deviating zcut sd's from optimal mean (in the inferior direction), have 
 failed this sub-criterion.}
 
-\item{dip_thresh}{A numeric value determining dip test p-value threshold.
+\item{dip_thresh}{A numeric value determining dip test p-value threshold. 
 Default 0.05.}
 
 \item{plot}{logical. Should a plot be produced?}
@@ -55,8 +55,8 @@ Default 0.05.}
 A logical, representing samples passing factor-based filter.
 }
 \description{
-This function returns a sample-filtering report for each cell in the input
-expression matrix, describing whether it passed filtering by factor-based
+This function returns a sample-filtering report for each cell in the input 
+expression matrix, describing whether it passed filtering by factor-based 
 filtering, using PCA of quality metrics.
 }
 \details{
@@ -72,4 +72,3 @@ mfilt = factor_sample_filter(expr = mat,
     qc, plot = TRUE,qual_select_q_thresh = 1)
 
 }
-

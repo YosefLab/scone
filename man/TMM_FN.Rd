@@ -2,7 +2,8 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{TMM_FN}
 \alias{TMM_FN}
-\title{Weighted trimmed mean of M-values (TMM) normalization wrapper.}
+\title{Weighted trimmed mean of M-values (TMM) scaling normalization wrapper
+function}
 \usage{
 TMM_FN(ei)
 }
@@ -13,7 +14,8 @@ TMM_FN(ei)
 TMM normalized matrix.
 }
 \description{
-Weighted trimmed mean of M-values (TMM) normalization wrapper.
+Weighted trimmed mean of M-values (TMM) scaling normalization wrapper
+function
 }
 \details{
 SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
@@ -23,4 +25,3 @@ ei <- matrix(0:20,nrow = 7)
 eo <- TMM_FN(ei)
 
 }
-

@@ -64,7 +64,9 @@
 #' @slot nested logical. Is batch nested within bio? 
 #'   (Automatically set by \code{\link{scone}}).
 #' @slot rezero logical. TRUE if \code{\link{scone}} was run with 
-#'   \code{rezero=TRUE}.
+#'   \code{zero="preadjust"} or \code{zero="strong"}.
+#' @slot fixzero logical. TRUE if \code{\link{scone}} was run with 
+#'   \code{zero="postadjust"} or \code{zero="strong"}.
 #' @slot impute_args list. Arguments passed to all imputation functions.
 #' 
 #' @seealso \code{\link{get_normalized}}, \code{\link{get_params}},
@@ -95,6 +97,7 @@ setClass(
     is_log = "logical",
     nested = "logical",
     rezero = "logical",
+    fixzero = "logical",
     impute_args = "list"
   )
 )
@@ -276,6 +279,7 @@ setMethod(
                is_log = is_log,
                nested = FALSE,
                rezero = FALSE,
+               fixzero = FALSE,
                impute_args = list()
                )
 

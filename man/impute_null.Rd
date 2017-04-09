@@ -22,4 +22,3 @@ mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 imat = impute_null(mat)
 
 }
-

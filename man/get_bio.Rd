@@ -2,10 +2,13 @@
 % Please edit documentation in R/AllGenerics.R, R/helper.R
 \docType{methods}
 \name{get_bio}
-\alias{get_batch}
-\alias{get_batch,SconeExperiment-method}
 \alias{get_bio}
+\alias{get_batch}
 \alias{get_bio,SconeExperiment-method}
+\alias{get_batch,SconeExperiment-method}
+\alias{get_batch}
+\alias{get_bio,SconeExperiment-method}
+\alias{get_batch,SconeExperiment-method}
 \title{Get Factor of Biological Conditions and Batch}
 \usage{
 get_bio(x)
@@ -35,4 +38,3 @@ bio = get_bio(obj)
 batch = get_batch(obj)
 
 }
-

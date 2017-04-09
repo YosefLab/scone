@@ -39,8 +39,8 @@
 #' @param norm_scaling character. Scaling options to be included in the Scaling
 #'   Step. Default c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"). See
 #'   details.
-#' @param norm_rezero logical. Restore imputed zeroes to zero following the
-#'   Scaling Step? Default TRUE.
+#' @param norm_rezero logical. Restore prior zeroes and negative values to zero
+#'   following normalization. Default FALSE.
 #' @param norm_k_max numeric. Max number (norm_k_max) of factors of unwanted
 #'   variation modeled in the Adjustment Step. Default NULL.
 #' @param norm_qc_expl numeric. In automatic selection of norm_k_max, what 
@@ -121,7 +121,7 @@ scone_easybake <- function(expr, qc,
                            norm_impute=c("yes", "no", "force"),
                            norm_scaling=c("none", "sum", "deseq",
                                           "tmm", "uq", "fq", "detect"),
-                           norm_rezero=TRUE, norm_k_max=NULL, norm_qc_expl=0.5,
+                           norm_rezero=FALSE, norm_k_max=NULL, norm_qc_expl=0.5,
                            norm_adjust_bio=c("yes", "no", "force"),
                            norm_adjust_batch=c("yes", "no", "force"), 
                            
@@ -438,10 +438,9 @@ scone_easybake <- function(expr, qc,
      & (get_params(my_scone)$adjust_batch != "batch"))
   
   if(norm_rezero){
-    is_screened = is_screened | 
-      ((get_params(my_scone)$imputation_method == "expect") &
-         (get_params(my_scone)$scaling_method %in%
-            c("none")))
+    zerop = "postadjust"
+  }else{
+    zerop = "none"
   }
   
   my_scone = select_methods(my_scone, 
@@ -505,7 +504,7 @@ scone_easybake <- function(expr, qc,
                     run=TRUE, verbose = (verbose > 1),
                     stratified_pam = eval_stratified_pam, 
                     eval_kclust = eval_kclust,
-                    rezero = norm_rezero, ...)
+                    zero = zerop, ...)
   
   toc = proc.time()
   if(verbose > 0) {
