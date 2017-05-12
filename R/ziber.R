@@ -259,3 +259,165 @@ impute_expectation <- function(expression,impute_args) {
 impute_null <- function(expression,impute_args) {
   return(expression)
 }
+
+#' Fast parameter estimation of zero-inflated bernoulli model
+#' 
+#' This function implements Newton's method for solving zero of 
+#' Expectation-Maximization equation at the limit of parameter convergence: a 
+#' zero-inflated bernoulli model of transcript detection, modeling gene 
+#' expression state (off of on) as a bernoulli draw on a gene-specific 
+#' expression rate (Z in {0,1}). Detection conditioned on expression is a 
+#' logistic function of gene-level features. The bernoulli model is modeled 
+#' numerically by a logistic model with an intercept.
+#' 
+#' @param x matrix. An expression data matrix (genes in rows, cells in columns)
+#' @param fp_tresh numeric. Threshold for calling a positive detection (D = 1).
+#'   Default 0.
+#' @param gfeatM matrix. Numeric gene level determinants of drop-out (genes in 
+#'   rows, features in columns)
+#' @param bulk_model logical. Use median log-expression of gene in detected 
+#'   fraction as sole gene-level feature. Default FALSE. Ignored if gfeatM is 
+#'   specified.
+#' @param pos_controls logical. TRUE for all genes that are known to be 
+#'   expressed in all cells.
+#' @param rate_tol numeric. Convergence treshold on expression rates (0-1).
+#' @param maxiter numeric. The maximum number of steps per gene. Default
+#'   100.
+#' @param verbose logical. Whether or not to print the value of the likelihood 
+#'   at each iteration.
+#'   
+#' @export
+#' 
+#' @return a list with the following elements: \itemize{ \item{W}{ coefficients
+#'   of sample-specific logistic drop-out model } \item{Alpha}{ intercept and 
+#'   gene-level parameter matrix } \item{X}{ intercept } \item{Beta}{ 
+#'   coefficient of gene-specific logistic expression model } 
+#'   \item{fnr_character}{ the probability, per gene, of P(D=0|E=1)} 
+#'   \item{p_nodrop}{ 1 - the probability P(drop|Y), useful as weights in 
+#'   weighted PCA} \item{expected_state}{ the expected
+#'   value E[Z] (1 = "on")} \item{loglik}{ the log-likelihood} 
+#'   \item{convergence}{for all genes, 0 if the algorithm converged and 1 if maxiter was 
+#'   reached} }
+#'   
+#' @examples
+#' mat <- matrix(rpois(1000, lambda = 3), ncol=10)
+#' mat = mat * matrix(1-rbinom(1000, size = 1, prob = .01), ncol=10)
+#' ziber_out = suppressWarnings(fast_estimate_ziber(mat,
+#'    bulk_model = TRUE,
+#'    pos_controls = 1:10))
+#' 
+
+fast_estimate_ziber = function(x, fp_tresh = 0, 
+                               gfeatM = NULL, bulk_model = FALSE, 
+                               pos_controls = NULL,
+                               rate_tol = 0.01, maxiter = 100,
+                               verbose = FALSE){
+  
+  Y = t(matrix(as.numeric( x > fp_tresh ),nrow = dim(x)[1]))
+  
+  if(is.null(gfeatM) & bulk_model){
+    x2 = x
+    x2[x2 <= fp_tresh] = NA
+    Alpha = t(matrix(log(rowMedians(x2, na.rm=TRUE))))
+  }else{
+    if(is.null(gfeatM)){
+      stop("No gene-level features specified")
+    }
+    Alpha = t(gfeatM)
+  }
+  
+  # Prepare Unwanted Variation and Sample-Intrinsic Intercept
+  Alpha = rbind(Alpha,rep(1,dim(x)[1]))
+  K = dim(Alpha)[1]
+  W = matrix(0,dim(x)[2],K)
+  
+  if(is.null(pos_controls)){
+    stop("Must supply positive controls genes to fit FNR characteristic")
+  }
+  
+  # Fit W once using control genes
+  cY = Y[,pos_controls]
+  cAlpha = Alpha[,pos_controls]
+  glm_pval = rep(NA,nrow(Y))
+  
+  for (i in 1:nrow(Y)){
+    
+    fit = suppressWarnings(glm(cbind(cY[i,],1-cY[i,]) ~ 0 +
+                                 t(cAlpha),family=binomial(logit)))
+    glm_pval[i] = summary(fit)$coef[,4][1]
+    
+    if((glm_pval[i] < .01) & fit$converged){
+      W[i,] = fit$coefficients
+    } else {
+      if(!fit$converged){
+        warning(paste0("Sample ",i," failed GLM fit, applying",
+                       " expression independent model."))
+      }else{
+        warning(paste0("Sample ",i," exhibits expression dependence",
+                       " consistent with null, applying expression ",
+                       "independent model."))
+      }
+      
+      # Only intercept with pseudocounts
+      W[i,] = c(0,log((sum(cY[i,]) + 0.5)/(ncol(cY) + 1)) -
+                  log((sum(1-cY[i,]) + 
+                         0.5)/(ncol(cY) + 1))) 
+    }
+  }
+  
+  fnr_character = .likfn(1,W,Alpha)
+  
+  f_fun = function(x,y,theta){
+    x - mean(1/(1+(1-y)*((1/x - 1)/theta)))
+  }
+  df_fun = function(x,y,theta){
+    1 - mean((theta - y*theta)/(1 + y*(-1 + x) + (-1 + theta)*x)^2)
+  }
+  
+  rates = rep(0.5,ncol(fnr_character))
+  rates[pos_controls] = 1
+  convergences = rep(0,ncol(fnr_character))
+  convergences[pos_controls] = NA
+  for(i in which(!pos_controls)){
+    rate_est = rates[i]
+    y = Y[,i]
+    theta = 1 - fnr_character[,i]
+    dr = -f_fun(rate_est,y,theta)/df_fun(rate_est,y,theta)
+    niter = 0
+    while(abs(dr) > rate_tol){
+      niter = niter + 1
+      rate_est = rate_est + dr
+      dr = -f_fun(rate_est,y,theta)/df_fun(rate_est,y,theta)
+      if(niter >= maxiter){
+        convergences[i] = 1
+        break
+      }
+    }
+    rates[i] = rate_est
+  }
+  
+  # Prepare Gene-Intrinsic Intercept
+  X = matrix(1,dim(x)[2],1)
+  Beta = matrix(boot::logit(rates),1,dim(x)[1])
+  
+  # Expression States
+  Z = Y*0
+  Z[,pos_controls] = 1
+  Z[,!pos_controls] = .pzfn(Y[,!pos_controls],
+                            W,Alpha[,!pos_controls],
+                            X,Beta[,!pos_controls])
+  
+  # Likelihood
+  matA = .likfn(1,X,Beta[,!pos_controls]) # Expression
+  matC = .likfn(Y[,!pos_controls],W,Alpha[,!pos_controls]) # Detection
+  is_perfect = (matC == 0) | (matA == 0) | (matA == 1)
+  EL2 = sum((Z[,!pos_controls]*log( matC ))[!is_perfect],na.rm = FALSE) + 
+    sum((Z[,!pos_controls]*log( matA ))[!is_perfect],na.rm = FALSE) + 
+    sum(((1-Z[,!pos_controls])*log( 1 - matA ))[!is_perfect],na.rm = FALSE)
+  
+  return(list(W = W, X = X, Alpha = Alpha, Beta = Beta,
+              fnr_character = t(fnr_character),
+              p_nodrop = 1 - t((Y <= fp_tresh)*Z), 
+              expected_state = t(Z), loglik = EL2,
+              convergence = convergences, glm_pval = glm_pval))
+}
