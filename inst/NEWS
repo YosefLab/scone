@@ -1,5 +1,11 @@
+Changes in version 1.1.1 (2017-30-6)
+========================
+
+* Added fast ziber imputation method
+
 Changes in version 1.0.0 (2017-4-6)
 ========================
+
 * Faster SVD with rARPACK.
 * New zero mode options in scone.
 * Newly exported get functions.
@@ -9,6 +15,7 @@ Changes in version 1.0.0 (2017-4-6)
 
 Changes in version 0.99.0 (2016-11-14)
 ========================
+
 * Major release: many changes due to porting to S4.
 * Widespread updates to documentation, including examples.
 * Compatibility with Bioconductor format, including biocViews.
