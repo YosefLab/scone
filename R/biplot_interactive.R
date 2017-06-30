@@ -1,24 +1,20 @@
 #' Interactive biplot
-#' 
+#'
 #' This is a wrapper around \code{\link{biplot_color}}, creating a shiny gadget
 #' to allow the user to select specific points in the graph.
-#' 
+#'
 #' @details Since this is based on the shiny gadget feature, it will not work
 #'   in static documents, such as vignettes or markdown / knitr documents. See
 #'   \code{biplot_color} for more details on the internals.
-#'   
+#'
 #' @param x a \code{\link{SconeExperiment}} object.
 #' @param ... passed to \code{\link{biplot_color}}.
-#'   
-#' @importFrom miniUI gadgetTitleBar miniContentPanel miniPage gadgetTitleBar
-#' @importFrom shiny plotOutput renderPlot observeEvent brushedPoints runGadget
-#'   verbatimTextOutput stopApp renderText
-#'   
+#'
 #' @export
-#' 
-#' @return A \code{\link{SconeExperiment}} object representing 
+#'
+#' @return A \code{\link{SconeExperiment}} object representing
 #'   selected methods.
-#'   
+#'
 #' @examples
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
@@ -30,19 +26,27 @@
 #' \dontrun{
 #' biplot_interactive(res)
 #' }
-#' 
+#'
 biplot_interactive <- function(x, ...) {
+
+  if (!requireNamespace("shiny", quietly = TRUE)) {
+    stop("shiny package needed for biplot_interactive")
+  }
+
+  if (!requireNamespace("miniUI", quietly = TRUE)) {
+    stop("miniUI package needed for biplot_interactive")
+  }
 
   data <- as.data.frame(apply(t(get_scores(x)),1,rank))
   scores <- get_score_ranks(x)
 
-  ui <- miniPage(
-    gadgetTitleBar("Drag to select points"),
-    miniContentPanel(
+  ui <- miniUI::miniPage(
+    miniUI::gadgetTitleBar("Drag to select points"),
+    miniUI::miniContentPanel(
       # The brush="brush" argument means we can listen for
       # brush events on the plot using input$brush.
-      plotOutput("plot1", height = "80%", brush = "plot_brush"),
-      verbatimTextOutput("info")
+      shiny::plotOutput("plot1", height = "80%", brush = "plot_brush"),
+      shiny::verbatimTextOutput("info")
     )
   )
 
@@ -53,14 +57,14 @@ biplot_interactive <- function(x, ...) {
     bp_obj <- biplot_color(pc_obj, y = scores)
 
     # Render the plot
-    output$plot1 <- renderPlot({
+    output$plot1 <- shiny::renderPlot({
       # Biplot
       biplot_color(pc_obj, y = scores, ...)
     })
 
     data_out <- cbind(data, bp_obj)
 
-    output$info <- renderText({
+    output$info <- shiny::renderText({
       xy_range_str <- function(e) {
         if(is.null(e)) return("NULL\n")
         idx <- which(bp_obj[,1] >= e$xmin & bp_obj[,1] <= e$xmax &
@@ -71,16 +75,16 @@ biplot_interactive <- function(x, ...) {
     })
 
     # Handle the Done button being pressed.
-    observeEvent(input$done, {
+    shiny::observeEvent(input$done, {
       # Return the brushed points. See ?shiny::brushedPoints.
-      names <- rownames(brushedPoints(data_out, 
-                                      input$plot_brush, 
+      names <- rownames(shiny::brushedPoints(data_out,
+                                      input$plot_brush,
                                       xvar="PC1",
                                       yvar="PC2"))
       out <- select_methods(x, names)
-      stopApp(invisible(out))
+      shiny::stopApp(invisible(out))
     })
   }
 
-  runGadget(ui, server)
+  shiny::runGadget(ui, server)
 }

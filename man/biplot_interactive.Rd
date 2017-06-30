@@ -12,7 +12,7 @@ biplot_interactive(x, ...)
 \item{...}{passed to \code{\link{biplot_color}}.}
 }
 \value{
-A \code{\link{SconeExperiment}} object representing 
+A \code{\link{SconeExperiment}} object representing
   selected methods.
 }
 \description{
