@@ -3,11 +3,11 @@
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Sum-scaled normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- SUM_FN(ei)
-#' 
+#'
 SUM_FN = function (ei) {
   scales = colSums(ei)
   eo = t(t(ei) * mean(scales) / scales)
@@ -21,11 +21,11 @@ SUM_FN = function (ei) {
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return TMM normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- TMM_FN(ei)
-#' 
+#'
 TMM_FN = function(ei) {
   size_fac = calcNormFactors(ei, method = "TMM")
   scales = (colSums(ei) * size_fac)
@@ -39,11 +39,11 @@ TMM_FN = function(ei) {
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return RLE normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- DESEQ_FN(ei)
-#' 
+#'
 DESEQ_FN = function(ei) {
   size_fac = calcNormFactors(ei, method = "RLE")
   scales = (colSums(ei) * size_fac)
@@ -57,11 +57,11 @@ DESEQ_FN = function(ei) {
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return UQ normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- UQ_FN(ei)
-#' 
+#'
 UQ_FN = function(ei) {
   size_fac = calcNormFactors(ei, method = "upperquartile")
   scales = (colSums(ei) * size_fac)
@@ -71,30 +71,30 @@ UQ_FN = function(ei) {
 
 #' Full-quantile normalization wrapper function
 #' @importFrom aroma.light normalizeQuantileRank.matrix
-#' @details SCONE "scaling" wrapper for 
+#' @details SCONE "scaling" wrapper for
 #'   \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return Full-quantile normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- FQ_FN(ei)
-#' 
+#'
 FQ_FN = function(ei) {
   eo = normalizeQuantileRank.matrix(ei)
   return(eo)
 }
 
 #' @rdname FQ_FN
-#' @details Unlike FQ_FN, FQT_FN handles ties carefully (see 
+#' @details Unlike FQ_FN, FQT_FN handles ties carefully (see
 #'   \code{\link[limma]{normalizeQuantiles}} for details).
 #' @export
-#' 
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- FQT_FN(ei)
-#' 
+#'
 FQT_FN = function(ei) {
   eo = normalizeQuantileRank.matrix(ei, ties = TRUE)
   return(eo)
@@ -103,16 +103,16 @@ FQT_FN = function(ei) {
 #' Centered log-ratio (CLR) normalization wrapper function
 #' @importFrom compositions clr
 #' @importFrom matrixStats colMedians
-#' @details SCONE scaling wrapper for 
+#' @details SCONE scaling wrapper for
 #'   \code{\link[compositions]{clr}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return CLR normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:20,nrow = 7)
 #' eo <- CLR_FN(ei)
-#' 
+#'
 CLR_FN = function (ei)
 {
   scale_mat <- t(clr(t(ei))) - log(ei)
@@ -123,18 +123,21 @@ CLR_FN = function (ei)
 }
 
 #' Simple deconvolution normalization wrapper
-#' @importFrom scran computeSumFactors
 #' @details SCONE scaling wrapper for \code{\link[scran]{computeSumFactors}}).
 #' @export
 #' @param ei Numerical matrix. (rows = genes, cols = samples).
 #' @return scran normalized matrix.
-#'   
+#'
 #' @examples
 #' ei <- matrix(0:76,nrow = 7)
 #' eo <- SCRAN_FN(ei)
-#' 
+#'
 SCRAN_FN = function(ei){
-  scales = computeSumFactors(ei, sizes = ceiling(sqrt(ncol(ei))))
+  if (!requireNamespace("scran", quietly = TRUE)) {
+    stop("scran package needed for SCRAN_FN()")
+  }
+
+  scales = scran::computeSumFactors(ei, sizes = ceiling(sqrt(ncol(ei))))
   eo = t(t(ei) * mean(scales) / scales)
   return(eo)
 }

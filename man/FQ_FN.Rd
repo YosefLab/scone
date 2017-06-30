@@ -19,10 +19,10 @@ Full-quantile normalized matrix.
 Full-quantile normalization wrapper function
 }
 \details{
-SCONE "scaling" wrapper for 
+SCONE "scaling" wrapper for
   \code{\link[aroma.light]{normalizeQuantileRank.matrix}}).
 
-Unlike FQ_FN, FQT_FN handles ties carefully (see 
+Unlike FQ_FN, FQT_FN handles ties carefully (see
   \code{\link[limma]{normalizeQuantiles}} for details).
 }
 \examples{
