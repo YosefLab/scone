@@ -16,7 +16,7 @@ CLR normalized matrix.
 Centered log-ratio (CLR) normalization wrapper function
 }
 \details{
-SCONE scaling wrapper for 
+SCONE scaling wrapper for
   \code{\link[compositions]{clr}}).
 }
 \examples{
