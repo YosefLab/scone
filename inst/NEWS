@@ -1,4 +1,9 @@
-Changes in version 1.1.1 (2017-30-6)
+Changes in version 1.1.2 (2017-7-3)
+========================
+
+* Moved many Imports: packages to Suggests: to reduce impact of loading scone
+
+Changes in version 1.1.1 (2017-6-30)
 ========================
 
 * Added fast ziber imputation method
