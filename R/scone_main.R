@@ -172,11 +172,11 @@ setMethod(
                         return_norm = c("no", "in_memory", "hdf5"),
                         hdf5file,
                         bpparam=BiocParallel::bpparam()) {
-    
-    
-    rezero = (zero %in% c("preadjust","strong"))
-    fixzero = (zero %in% c("postadjust","strong"))
-    
+
+    zero <- match.arg(zero)
+    rezero <- (zero %in% c("preadjust","strong"))
+    fixzero <- (zero %in% c("postadjust","strong"))
+
     if(x@is_log) {
       stop("At the moment, scone is implemented only for non-log counts.")
     }
