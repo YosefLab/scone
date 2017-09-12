@@ -50,6 +50,10 @@
 #' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
 #'   separately computed for each biological-cross-batch stratum (accepting
 #'   NAs), and a weighted average is returned as PAM_SIL.
+#' @param stratified_cor logical. If TRUE then cor metrics are separately
+#'   computed for each biological-cross-batch stratum (accepts NAs), and
+#'   weighted averages are returned for EXP_QC_COR, EXP_UV_COR, & EXP_WV_COR.
+#'   Default FALSE.
 #' @param stratified_rle logical. If TRUE then rle metrics are separately 
 #'   computed for each biological-cross-batch stratum (accepts NAs), and
 #'   weighted averages are returned for RLE_MED & RLE_IQR. Default FALSE.
@@ -171,6 +175,7 @@ setMethod(
                         eval_proj = NULL,
                         eval_proj_args = NULL, eval_kclust=2:10,
                         verbose=FALSE, stratified_pam = FALSE,
+                        stratified_cor = FALSE,
                         stratified_rle = FALSE,
                         return_norm = c("no", "in_memory", "hdf5"),
                         hdf5file,
@@ -335,6 +340,12 @@ setMethod(
       if(stratified_rle) {
         if(is.null(bio) & is.null(batch)){
           stop("For stratified_rle, bio and/or batch must be specified")
+        }
+      }
+      
+      if(stratified_cor) {
+        if(is.null(bio) & is.null(batch)){
+          stop("For stratified_cor, bio and/or batch must be specified")
         }
       }
       
@@ -548,7 +559,10 @@ setMethod(
                               bio = bio, batch = batch,
                               qc_factors = qc_pcs, 
                               uv_factors = uv_factors, wv_factors = wv_factors,
-                              is_log = TRUE, stratified_pam = stratified_pam)
+                              stratified_pam = stratified_pam,
+                              stratified_cor = stratified_cor,
+                              stratified_rle = stratified_rle,
+                              is_log = TRUE)
       } else {
         score <- NULL
       }
