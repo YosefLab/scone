@@ -7,7 +7,7 @@
 score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
   eval_kclust = NULL, bio = NULL, batch = NULL, qc_factors = NULL,
   uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  stratified_pam = FALSE)
+  stratified_pam = FALSE, stratified_rle = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The expression data matrix (genes in rows, cells in 
@@ -50,6 +50,10 @@ transformation will not be carried out prior to projection. Default FALSE.}
 \item{stratified_pam}{logical. If TRUE then maximum ASW is separately 
 computed for each biological-cross-batch stratum (accepts NAs), and a 
 weighted average silhouette width is returned as PAM_SIL. Default FALSE.}
+
+\item{stratified_rle}{logical. If TRUE then rle metrics are separately 
+computed for each biological-cross-batch stratum (accepts NAs), and
+weighted averages are returned for RLE_MED & RLE_IQR. Default FALSE.}
 }
 \value{
 A list with the following metrics: \itemize{ \item{BIO_SIL}{ Average
@@ -61,8 +65,9 @@ A list with the following metrics: \itemize{ \item{BIO_SIL}{ Average
   correlation between expression pcs and negative control gene factors.} 
   \item{EXP_WV_COR}{ Maximum squared spearman correlation between expression
   pcs and positive control gene factors.} \item{RLE_MED}{ The mean squared 
-  median Relative Log Expression (RLE).} \item{RLE_IQR}{ The variance of the
-  inter-quartile range (IQR) of the RLE.} }
+  median Relative Log Expression (RLE) (see stratified_rle argument).}
+  \item{RLE_IQR}{ The variance of the inter-quartile range (IQR) of the RLE
+  (see stratified_rle argument).} }
 }
 \description{
 This function evaluates a (normalized) expression matrix using SCONE 

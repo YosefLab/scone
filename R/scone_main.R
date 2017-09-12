@@ -50,7 +50,9 @@
 #' @param stratified_pam logical. If TRUE then maximum ASW for PAM_SIL is
 #'   separately computed for each biological-cross-batch stratum (accepting
 #'   NAs), and a weighted average is returned as PAM_SIL.
-#'   
+#' @param stratified_rle logical. If TRUE then rle metrics are separately 
+#'   computed for each biological-cross-batch stratum (accepts NAs), and
+#'   weighted averages are returned for RLE_MED & RLE_IQR. Default FALSE.
 #' @param verbose logical. If TRUE some messagges are printed.
 #' @param run logical. If FALSE the normalization and evaluation are not run,
 #'   but normalization parameters are returned in the output object for 
@@ -169,6 +171,7 @@ setMethod(
                         eval_proj = NULL,
                         eval_proj_args = NULL, eval_kclust=2:10,
                         verbose=FALSE, stratified_pam = FALSE,
+                        stratified_rle = FALSE,
                         return_norm = c("no", "in_memory", "hdf5"),
                         hdf5file,
                         bpparam=BiocParallel::bpparam()) {
@@ -327,6 +330,12 @@ setMethod(
       
       if(any(eval_kclust >= ncol(x))) {
         stop("'eval_kclust' must be less than the number of samples.")
+      }
+      
+      if(stratified_rle) {
+        if(is.null(bio) & is.null(batch)){
+          stop("For stratified_rle, bio and/or batch must be specified")
+        }
       }
       
       if(!is.null(eval_kclust) & stratified_pam) {

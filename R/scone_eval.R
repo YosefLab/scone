@@ -43,6 +43,9 @@
 #' @param stratified_pam logical. If TRUE then maximum ASW is separately 
 #'   computed for each biological-cross-batch stratum (accepts NAs), and a 
 #'   weighted average silhouette width is returned as PAM_SIL. Default FALSE.
+#' @param stratified_rle logical. If TRUE then rle metrics are separately 
+#'   computed for each biological-cross-batch stratum (accepts NAs), and
+#'   weighted averages are returned for RLE_MED & RLE_IQR. Default FALSE.
 #'   
 #' @importFrom class knn
 #' @importFrom fpc pamk
@@ -61,8 +64,9 @@
 #'   correlation between expression pcs and negative control gene factors.} 
 #'   \item{EXP_WV_COR}{ Maximum squared spearman correlation between expression
 #'   pcs and positive control gene factors.} \item{RLE_MED}{ The mean squared 
-#'   median Relative Log Expression (RLE).} \item{RLE_IQR}{ The variance of the
-#'   inter-quartile range (IQR) of the RLE.} }
+#'   median Relative Log Expression (RLE) (see stratified_rle argument).}
+#'   \item{RLE_IQR}{ The variance of the inter-quartile range (IQR) of the RLE
+#'   (see stratified_rle argument).} }
 #'   
 #' @examples 
 #' 
@@ -83,7 +87,8 @@ score_matrix <- function(expr, eval_pcs = 3,
                          qc_factors = NULL,
                          uv_factors = NULL,
                          wv_factors = NULL,
-                         is_log=FALSE, stratified_pam = FALSE){
+                         is_log=FALSE, stratified_pam = FALSE,
+                         stratified_rle = FALSE){
   
   if(any(is.na(expr) | is.infinite(expr) | is.nan(expr))){
     stop("NA/Inf/NaN Expression Values.")
@@ -242,13 +247,36 @@ score_matrix <- function(expr, eval_pcs = 3,
   }
   
   ## ----- RLE Measures
-  rle <- expr - rowMedians(expr)
-  
-  # Non-Zero Median RLE
-  RLE_MED <- mean(colMedians(rle)^2) # Variance of the median
-  
-  # Variable IQR RLE
-  RLE_IQR <- var(colIQRs(rle)) # Variance of the IQR
+  if(stratified_rle){
+    
+    biobatch = as.factor(paste(bio,batch,sep = "_"))
+    RLE_MED <- RLE_IQR <- 0
+    
+    for (cond in levels(biobatch)) {
+      is_cond = which(biobatch == cond)
+      cond_w = length(is_cond)
+      rle <- expr[,is_cond] - rowMedians(expr[,is_cond])
+      
+      # Non-Zero Median RLE
+      RLE_MED <- RLE_MED + cond_w * mean(colMedians(rle) ^ 2) # Variance of the median
+      
+      # Variable IQR RLE
+      RLE_IQR <- RLE_IQR + cond_w * var(colIQRs(rle)) # Variance of the IQR
+      
+    }
+    
+    RLE_MED <- RLE_MED / length(biobatch)
+    RLE_IQR <- RLE_IQR / length(biobatch)
+    
+  } else{
+    rle <- expr - rowMedians(expr)
+    
+    # Non-Zero Median RLE
+    RLE_MED <- mean(colMedians(rle) ^ 2) # Variance of the median
+    
+    # Variable IQR RLE
+    RLE_IQR <- var(colIQRs(rle)) # Variance of the IQR
+  }
   
   scores = c(BIO_SIL, BATCH_SIL, PAM_SIL,
              EXP_QC_COR, EXP_UV_COR, EXP_WV_COR,

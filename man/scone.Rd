@@ -15,8 +15,8 @@ scone(x, ...)
   adjust_batch = c("no", "yes", "force"), run = TRUE, evaluate = TRUE,
   eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
   eval_kclust = 2:10, verbose = FALSE, stratified_pam = FALSE,
-  return_norm = c("no", "in_memory", "hdf5"), hdf5file,
-  bpparam = BiocParallel::bpparam())
+  stratified_rle = FALSE, return_norm = c("no", "in_memory", "hdf5"),
+  hdf5file, bpparam = BiocParallel::bpparam())
 }
 \arguments{
 \item{x}{a \code{\link{SconeExperiment}} object.}
@@ -76,6 +76,10 @@ If NULL, tightness will be returned NA.}
 \item{stratified_pam}{logical. If TRUE then maximum ASW for PAM_SIL is
 separately computed for each biological-cross-batch stratum (accepting
 NAs), and a weighted average is returned as PAM_SIL.}
+
+\item{stratified_rle}{logical. If TRUE then rle metrics are separately 
+computed for each biological-cross-batch stratum (accepts NAs), and
+weighted averages are returned for RLE_MED & RLE_IQR. Default FALSE.}
 
 \item{return_norm}{character. If "no" the normalized values will not be
 returned with the output object. This will create a much smaller object
