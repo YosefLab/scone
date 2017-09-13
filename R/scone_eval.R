@@ -63,11 +63,11 @@
 #'   silhouette width by biological condition.} \item{BATCH_SIL}{ Average
 #'   silhouette width by batch condition.} \item{PAM_SIL}{ Maximum average
 #'   silhouette width from PAM clustering (see stratified_pam argument).}
-#'   \item{EXP_QC_COR}{ Maximum squared spearman correlation between expression
+#'   \item{EXP_QC_COR}{ Coefficient of determination between expression
 #'   pcs and quality factors (see stratified_cor argument).} \item{EXP_UV_COR}{
-#'   Maximum squared spearman correlation between expression pcs and negative
+#'   Coefficient of determination between expression pcs and negative
 #'   control gene factors (see stratified_cor argument).} \item{EXP_WV_COR}{
-#'   Maximum squared spearman correlation between expression pcs and positive
+#'   Coefficient of determination between expression pcs and positive
 #'   control gene factors (see stratified_cor argument).} \item{RLE_MED}{ The
 #'   mean squared median Relative Log Expression (RLE) (see stratified_rle
 #'   argument).} \item{RLE_IQR}{ The variance of the inter-quartile range (IQR)
@@ -268,23 +268,26 @@ score_matrix <- function(expr,
       
       # Max cor with quality factors.
       if (!is.null(qc_factors)) {
-        EXP_QC_COR <- EXP_QC_COR + cond_w * max(cor(proj[is_cond, ],
-                                                    qc_factors[is_cond, ],
-                                                    method = "spearman") ^ 2)
+        EXP_QC_COR <-
+          EXP_QC_COR + cond_w * (1 - sum(unlist(apply(proj, 2, function(y) {
+            lm(y ~ qc_factors)$residual
+          })) ^ 2) / sum(scale(proj, scale = FALSE) ^ 2))
       }
       
       # Max cor with UV factors.
       if (!is.null(uv_factors)) {
-        EXP_UV_COR  <- EXP_UV_COR + cond_w * max(cor(proj[is_cond, ],
-                                                     uv_factors[is_cond, ],
-                                                     method = "spearman") ^ 2)
+        EXP_UV_COR  <-
+          EXP_UV_COR + cond_w * (1 - sum(unlist(apply(proj, 2, function(y) {
+            lm(y ~ uv_factors)$residual
+          })) ^ 2) / sum(scale(proj, scale = FALSE) ^ 2))
       }
       
       # Max cor with WV factors.
       if (!is.null(wv_factors)) {
-        EXP_WV_COR <-  EXP_WV_COR + cond_w * max(cor(proj[is_cond, ],
-                                                     wv_factors[is_cond, ],
-                                                     method = "spearman") ^ 2)
+        EXP_WV_COR <-
+          EXP_WV_COR + cond_w * (1 - sum(unlist(apply(proj, 2, function(y) {
+            lm(y ~ wv_factors)$residual
+          })) ^ 2) / sum(scale(proj, scale = FALSE) ^ 2))
       }
       
     }
@@ -308,21 +311,27 @@ score_matrix <- function(expr,
   } else{
     # Max cor with quality factors.
     if (!is.null(qc_factors)) {
-      EXP_QC_COR = max(cor(proj, qc_factors, method = "spearman") ^ 2)
+      EXP_QC_COR <- 1 - sum(unlist(apply(proj, 2, function(y) {
+        lm(y ~ qc_factors)$residual
+        })) ^ 2) / sum(scale(proj, scale = FALSE) ^ 2)
     } else{
       EXP_QC_COR = NA
     }
     
     # Max cor with UV factors.
     if (!is.null(uv_factors)) {
-      EXP_UV_COR = max(cor(proj, uv_factors, method = "spearman") ^ 2)
+      EXP_UV_COR <- 1 - sum(unlist(apply(proj, 2, function(y) {
+        lm(y ~ uv_factors)$residual
+      })) ^ 2) / sum(scale(proj, scale = FALSE) ^ 2)
     } else{
       EXP_UV_COR = NA
     }
     
     # Max cor with WV factors.
     if (!is.null(wv_factors)) {
-      EXP_WV_COR = max(cor(proj, wv_factors, method = "spearman") ^ 2)
+      EXP_WV_COR <- 1 - sum(unlist(apply(proj, 2, function(y) {
+        lm(y ~ wv_factors)$residual
+      })) ^ 2) / sum(scale(proj, scale = FALSE) ^ 2)
     } else{
       EXP_WV_COR = NA
     }

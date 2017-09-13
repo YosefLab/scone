@@ -65,11 +65,11 @@ A list with the following metrics: \itemize{ \item{BIO_SIL}{ Average
   silhouette width by biological condition.} \item{BATCH_SIL}{ Average
   silhouette width by batch condition.} \item{PAM_SIL}{ Maximum average
   silhouette width from PAM clustering (see stratified_pam argument).}
-  \item{EXP_QC_COR}{ Maximum squared spearman correlation between expression
+  \item{EXP_QC_COR}{ Coefficient of determination between expression
   pcs and quality factors (see stratified_cor argument).} \item{EXP_UV_COR}{
-  Maximum squared spearman correlation between expression pcs and negative
+  Coefficient of determination between expression pcs and negative
   control gene factors (see stratified_cor argument).} \item{EXP_WV_COR}{
-  Maximum squared spearman correlation between expression pcs and positive
+  Coefficient of determination between expression pcs and positive
   control gene factors (see stratified_cor argument).} \item{RLE_MED}{ The
   mean squared median Relative Log Expression (RLE) (see stratified_rle
   argument).} \item{RLE_IQR}{ The variance of the inter-quartile range (IQR)
