@@ -625,7 +625,7 @@ sconeReport = function(x, methods,
              fill = cc[sort(unique(factor(strat_col())))])
     })
 
-    output$plot3d_base <- shiny::renderPlotly({
+    output$plot3d_base <- plotly::renderPlotly({
       PC1 <- PC2 <- PC3 <- NULL
       df <- setNames(data.frame(pc_obj_base()$x[,1:3]),
                      c("PC1", "PC2", "PC3"))
@@ -665,7 +665,7 @@ sconeReport = function(x, methods,
       abs(cor(qc,pc_obj_base()$x))
     })
 
-    output$qccorPlot <- shiny::renderPlotly({
+    output$qccorPlot <- plotly::renderPlotly({
       metric <- value <- PC <- NULL
 
       df = reshape2::melt(cor_qc()[,1:input$dim])
@@ -696,7 +696,7 @@ sconeReport = function(x, methods,
              fill = cc[sort(unique(factor(strat_col())))])
     })
 
-    output$plot3d_qc <- shiny::renderPlotly({
+    output$plot3d_qc <- plotly::renderPlotly({
       if(ncol(pc_obj_qc()$x) >= 3){
         PC1 <- PC2 <- PC3 <- NULL
         df <- setNames(data.frame(pc_obj_qc()$x[,1:3]),
