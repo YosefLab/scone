@@ -24,6 +24,9 @@
 #'
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom rARPACK svds
+#' @importFrom graphics boxplot
+#' @importFrom utils write.csv
+#' @importFrom stats setNames var
 #' @export
 #'
 #' @return An object that represents the SCONE report app.
@@ -66,15 +69,15 @@ sconeReport = function(x, methods,
     stop("reshape2 package needed for sconeReport()")
   }
 
-  if (!require("plotly", quietly = TRUE)) {
+  if (!requireNamespace("plotly", quietly = TRUE)) {
     stop("plotly package needed for sconeReport()")
   }
 
-  if (!require("visNetwork", quietly = TRUE)) {
+  if (!requireNamespace("visNetwork", quietly = TRUE)) {
     stop("visNetwork package needed for sconeReport()")
   }
 
-  if (!require("ggplot2", quietly = TRUE)) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package needed for sconeReport()")
   }
 
@@ -223,18 +226,18 @@ sconeReport = function(x, methods,
                             ),
                             shiny::tabPanel("PCA",
                                      shiny::br(),
-                                     shiny::p(paste0("This panel shows principal ",
+                                shiny::p(paste0("This panel shows principal ",
                                               "component analysis ",
                                               "(PCA) results",
                                               " on different subsets ",
                                               "of genes.")),
                                      shiny::br(),
-                                     shiny::h6("Variance Explained (All Genes)"),
+                                  shiny::h6("Variance Explained (All Genes)"),
                                      shiny::p(paste0("Use this plot",
                                               " to decide on the ",
                                               "dimensionality of the reduced",
                                               " spaced used for evaluation.")),
-                                     shiny::plotOutput("plot_scree",width = "650px",
+                                shiny::plotOutput("plot_scree",width = "650px",
                                                 height = "400px"),
                                      shiny::br(),
                                      shiny::h6("2D (All Genes)"),
@@ -264,7 +267,7 @@ sconeReport = function(x, methods,
                             ),
                             shiny::tabPanel("QC",
                                      shiny::br(),
-                                     shiny::p(paste0("This panel shows the absolute",
+                              shiny::p(paste0("This panel shows the absolute",
                                               " correlations between",
                                               " Principal",
                                               " Components (PCs) of",
@@ -326,7 +329,7 @@ sconeReport = function(x, methods,
                             ),
                             shiny::tabPanel("Control Genes",
                                      shiny::br(),
-                                     shiny::p(paste0("Heatmap of control genes, ",
+                                  shiny::p(paste0("Heatmap of control genes, ",
                                               "colored by all",
                                               " three categories.")),
                                      shiny::br(),

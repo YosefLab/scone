@@ -33,7 +33,8 @@ TMM_FN = function(ei) {
   return(eo)
 }
 
-#' Relative log-expression (RLE; DESeq) scaling normalization wrapper function
+#' Relative log-expression (RLE; DESeq) scaling normalization wrapper
+#' function
 #' @importFrom edgeR calcNormFactors
 #' @details SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
 #' @export

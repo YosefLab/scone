@@ -296,8 +296,8 @@ impute_null <- function(expression,impute_args) {
 #'   \item{p_nodrop}{ 1 - the probability P(drop|Y), useful as weights in 
 #'   weighted PCA} \item{expected_state}{ the expected
 #'   value E[Z] (1 = "on")} \item{loglik}{ the log-likelihood} 
-#'   \item{convergence}{for all genes, 0 if the algorithm converged and 1 if maxiter was 
-#'   reached} }
+#'   \item{convergence}{for all genes, 0 if the algorithm converged and
+#'   1 if maxiter was reached} }
 #'   
 #' @examples
 #' mat <- matrix(rpois(1000, lambda = 3), ncol=10)

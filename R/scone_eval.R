@@ -56,6 +56,7 @@
 #' @importFrom cluster silhouette
 #' @importFrom rARPACK svds
 #' @importFrom matrixStats rowMedians colMedians colIQRs
+#' @importFrom stats lm
 #'
 #' @export
 #'
@@ -269,7 +270,8 @@ score_matrix <- function(expr,
       # Max cor with quality factors.
       if (!is.null(qc_factors)) {
         EXP_QC_COR <-
-          EXP_QC_COR + cond_w * (1 - sum(unlist(apply(proj[is_cond,], 2, function(y) {
+          EXP_QC_COR + cond_w * (1 - sum(unlist(apply(proj[is_cond,], 2,
+                                                      function(y) {
             lm(y ~ qc_factors[is_cond,])$residual
           })) ^ 2) / sum(scale(proj[is_cond,], scale = FALSE) ^ 2))
       }
@@ -277,7 +279,8 @@ score_matrix <- function(expr,
       # Max cor with UV factors.
       if (!is.null(uv_factors)) {
         EXP_UV_COR  <-
-          EXP_UV_COR + cond_w * (1 - sum(unlist(apply(proj[is_cond,], 2, function(y) {
+          EXP_UV_COR + cond_w * (1 - sum(unlist(apply(proj[is_cond,], 2,
+                                                      function(y) {
             lm(y ~ uv_factors[is_cond,])$residual
           })) ^ 2) / sum(scale(proj[is_cond,], scale = FALSE) ^ 2))
       }
@@ -285,7 +288,8 @@ score_matrix <- function(expr,
       # Max cor with WV factors.
       if (!is.null(wv_factors)) {
         EXP_WV_COR <-
-          EXP_WV_COR + cond_w * (1 - sum(unlist(apply(proj[is_cond,], 2, function(y) {
+          EXP_WV_COR + cond_w * (1 - sum(unlist(apply(proj[is_cond,], 2,
+                                                      function(y) {
             lm(y ~ wv_factors[is_cond,])$residual
           })) ^ 2) / sum(scale(proj[is_cond,], scale = FALSE) ^ 2))
       }

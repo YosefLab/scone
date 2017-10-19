@@ -2,7 +2,8 @@
 % Please edit documentation in R/SCONE_DEFAULTS.R
 \name{DESEQ_FN}
 \alias{DESEQ_FN}
-\title{Relative log-expression (RLE; DESeq) scaling normalization wrapper function}
+\title{Relative log-expression (RLE; DESeq) scaling normalization wrapper
+function}
 \usage{
 DESEQ_FN(ei)
 }
@@ -13,7 +14,8 @@ DESEQ_FN(ei)
 RLE normalized matrix.
 }
 \description{
-Relative log-expression (RLE; DESeq) scaling normalization wrapper function
+Relative log-expression (RLE; DESeq) scaling normalization wrapper
+function
 }
 \details{
 SCONE scaling wrapper for \code{\link[edgeR]{calcNormFactors}}).
