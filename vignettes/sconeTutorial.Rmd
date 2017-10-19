@@ -617,16 +617,16 @@ negative (lower is better) signature.
   expression PCs. 
   Positive signature.
 * EXP_QC_COR: Removal of Alignment Artifacts. 
-  Maximum squared Spearman correlation between first 3 expression PCs and 
+  R^2 measure for regression of first 3 expression PCs on 
   first `k_qc` QPCs. 
   Negative signature.
 * EXP_UV_COR: Removal of Expression Artifacts. 
-  Maximum squared Spearman correlation between first 3 expression PCs and 
+  R^2 measure for regression of first 3 expression PCs on 
   first 3 PCs of the negative control (specified by `eval_negcon` or 
   `ruv_negcon` by default) sub-matrix of the original (raw) data. 
   Negative signature.
 * EXP_WV_COR: Preservation of Biological Variance.
-  Maximum squared Spearman correlation between first 3 expression PCs and
+  R^2 measure for regression of first 3 expression PCs on 
   first 3 PCs of the positive control (specified by `eval_poscon`) 
   sub-matrix of the original (raw) data. 
   Positive signature.
@@ -648,7 +648,7 @@ my_scone <- scone(my_scone,
                   run=TRUE,
                   eval_kclust = 2:6,stratified_pam = TRUE,
                   return_norm = "in_memory",
-                  zero = "preadjust")
+                  zero = "postadjust")
 
 ```
 
@@ -665,9 +665,9 @@ In the call above, we have set the following parameter arguments:
   Store all normalized matrices in addition to evaluation data. 
   Otherwise normalized data is not returned in the resulting 
   object.
-* zero = "preadjust". 
-  Restore data entries that are originally zeroes back to zero
-  after the scaling step.
+* zero = "postadjust". 
+  Restore data entries that are originally zeroes / negative after 
+  normalization to zero after the adjustment step.
 
 The output will contain various updated elements:
 
@@ -695,7 +695,7 @@ be recomputed.
 # Step 3: Selecting a normalization for downstream analysis
 
 Based on our sorting criteria, it would appear that
-`none,fq,no_uv,no_bio,no_batch` performs well compared to other normalization
+`none,uq,ruv_k=1,no_bio,no_batch` performs well compared to other normalization
 workflows. A useful way to visualize this method with respect to others is the
 `biplot_color` function
 
