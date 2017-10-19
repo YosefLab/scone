@@ -40,8 +40,8 @@ a list with the following elements: \itemize{ \item{W}{ coefficients
   \item{p_nodrop}{ 1 - the probability P(drop|Y), useful as weights in 
   weighted PCA} \item{expected_state}{ the expected
   value E[Z] (1 = "on")} \item{loglik}{ the log-likelihood} 
-  \item{convergence}{for all genes, 0 if the algorithm converged and 1 if maxiter was 
-  reached} }
+  \item{convergence}{for all genes, 0 if the algorithm converged and
+  1 if maxiter was reached} }
 }
 \description{
 This function implements Newton's method for solving zero of 
