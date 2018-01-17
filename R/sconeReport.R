@@ -26,6 +26,7 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
     intermediate <- scone_object[,indices]
     exists <- rowSums(assay(intermediate)) > 0
     # Note_MC: Consider: Add verbose setting / warning where filtering stats are reported
+    # Note_MC: Consider: Store sampled indices as metadata.
     return(intermediate[exists,])
   }
  
