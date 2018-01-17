@@ -1,52 +1,3 @@
-#' SCONE Report Browser: Browse Evaluation of Normalization Performance
-#'
-#' This function opens a shiny application session for visualizing performance
-#' of a variety of normalization schemes.
-#'
-#' @param x a \code{SconeExperiment} object
-#' @param methods character specifying the normalizations to report.
-#' @param qc matrix. QC metrics to be used for QC evaluation report. Required.
-#' @param bio factor. A biological condition (variation to be preserved).
-#'   Default NULL.
-#' @param batch factor. A known batch variable (variation to be removed).
-#'   Default NULL.
-#' @param negcon character. Genes to be used as negative controls for
-#'   evaluation. These genes should be expected not to change according to the
-#'   biological phenomenon of interest. Default empty character.
-#' @param poscon character. Genes to be used as positive controls for
-#'   evaluation. These genes should be expected to change according to the
-#'   biological phenomenon of interest. Default empty character.
-#' @param eval_proj function. Projection function for evaluation  (see
-#'   \code{\link{score_matrix}} for details). If NULL, PCA is used for
-#'   projection.
-#' @param eval_proj_args list. List of args passed to projection function as
-#'   eval_proj_args.
-#'
-#' @importFrom RColorBrewer brewer.pal
-#' @importFrom rARPACK svds
-#' @importFrom graphics boxplot
-#' @importFrom utils write.csv
-#' @importFrom stats setNames var
-#' @export
-#'
-#' @return An object that represents the SCONE report app.
-#'
-#' @examples
-#' set.seed(101)
-#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
-#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- SconeExperiment(mat)
-#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
-#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,
-#'            bpparam = BiocParallel::SerialParam())
-#' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
-#' rownames(qc) = colnames(mat)
-#' colnames(qc) = c("NCOUNTS","NGENES")
-#' \dontrun{
-#' sconeReport(res,rownames(get_params(res)), qc = qc)
-#' }
-#'
-
 # Function to subsample scon e object by subsampling cells
 subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
   if(at_bio){
@@ -166,6 +117,55 @@ subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell
   }
   
 }
+
+#' SCONE Report Browser: Browse Evaluation of Normalization Performance
+#'
+#' This function opens a shiny application session for visualizing performance
+#' of a variety of normalization schemes.
+#'
+#' @param x a \code{SconeExperiment} object
+#' @param methods character specifying the normalizations to report.
+#' @param qc matrix. QC metrics to be used for QC evaluation report. Required.
+#' @param bio factor. A biological condition (variation to be preserved).
+#'   Default NULL.
+#' @param batch factor. A known batch variable (variation to be removed).
+#'   Default NULL.
+#' @param negcon character. Genes to be used as negative controls for
+#'   evaluation. These genes should be expected not to change according to the
+#'   biological phenomenon of interest. Default empty character.
+#' @param poscon character. Genes to be used as positive controls for
+#'   evaluation. These genes should be expected to change according to the
+#'   biological phenomenon of interest. Default empty character.
+#' @param eval_proj function. Projection function for evaluation  (see
+#'   \code{\link{score_matrix}} for details). If NULL, PCA is used for
+#'   projection.
+#' @param eval_proj_args list. List of args passed to projection function as
+#'   eval_proj_args.
+#'
+#' @importFrom RColorBrewer brewer.pal
+#' @importFrom rARPACK svds
+#' @importFrom graphics boxplot
+#' @importFrom utils write.csv
+#' @importFrom stats setNames var
+#' @export
+#'
+#' @return An object that represents the SCONE report app.
+#'
+#' @examples
+#' set.seed(101)
+#' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
+#' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
+#' obj <- SconeExperiment(mat)
+#' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
+#'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,
+#'            bpparam = BiocParallel::SerialParam())
+#' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
+#' rownames(qc) = colnames(mat)
+#' colnames(qc) = c("NCOUNTS","NGENES")
+#' \dontrun{
+#' sconeReport(res,rownames(get_params(res)), qc = qc)
+#' }
+#'
 
 sconeReport = function(x, methods,
                        qc = NULL,
