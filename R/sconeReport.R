@@ -1,13 +1,15 @@
+# Note_MC: Add documentation similar to sconeReport below.
 # Function to subsample scon e object by subsampling cells
 subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
   if(at_bio){
    # Default is to subsample at bio, returning a subsampled scone with numbers of cells
-   # at the same amiunt, the amount of the size of the smallest bio  
+   # at the same amiunt, the amount of the size of the smallest bio
    return(subsample_cells_with_min_bio(scone_object)) 
   }
   else{
     # Otherwise, sample randomly
     # Set Seed to make reproducible
+    # Note_MC: Consider: Pass seed via argument, and by default do not set it.
     set.seed(100)
     
     # Maximum length of cells
@@ -15,17 +17,21 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
     
     # Number of cells to get based on percent wanted
     num_samples <- ceiling((percent*length) / 100)
+    # Note_MC: 0 index looks like trouble - you would sometimes sample one fewer than num_samples - try seq(1,length) or seq_len(length)
     list_possible <- seq(0, length)
     
     # Randomly select which cells to get and return the scone object with only those cells
+    # Note_MC: Consider: gdata::resample for edge case of 1 index possible see ?sample
     indices <- sample(list_possible, num_samples)
     intermediate <- scone_object[,indices]
     exists <- rowSums(assay(intermediate)) > 0
+    # Note_MC: Consider: Add verbose setting / warning where filtering stats are reported
     return(intermediate[exists,])
   }
  
 }
 
+# Note_MC: Add documentation similar to sconeReport below.
 # Function to return a scone object subsampled so that there are the same amount of cells 
 # for each bio, that number is the size of the smallest bio
 subsample_cells_with_min_bio <- function(scone_obj){
@@ -63,6 +69,7 @@ subsample_cells_with_min_bio <- function(scone_obj){
   return(intermediate[exists,])
 }
 
+# Note_MC: Add documentation similar to sconeReport below.
 # Function to subsample scone object by gene
 subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
   # Set seed to make reproducible
@@ -99,6 +106,7 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
   }
 }
 
+# Note_MC: Add documentation similar to sconeReport below.
 # Wrapper fucntion to subsample scone object by both cell and genes
 subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell_level = 100, 
                             cells_first=TRUE, at_bio = TRUE,
