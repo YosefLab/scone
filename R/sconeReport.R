@@ -37,7 +37,9 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
 # for each bio, that number is the size of the smallest bio
 subsample_cells_with_min_bio <- function(scone_obj){
   # Find the minimum size of bio
+  # Note_MC: Consider: Pass seed via argument, and by default do not set it.
   set.seed(100)
+  # Note_MC: Check $bio is defined properly and handle appropriately
   bios <- colData(scone_obj)$bio
   bio_table <- table(bios)
   bio_uniq <- names(bio_table)
@@ -50,23 +52,28 @@ subsample_cells_with_min_bio <- function(scone_obj){
   good_cells <- NULL
   for(bio in bio_uniq){
     # Get where its equal
+    # Note_MC: no need to subset and store the whole object, you can subset and store the column names / cell names instead
     cells_with_bio <- scone_obj[,(bios == bio)]
     
     # randomly subsample these cells with num at the minimum
     length <- ncol(cells_with_bio)
     num_samples <- min_size
+    # Note_MC: 0 index looks like trouble - you would sometimes sample one fewer than num_samples - try seq(1,length) or seq_len(length)
     list_possible <- seq(0, length)
     # Get the good cells and append them to a list of other good cells
     good_cells <- c(good_cells, colnames(cells_with_bio[,sample(list_possible, num_samples)]))
   }
   
   # Back to original scone object, get those indices
+  # Note_MC: technically this is not required, since good_cells accesses the correct columns of scone_obj
   indices <- (colnames(scone_obj) %in% good_cells)
   
   # Remove empty cells (no gene data)
   intermediate <- scone_obj[,indices]
   exists <- rowSums(assay(intermediate)) > 0
   #Get a list of cells that should be taken
+  # Note_MC: Consider: Add verbose setting / warning where filtering stats are reported
+  # Note_MC: Consider: Store sampled indices as metadata.
   return(intermediate[exists,])
 }
 
