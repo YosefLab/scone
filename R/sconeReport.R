@@ -46,12 +46,134 @@
 #' sconeReport(res,rownames(get_params(res)), qc = qc)
 #' }
 #'
+
+# Function to subsample scon e object by subsampling cells
+subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
+  if(at_bio){
+   # Default is to subsample at bio, returning a subsampled scone with numbers of cells
+   # at the same amiunt, the amount of the size of the smallest bio  
+   return(subsample_cells_with_min_bio(scone_object)) 
+  }
+  else{
+    # Otherwise, sample randomly
+    # Set Seed to make reproducible
+    set.seed(100)
+    
+    # Maximum length of cells
+    length <- ncol(scone_object)
+    
+    # Number of cells to get based on percent wanted
+    num_samples <- ceiling((percent*length) / 100)
+    list_possible <- seq(0, length)
+    
+    # Randomly select which cells to get and return the scone object with only those cells
+    indices <- sample(list_possible, num_samples)
+    intermediate <- scone_object[,indices]
+    exists <- rowSums(assay(intermediate)) > 0
+    return(intermediate[exists,])
+  }
+ 
+}
+
+# Function to return a scone object subsampled so that there are the same amount of cells 
+# for each bio, that number is the size of the smallest bio
+subsample_cells_with_min_bio <- function(scone_obj){
+  # Find the minimum size of bio
+  set.seed(100)
+  bios <- colData(scone_obj)$bio
+  bio_table <- table(bios)
+  bio_uniq <- names(bio_table)
+  min_size <- min(bio_table)
+  
+  # Now we have the minimum size, we need to seperate into bio groups
+  # Let's do this with indices because don't know how to append summarized experiments
+  # Get indexes of the minimum size,
+  indices <- c()
+  good_cells <- NULL
+  for(bio in bio_uniq){
+    # Get where its equal
+    cells_with_bio <- scone_obj[,(bios == bio)]
+    
+    # randomly subsample these cells with num at the minimum
+    length <- ncol(cells_with_bio)
+    num_samples <- min_size
+    list_possible <- seq(0, length)
+    # Get the good cells and append them to a list of other good cells
+    good_cells <- c(good_cells, colnames(cells_with_bio[,sample(list_possible, num_samples)]))
+  }
+  
+  # Back to original scone object, get those indices
+  indices <- (colnames(scone_obj) %in% good_cells)
+  
+  # Remove empty cells (no gene data)
+  intermediate <- scone_obj[,indices]
+  exists <- rowSums(assay(intermediate)) > 0
+  #Get a list of cells that should be taken
+  return(intermediate[exists,])
+}
+
+# Function to subsample scone object by gene
+subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
+  # Set seed to make reproducible
+  set.seed(100)
+  # Defualt option is to keep all control genes and subsample by percentile
+  if(keep_all_control){
+    # Get index of control genes
+    is_control <- rowSums(as.matrix(rowData(scone_object))) > 0
+    
+    # Get maximum size of sample
+    length <- nrow(scone_object)
+    num_samples <- ceiling((percent*length) / 100)
+    list_possible <- seq(0, length-1)
+    
+    # Randomly select genes 
+    indices <- sample(list_possible, num_samples)
+    
+    # Combine random genes and control genes 
+    indices <- ((list_possible %in% indices) + is_control) > 0
+    
+    # Subsample scone object
+    return(scone_object[indices,])
+  }
+  else{
+    # If do not care about control genes, just sample by percentile
+    # Maximum size
+    length <- nrow(scone_object)
+    # Randomly select genes
+    num_samples <- ceiling((percent*length) / 100)
+    list_possible <- seq(0, length)
+    indices <- sample(list_possible, num_samples)
+    # Return subsampled scone
+    return(scone_object[indices,])
+  }
+}
+
+# Wrapper fucntion to subsample scone object by both cell and genes
+subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell_level = 100, 
+                            cells_first=TRUE, at_bio = TRUE,
+                            keep_all_control=TRUE){
+  if(cells_first){
+    # If subsampling cells before subsampling genes
+    return(subsample_genes(
+      subsample_cells(my_scone ,percent = subsample_cell_level, at_bio = at_bio), 
+      subsample_gene_level, keep_all_control = keep_all_control))
+  }
+  else {
+    # If subsampling genes before subsampling cells
+    return(subsample_cells(
+      subsample_genes(my_scone, subsample_gene_level, keep_all_control = keep_all_control), 
+      percent = subsample_cell_level, at_bio = at_bio))
+  }
+  
+}
+
 sconeReport = function(x, methods,
-                       qc,
+                       qc = NULL,
                        bio = NULL, batch = NULL,
                        poscon = character(), negcon = character(),
                        eval_proj = NULL,
-                       eval_proj_args = NULL){
+                       eval_proj_args = NULL, subsample_genes =100, subsample_cells=100, 
+                       sub_scone = TRUE){
 
   if (!requireNamespace("shiny", quietly = TRUE)) {
     stop("shiny package needed for sconeReport()")
@@ -79,6 +201,29 @@ sconeReport = function(x, methods,
 
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package needed for sconeReport()")
+  }
+
+  if(sub_scone){
+    x = subsample_scone(x, subsample_gene_level = subsample_genes)
+  } 
+  
+  if(is.null(qc)){
+    qc <- get_qc(x)
+    
+  }
+  if(is.null(bio)){
+    bio <- get_bio(x)
+  }
+  if(is.null(batch)){
+    batch <- get_batch(x)
+  }
+  
+  if(length(poscon) < 1 && !(is.null(row.names(x)[get_poscon(x)]))){
+    poscon <- (row.names(x)[get_poscon(x)])
+  }
+  
+  if(length(negcon) < 1 && !(is.null((row.names(x)[get_negconeval(x)])))){
+    negcon <- (row.names(x)[get_negconeval(x)])
   }
 
   scone_res = list()
