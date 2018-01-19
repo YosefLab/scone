@@ -172,7 +172,7 @@ sconeReport = function(x, methods,
                        bio = NULL, batch = NULL,
                        poscon = character(), negcon = character(),
                        eval_proj = NULL,
-                       eval_proj_args = NULL, subsample_genes =100, subsample_cells=100, 
+                       eval_proj_args = NULL, subsample_genes = 100, subsample_cells = 100, 
                        sub_scone = TRUE){
 
   if (!requireNamespace("shiny", quietly = TRUE)) {
