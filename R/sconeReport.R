@@ -1,44 +1,63 @@
-# Note_MC: Add documentation similar to sconeReport below.
-# Function to subsample scon e object by subsampling cells
-subsample_cells <- function(scone_object, percent=100, at_bio = FALSE){
+#' Function to subsample Scone object by subsampling cells
+#'
+#' This function subsamples a scone object in a number of different ways
+#'
+#' @param scone_object a \code{SconeExperiment} object
+#' @param percent percent of cells you should take if subsampling purely by percent
+#' @param at_bio option to subsample to the number of cells of within the smallest bio group,
+#' @param seed the random seed
+#' @param verbose option to display more information about subsampling
+#' reducing every cell count in a bio group to the same number
+#'
+#' @return The subsampled Scone Object
+
+subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 100, verbose = FALSE){
   if(at_bio){
    # Default is to subsample at bio, returning a subsampled scone with numbers of cells
    # at the same amiunt, the amount of the size of the smallest bio
-   return(subsample_cells_with_min_bio(scone_object)) 
+   return(subsample_cells_with_min_bio(scone_object, seed = seed, verbose = verbose)) 
   }
   else{
     # Otherwise, sample randomly
     # Set Seed to make reproducible
-    # Note_MC: Consider: Pass seed via argument, and by default do not set it.
-    set.seed(100)
+    set.seed(seed)
     
     # Maximum length of cells
     length <- ncol(scone_object)
     
     # Number of cells to get based on percent wanted
     num_samples <- ceiling((percent*length) / 100)
-    # Note_MC: 0 index looks like trouble - you would sometimes sample one fewer than num_samples - try seq(1,length) or seq_len(length)
-    list_possible <- seq(0, length)
+    list_possible <- seq(length)
     
     # Randomly select which cells to get and return the scone object with only those cells
     # Note_MC: Consider: gdata::resample for edge case of 1 index possible see ?sample
     indices <- sample(list_possible, num_samples)
     intermediate <- scone_object[,indices]
     exists <- rowSums(assay(intermediate)) > 0
-    # Note_MC: Consider: Add verbose setting / warning where filtering stats are reported
+    
+    if(verbose){
+      print(paste("Initial Size", toString(length), "Cells" ))
+      print(paste("New Size" ,toString(ncol(intermediate[exists,])), "Cells" ))
+    }
     # Note_MC: Consider: Store sampled indices as metadata.
     return(intermediate[exists,])
   }
  
 }
 
-# Note_MC: Add documentation similar to sconeReport below.
-# Function to return a scone object subsampled so that there are the same amount of cells 
-# for each bio, that number is the size of the smallest bio
-subsample_cells_with_min_bio <- function(scone_obj){
+#' Internal function to subsample Scone object by subsampling cells by size of smallest bio group
+#'
+#' This function subsamples a scone object to the size of smallest bio group
+#'
+#' @param scone_object a \code{SconeExperiment} object
+#' @param seed the random seed
+#' @param verbose option to display more information about subsampling
+#'
+#' @return The subsampled Scone Object
+
+subsample_cells_with_min_bio <- function(scone_obj, seed = 100, verbose= FALSE){
   # Find the minimum size of bio
-  # Note_MC: Consider: Pass seed via argument, and by default do not set it.
-  set.seed(100)
+  set.seed(seed)
   # Note_MC: Check $bio is defined properly and handle appropriately
   bios <- colData(scone_obj)$bio
   bio_table <- table(bios)
@@ -58,30 +77,45 @@ subsample_cells_with_min_bio <- function(scone_obj){
     # randomly subsample these cells with num at the minimum
     length <- ncol(cells_with_bio)
     num_samples <- min_size
-    # Note_MC: 0 index looks like trouble - you would sometimes sample one fewer than num_samples - try seq(1,length) or seq_len(length)
-    list_possible <- seq(0, length)
+    list_possible <- seq(length)
     # Get the good cells and append them to a list of other good cells
     good_cells <- c(good_cells, colnames(cells_with_bio[,sample(list_possible, num_samples)]))
   }
   
   # Back to original scone object, get those indices
-  # Note_MC: technically this is not required, since good_cells accesses the correct columns of scone_obj
+  # Note_MC: technically this is not required, since good_cells accesses the correct columns of scone_obj-
+  # Note_YR: I remeber the column numbers being rewritten, which is why I added this step
   indices <- (colnames(scone_obj) %in% good_cells)
   
   # Remove empty cells (no gene data)
   intermediate <- scone_obj[,indices]
   exists <- rowSums(assay(intermediate)) > 0
-  #Get a list of cells that should be taken
-  # Note_MC: Consider: Add verbose setting / warning where filtering stats are reported
+  # Get a list of cells that should be taken
   # Note_MC: Consider: Store sampled indices as metadata.
-  return(intermediate[exists,])
+  inter <- intermediate[exists,]
+  if(verbose){
+    print(paste("Initial Size", toString(ncol(scone_obj)), "Cells"))
+    print(paste("New Size" , toString(ncol(inter)), "Cells" ))
+  }
+  return(inter)
 }
 
-# Note_MC: Add documentation similar to sconeReport below.
-# Function to subsample scone object by gene
-subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
+#' Function to subsample Scone object by subsampling genes
+#'
+#' This function subsamples a scone object in a number of different ways by genes
+#'
+#' @param scone_object a \code{SconeExperiment} object
+#' @param percent percent of genes you should take if subsampling purely by percent
+#' @param keep_all_control option to keep all control genes and only
+#' subsample remaining genes to fill to specificed percent
+#' @param seed the random seed
+#' @param verbose option to display more information about subsampling
+#'
+#' @return The subsampled Scone Object
+
+subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, seed = 100, verbose = FALSE){
   # Set seed to make reproducible
-  set.seed(100)
+  set.seed(seed)
   # Defualt option is to keep all control genes and subsample by percentile
   if(keep_all_control){
     # Get index of control genes
@@ -90,7 +124,7 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
     # Get maximum size of sample
     length <- nrow(scone_object)
     num_samples <- ceiling((percent*length) / 100)
-    list_possible <- seq(0, length-1)
+    list_possible <- seq(length)
     
     # Randomly select genes 
     indices <- sample(list_possible, num_samples)
@@ -99,7 +133,12 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
     indices <- ((list_possible %in% indices) + is_control) > 0
     
     # Subsample scone object
-    return(scone_object[indices,])
+    inter <- scone_object[indices,]
+    if(verbose){
+      print(paste("Initial Size", toString(length), "Genes"))
+      print(paste("New Size" , toString(nrow(inter)), "Genes" ))
+    }
+    return(inter)
   }
   else{
     # If do not care about control genes, just sample by percentile
@@ -107,29 +146,53 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE){
     length <- nrow(scone_object)
     # Randomly select genes
     num_samples <- ceiling((percent*length) / 100)
-    list_possible <- seq(0, length)
+    list_possible <- seq(length)
     indices <- sample(list_possible, num_samples)
     # Return subsampled scone
-    return(scone_object[indices,])
+    inter <- scone_object[indices,]
+    if(verbose){
+      print(paste("Initial Size", toString(length), "Genes"))
+      print(paste("New Size" , toString(nrow(inter)), "Genes" ))
+    }
+    return(inter)
   }
 }
 
-# Note_MC: Add documentation similar to sconeReport below.
-# Wrapper fucntion to subsample scone object by both cell and genes
+#' Wrapper Function to subsample Scone object 
+#'
+#' This function subsamples a scone object in a number of different ways
+#' of a variety of normalization schemes.
+#'
+#' @param my_scone a \code{SconeExperiment} object
+#' @param subsample_gene_level percent of genes you should take if subsampling genes by percent
+#' @param subsample_cell_level percent of cells you should take if subsampling cells by percent
+#' @param at_bio option to subsample to the number of cells of within the smallest bio group,
+#' reducing every cell count in a bio group to the same number
+#' @param keep_all_control option to keep all control genes and only
+#' subsample remaining genes to fill to specificed percent,
+#' @param cells_first option to control wether to subsample cells and then genes, or the other way around
+#' @param seed the random seed
+#' @param verbose option to display more information about subsampling
+#'
+#' @return The subsampled Scone Object
+
 subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell_level = 100, 
                             cells_first=TRUE, at_bio = TRUE,
-                            keep_all_control=TRUE){
+                            keep_all_control=TRUE, seed = 100, verbose = FALSE){
   if(cells_first){
     # If subsampling cells before subsampling genes
     return(subsample_genes(
-      subsample_cells(my_scone ,percent = subsample_cell_level, at_bio = at_bio), 
-      subsample_gene_level, keep_all_control = keep_all_control))
+      subsample_cells(my_scone, percent = subsample_cell_level, at_bio = at_bio, verbose = verbose, seed = seed), 
+      subsample_gene_level, keep_all_control = keep_all_control,
+      verbose = verbose, seed = seed))
   }
   else {
     # If subsampling genes before subsampling cells
     return(subsample_cells(
-      subsample_genes(my_scone, subsample_gene_level, keep_all_control = keep_all_control), 
-      percent = subsample_cell_level, at_bio = at_bio))
+      subsample_genes(my_scone, subsample_gene_level, keep_all_control = keep_all_control, verbose = verbose, seed = seed), 
+      percent = subsample_cell_level, at_bio = at_bio,
+      verbose = verbose, seed = seed)
+      )
   }
   
 }
