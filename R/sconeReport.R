@@ -1,3 +1,6 @@
+#' Note_MC: Add @example for each function
+#' Note_MC: Add @export to each function
+#' 
 #' Function to subsample Scone object by subsampling cells
 #'
 #' This function subsamples a scone object in a number of different ways
@@ -45,6 +48,9 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
  
 }
 
+#' Note_MC: Add @example for each function
+#' Note_MC: Add @export to each function
+#' 
 #' Internal function to subsample Scone object by subsampling cells by size of smallest bio group
 #'
 #' This function subsamples a scone object to the size of smallest bio group
@@ -100,6 +106,9 @@ subsample_cells_with_min_bio <- function(scone_obj, seed = 100, verbose= FALSE){
   return(inter)
 }
 
+#' Note_MC: Add @example for each function
+#' Note_MC: Add @export to each function
+#' 
 #' Function to subsample Scone object by subsampling genes
 #'
 #' This function subsamples a scone object in a number of different ways by genes
@@ -158,6 +167,9 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, 
   }
 }
 
+#' Note_MC: Add @example for each function
+#' Note_MC: Add @export to each function
+#' 
 #' Wrapper Function to subsample Scone object 
 #'
 #' This function subsamples a scone object in a number of different ways
