@@ -1,9 +1,9 @@
 #' Note_MC: Add @example for each function
 #' Note_MC: Add @export to each function
 #' 
-#' Function to subsample Scone object by subsampling cells
+#' Function to subsample \code{SconeExperiment} object by subsampling cells
 #'
-#' This function subsamples a scone object in a number of different ways
+#' This function subsamples a \code{SconeExperiment} object in a number of different ways
 #'
 #' @param scone_object a \code{SconeExperiment} object
 #' @param percent percent of cells you should take if subsampling purely by percent
@@ -32,7 +32,7 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
     num_samples <- ceiling((percent*length) / 100)
     list_possible <- seq(length)
     
-    # Randomly select which cells to get and return the scone object with only those cells
+    # Randomly select which cells to get and return the \code{SconeExperiment} object with only those cells
     # Note_MC: Consider: gdata::resample for edge case of 1 index possible see ?sample
     indices <- sample(list_possible, num_samples)
     intermediate <- scone_object[,indices]
@@ -51,9 +51,9 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 #' Note_MC: Add @example for each function
 #' Note_MC: Add @export to each function
 #' 
-#' Internal function to subsample Scone object by subsampling cells by size of smallest bio group
+#' Internal function to subsample \code{SconeExperiment} object by subsampling cells by size of smallest bio group
 #'
-#' This function subsamples a scone object to the size of smallest bio group
+#' This function subsamples a \code{SconeExperiment} object to the size of smallest bio group
 #'
 #' @param scone_object a \code{SconeExperiment} object
 #' @param seed the random seed
@@ -88,7 +88,7 @@ subsample_cells_with_min_bio <- function(scone_obj, seed = 100, verbose= FALSE){
     good_cells <- c(good_cells, colnames(cells_with_bio[,sample(list_possible, num_samples)]))
   }
   
-  # Back to original scone object, get those indices
+  # Back to original \code{SconeExperiment} object, get those indices
   # Note_MC: technically this is not required, since good_cells accesses the correct columns of scone_obj-
   # Note_YR: I remeber the column numbers being rewritten, which is why I added this step
   indices <- (colnames(scone_obj) %in% good_cells)
@@ -109,9 +109,9 @@ subsample_cells_with_min_bio <- function(scone_obj, seed = 100, verbose= FALSE){
 #' Note_MC: Add @example for each function
 #' Note_MC: Add @export to each function
 #' 
-#' Function to subsample Scone object by subsampling genes
+#' Function to subsample \code{SconeExperiment} object by subsampling genes
 #'
-#' This function subsamples a scone object in a number of different ways by genes
+#' This function subsamples a \code{SconeExperiment} object in a number of different ways by genes
 #'
 #' @param scone_object a \code{SconeExperiment} object
 #' @param percent percent of genes you should take if subsampling purely by percent
@@ -141,7 +141,7 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, 
     # Combine random genes and control genes 
     indices <- ((list_possible %in% indices) + is_control) > 0
     
-    # Subsample scone object
+    # Subsample \code{SconeExperiment} object
     inter <- scone_object[indices,]
     if(verbose){
       print(paste("Initial Size", toString(length), "Genes"))
@@ -170,9 +170,9 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, 
 #' Note_MC: Add @example for each function
 #' Note_MC: Add @export to each function
 #' 
-#' Wrapper Function to subsample Scone object 
+#' Wrapper Function to subsample \code{SconeExperiment} object 
 #'
-#' This function subsamples a scone object in a number of different ways
+#' This function subsamples a \code{SconeExperiment} object in a number of different ways
 #' of a variety of normalization schemes.
 #'
 #' @param my_scone a \code{SconeExperiment} object
@@ -209,7 +209,7 @@ subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell
   
 }
 
-#' SCONE Report Browser: Browse Evaluation of Normalization Performance
+#' Scone Report Browser: Browse Evaluation of Normalization Performance
 #'
 #' This function opens a shiny application session for visualizing performance
 #' of a variety of normalization schemes.
@@ -240,7 +240,7 @@ subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell
 #' @importFrom stats setNames var
 #' @export
 #'
-#' @return An object that represents the SCONE report app.
+#' @return An object that represents the Scone report app.
 #'
 #' @examples
 #' set.seed(101)
@@ -427,7 +427,7 @@ sconeReport = function(x, methods,
 
   ## ----- UI Definition -----
   ui <- shiny::fluidPage(
-    shiny::titlePanel("SCONE Report Browser"),
+    shiny::titlePanel("Scone Report Browser"),
 
     shiny::sidebarLayout(
       shiny::sidebarPanel(
