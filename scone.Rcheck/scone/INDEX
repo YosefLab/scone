@@ -1,0 +1,55 @@
+CLR_FN                  Centered log-ratio (CLR) normalization wrapper
+                        function
+DESEQ_FN                Relative log-expression (RLE; DESeq) scaling
+                        normalization wrapper function
+FQ_FN                   Full-quantile normalization wrapper function
+SCRAN_FN                Simple deconvolution normalization wrapper
+SUM_FN                  Sum scaling normalization function
+SconeExperiment-class   Class SconeExperiment
+TMM_FN                  Weighted trimmed mean of M-values (TMM) scaling
+                        normalization wrapper function
+UQ_FN                   Upper-quartile (UQ) scaling normalization
+                        wrapper function
+biplot_color            Function for biplotting with no point labels
+                        and with points color-coded according to a
+                        quantitative variable. For example: the rank of
+                        normalization performance.
+biplot_interactive      Interactive biplot
+control_genes           Data: Positive and Negative Control Genes
+estimate_ziber          Parameter estimation of zero-inflated bernoulli
+                        model
+factor_sample_filter    Factor-based Sample Filtering: Function to
+                        filter single-cell RNA-Seq libraries.
+fast_estimate_ziber     Fast parameter estimation of zero-inflated
+                        bernoulli model
+get_bio                 Get Factor of Biological Conditions and Batch
+get_design              Retrieve Design Matrix
+get_negconruv           Get Negative and Positive Controls
+get_normalized          Retrieve Normalized Matrix
+get_params              Extract scone parameters
+get_qc                  Get Quality Control Matrix
+get_scores              Extract scone scores
+impute_expectation      Imputation of zero abundance based on general
+                        zero-inflated model
+impute_null             Null or no-op imputation
+lm_adjust               Linear Adjustment Normalization
+make_design             Make a Design Matrix
+metric_sample_filter    Metric-based Sample Filtering: Function to
+                        filter single-cell RNA-Seq libraries.
+scone                   Normalize Expression Data and Evaluate
+                        Normalization Performance
+sconeReport             SCONE Report Browser: Browse Evaluation of
+                        Normalization Performance
+scone_easybake          Wrapper for Running Essential SCONE Modules
+score_matrix            SCONE Evaluation: Evaluate an Expression Matrix
+select_methods          Get a subset of normalizations from a
+                        SconeExperiment object
+simple_FNR_params       Fit Simple False-Negative Model
+subsample_cells         Function to subsample Scone object by
+                        subsampling cells
+subsample_cells_with_min_bio
+                        Internal function to subsample Scone object by
+                        subsampling cells by size of smallest bio group
+subsample_genes         Function to subsample Scone object by
+                        subsampling genes
+subsample_scone         Wrapper Function to subsample Scone object

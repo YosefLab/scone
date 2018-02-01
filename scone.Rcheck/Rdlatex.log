@@ -1,0 +1,1383 @@
+Hmm ... looks like a package
+
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2017-04-15>
+Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
+(./Rd2.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/bk10.clo))
+(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/bm.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/alltt.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/verbatim.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/url/url.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/textcomp.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/times.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/zi4.sty
+`inconsolata-zi4' v1.112, 2017/01/04 Text macros for Inconsolata (msharpe)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/keyval.tex)))))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/color.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-def/pdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/infwarerr.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ltxcmds.sty)))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
+(/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/auxhook.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/hyperref.cfg))
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
+
+Package hyperref Warning: Option `hyperindex' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+
+Package hyperref Warning: Option `pagebackref' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/makeidx.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/inputenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ot1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/omsenc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.dfu))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/latin1.def))
+Writing index file Rd2.idx
+No file Rd2.aux.
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1cmr.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1phv.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [1{/usr/local/texl
+ive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [2]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [3]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (15.6382pt too wide) in paragraph at lines 246--248
+[]\T1/ptm/m/n/10 Eisenberg E, Lev-anon EY. Hu-man house-keep-ing genes, re-vis-
+ited. Trends in Ge-net-ics, 2013, 29(10):569-
+[4] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (1.91644pt too wide) in paragraph at lines 301--307
+[]\T1/ptm/m/n/10 This func-tion im-ple-ments an expectation-maximization al-go-
+rithm for a zero-inflated bernoulli model
+[5] (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [6] [7]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [8]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [9]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [10pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.batch}) has been
+ already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.628 get_design(x, method)
+                           pdfTeX warning (ext4): destination with the same ide
+ntifier (name{Rfn.get.Rul.batch,SconeExperiment.Rdash.method}) has been already
+ used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.628 get_design(x, method)
+                           pdfTeX warning (ext4): destination with the same ide
+ntifier (name{Rfn.get.Rul.bio,SconeExperiment.Rdash.method}) has been already u
+sed, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.628 get_design(x, method)
+                           ] [11]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [12pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.negconeval}) has
+ been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.759 negcon_eval = get_negconeval(obj)
+                                       pdfTeX warning (ext4): destination with 
+the same identifier (name{Rfn.get.Rul.negconeval,SconeExperiment.Rdash.method})
+ has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.759 negcon_eval = get_negconeval(obj)
+                                       pdfTeX warning (ext4): destination with 
+the same identifier (name{Rfn.get.Rul.negconruv,SconeExperiment.Rdash.method}) 
+has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.759 negcon_eval = get_negconeval(obj)
+                                       pdfTeX warning (ext4): destination with 
+the same identifier (name{Rfn.get.Rul.poscon}) has been already used, duplicate
+ ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.759 negcon_eval = get_negconeval(obj)
+                                       pdfTeX warning (ext4): destination with 
+the same identifier (name{Rfn.get.Rul.poscon,SconeExperiment.Rdash.method}) has
+ been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.759 negcon_eval = get_negconeval(obj)
+                                       ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [13]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [14pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.params,SconeExpe
+riment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.897 ...}{Get Quality Control Matrix}{get.Rul.qc}
+                                                  ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [15pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.qc,SconeExperime
+nt.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.scores,SconeExperiment.Rdash.method}) has been already used
+, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.score.Rul.ranks}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.score.Rul.ranks,SconeExperiment.Rdash.method}) has been alr
+eady used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [16]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [17]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [18]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [19] [20]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [21]
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1400--1404
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1405--1408
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[22]
+Overfull \hbox (7.30814pt too wide) in paragraph at lines 1430--1433
+[]\T1/ptm/m/n/10 If \T1/zi4/m/n/10 x \T1/ptm/m/n/10 has a non-empty \T1/zi4/m/n
+/10 scone_params \T1/ptm/m/n/10 slot, only the sub-set of nor-mal-iza-tions spe
+c-i-fied in \T1/zi4/m/n/10 scone_params
+
+Overfull \hbox (2.82852pt too wide) in paragraph at lines 1447--1454
+\T1/ptm/m/n/10 per-for-mance, in-clud-ing BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RL
+E_MED, and RLE_IQR.
+[23] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [24pdfTeX war
+ning (ext4): destination with the same identifier (name{Rfn.SconeExperiment}) h
+as been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.1569 
+       ] [25]
+Overfull \hbox (19.401pt too wide) in paragraph at lines 1671--1678
+[][][]\T1/zi4/m/n/10 get_normalized[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 ge
+t_params[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_batch[][][]\T1/ptm/m/n/10
+ , [][]\T1/zi4/m/n/10 get_bio[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_desi
+gn[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_negconeval[][][]\T1/ptm/m/n/10 
+, [][]\T1/zi4/m/n/10 get_negconruv[][][]\T1/ptm/m/n/10 ,
+
+Overfull \hbox (7.33965pt too wide) in paragraph at lines 1671--1678
+[][]\T1/zi4/m/n/10 get_poscon[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_qc[]
+[][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_scores[][][]\T1/ptm/m/n/10 , and []
+[]\T1/zi4/m/n/10 get_score_ranks[][][] \T1/ptm/m/n/10 to ac-cess in-ter-nal fie
+lds, [][]\T1/zi4/m/n/10 select_methods[][][]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [26]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [27] [28] [29]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [30]
+Overfull \hbox (5.99652pt too wide) in paragraph at lines 1982--1985
+[]\T1/ptm/m/n/10 logical. If TRUE then max-i-mum ASW is sep-a-rately com-puted 
+for each biological-
+
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1986--1990
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1991--1994
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[31] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [32] [33]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (2.22661pt too wide) in paragraph at lines 2174--2176
+[]\T1/ptm/m/n/10 matrix A ma-trix of transcript-proportional units (genes in ro
+ws, cells in columns). 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [34]
+Overfull \hbox (6.74715pt too wide) in paragraph at lines 2251--2251
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_cells(res,percent=50, at_bio = FAL
+SE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [35]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [36]
+Overfull \hbox (50.24408pt too wide) in paragraph at lines 2350--2350
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_genes(res, percent=50, keep_all_co
+ntrol = TRUE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [37]
+Overfull \hbox (51.75635pt too wide) in paragraph at lines 2413--2413
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_scone(scone_object, subsample_gene
+_level = 50, subsample_cell_level = 100,[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [38]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [39]
+No file Rd2.ind.
+[40] (./Rd2.aux)
+
+Package rerunfilecheck Warning: File `Rd2.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+ )
+(see the transcript file for additional information)pdfTeX warning (dest): name
+{Rfn.computeSumFactors} has been referenced but does not exist, replaced by a f
+ixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment.Rdash.class} has been refe
+renced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.bpparam} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantiles} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantileRank.matrix} has been referenc
+ed but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.calcNormFactors} has been referenced but does n
+ot exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toTitleCase} has been referenced but does not e
+xist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.tolower} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toupper} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.clr} has been referenced but does not exist, re
+placed by a fixed one
+
+pdfTeX warning (dest): name{Rfn.prcomp} has been referenced but does not exist,
+ replaced by a fixed one
+
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/us
+r/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texlive
+/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/20
+17/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/t
+exlive/2017/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/
+2017/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf
+-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/font
+s/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on Rd2.pdf (40 pages, 167835 bytes).
+Transcript written on Rd2.log.
+This is makeindex, version 2.15 [TeX Live 2017] (kpathsea + Thai support).
+Scanning input file Rd2.idx....done (149 entries accepted, 0 rejected).
+Sorting entries....done (1263 comparisons).
+Generating output file Rd2.ind....done (175 lines written, 1 warning).
+Output written in Rd2.ind.
+Transcript written in Rd2.ilg.
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2017-04-15>
+Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
+(./Rd2.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/bk10.clo))
+(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/bm.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/alltt.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/verbatim.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/url/url.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/textcomp.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/times.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/zi4.sty
+`inconsolata-zi4' v1.112, 2017/01/04 Text macros for Inconsolata (msharpe)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/keyval.tex)))))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/color.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-def/pdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/infwarerr.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ltxcmds.sty)))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
+(/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/auxhook.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/hyperref.cfg))
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
+
+Package hyperref Warning: Option `hyperindex' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+
+Package hyperref Warning: Option `pagebackref' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/makeidx.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/inputenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ot1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/omsenc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.dfu))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/latin1.def))
+Writing index file Rd2.idx
+(./Rd2.aux) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1cmr.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
+(./Rd2.out) (./Rd2.out)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc
+[1{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [2]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [3]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (15.6382pt too wide) in paragraph at lines 246--248
+[]\T1/ptm/m/n/10 Eisenberg E, Lev-anon EY. Hu-man house-keep-ing genes, re-vis-
+ited. Trends in Ge-net-ics, 2013, 29(10):569-
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [5]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (1.91644pt too wide) in paragraph at lines 301--307
+[]\T1/ptm/m/n/10 This func-tion im-ple-ments an expectation-maximization al-go-
+rithm for a zero-inflated bernoulli model
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ts1ptm.fd) [6]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [7]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [8]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [9]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/ts1zi4.fd) [10pdfTeX 
+warning (ext4): destination with the same identifier (name{Rfn.get.Rul.batch}) 
+has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.590 get_batch(x)
+                  pdfTeX warning (ext4): destination with the same identifier (
+name{Rfn.get.Rul.batch,SconeExperiment.Rdash.method}) has been already used, du
+plicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.590 get_batch(x)
+                  pdfTeX warning (ext4): destination with the same identifier (
+name{Rfn.get.Rul.bio,SconeExperiment.Rdash.method}) has been already used, dupl
+icate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.590 get_batch(x)
+                  ] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def
+) [11] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [12pdfTeX w
+arning (ext4): destination with the same identifier (name{Rfn.get.Rul.negconeva
+l}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.719 
+      pdfTeX warning (ext4): destination with the same identifier (name{Rfn.get
+.Rul.negconeval,SconeExperiment.Rdash.method}) has been already used, duplicate
+ ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.719 
+      pdfTeX warning (ext4): destination with the same identifier (name{Rfn.get
+.Rul.negconruv,SconeExperiment.Rdash.method}) has been already used, duplicate 
+ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.719 
+      pdfTeX warning (ext4): destination with the same identifier (name{Rfn.get
+.Rul.poscon}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.719 
+      pdfTeX warning (ext4): destination with the same identifier (name{Rfn.get
+.Rul.poscon,SconeExperiment.Rdash.method}) has been already used, duplicate ign
+ored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.719 
+      ] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [13]
+[14] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [15pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.params,SconeExpe
+riment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.918 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.qc,SconeExperiment.Rdash.method}) has been already used, du
+plicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.918 \end{Arguments}
+                     ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [16pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.scores,SconeExpe
+riment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.984 scores = get_scores(res)
+                              pdfTeX warning (ext4): destination with the same 
+identifier (name{Rfn.get.Rul.score.Rul.ranks}) has been already used, duplicate
+ ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.984 scores = get_scores(res)
+                              pdfTeX warning (ext4): destination with the same 
+identifier (name{Rfn.get.Rul.score.Rul.ranks,SconeExperiment.Rdash.method}) has
+ been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.984 scores = get_scores(res)
+                              ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [17]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [18]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [19]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [20]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [21] [22]
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1400--1404
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1405--1408
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+
+Overfull \hbox (7.30814pt too wide) in paragraph at lines 1430--1433
+[]\T1/ptm/m/n/10 If \T1/zi4/m/n/10 x \T1/ptm/m/n/10 has a non-empty \T1/zi4/m/n
+/10 scone_params \T1/ptm/m/n/10 slot, only the sub-set of nor-mal-iza-tions spe
+c-i-fied in \T1/zi4/m/n/10 scone_params
+
+Overfull \hbox (2.82852pt too wide) in paragraph at lines 1447--1454
+\T1/ptm/m/n/10 per-for-mance, in-clud-ing BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RL
+E_MED, and RLE_IQR.
+[23] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [24] [25pdfTe
+X warning (ext4): destination with the same identifier (name{Rfn.SconeExperimen
+t}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.1587 \item[\code{negcon\_eval}]
+                                  a logical vector indicating which genes to...
+]
+Overfull \hbox (19.401pt too wide) in paragraph at lines 1671--1678
+[][][]\T1/zi4/m/n/10 get_normalized[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 ge
+t_params[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_batch[][][]\T1/ptm/m/n/10
+ , [][]\T1/zi4/m/n/10 get_bio[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_desi
+gn[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_negconeval[][][]\T1/ptm/m/n/10 
+, [][]\T1/zi4/m/n/10 get_negconruv[][][]\T1/ptm/m/n/10 ,
+
+Overfull \hbox (7.33965pt too wide) in paragraph at lines 1671--1678
+[][]\T1/zi4/m/n/10 get_poscon[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_qc[]
+[][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_scores[][][]\T1/ptm/m/n/10 , and []
+[]\T1/zi4/m/n/10 get_score_ranks[][][] \T1/ptm/m/n/10 to ac-cess in-ter-nal fie
+lds, [][]\T1/zi4/m/n/10 select_methods[][][]
+[26] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [27]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [28] [29]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [30]
+Overfull \hbox (5.99652pt too wide) in paragraph at lines 1982--1985
+[]\T1/ptm/m/n/10 logical. If TRUE then max-i-mum ASW is sep-a-rately com-puted 
+for each biological-
+
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1986--1990
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1991--1994
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[31] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [32]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [33]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (2.22661pt too wide) in paragraph at lines 2174--2176
+[]\T1/ptm/m/n/10 matrix A ma-trix of transcript-proportional units (genes in ro
+ws, cells in columns). 
+[34] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [35]
+Overfull \hbox (6.74715pt too wide) in paragraph at lines 2251--2251
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_cells(res,percent=50, at_bio = FAL
+SE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [36]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (50.24408pt too wide) in paragraph at lines 2350--2350
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_genes(res, percent=50, keep_all_co
+ntrol = TRUE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [37]
+Overfull \hbox (51.75635pt too wide) in paragraph at lines 2413--2413
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_scone(scone_object, subsample_gene
+_level = 50, subsample_cell_level = 100,[] 
+[38] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [39]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) (./Rd2.ind
+[40]
+
+LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
+(Font)              using `T1/zi4/m/n' instead on input line 12.
+
+
+Overfull \hbox (25.8567pt too wide) in paragraph at lines 51--53
+[]\T1/zi4/m/it/10 get_design,SconeExperiment,character-method 
+
+Overfull \hbox (15.8567pt too wide) in paragraph at lines 53--55
+[]\T1/zi4/m/it/10 get_design,SconeExperiment,numeric-method 
+
+Overfull \hbox (45.8567pt too wide) in paragraph at lines 67--69
+[]\T1/zi4/m/it/10 get_normalized,SconeExperiment,character-method 
+
+Overfull \hbox (35.8567pt too wide) in paragraph at lines 69--71
+[]\T1/zi4/m/it/10 get_normalized,SconeExperiment,numeric-method 
+
+Overfull \hbox (0.8567pt too wide) in paragraph at lines 87--89
+[]\T1/zi4/m/it/10 get_score_ranks,SconeExperiment-method 
+
+Overfull \hbox (25.8567pt too wide) in paragraph at lines 143--145
+[]\T1/zi4/m/it/10 SconeExperiment,SummarizedExperiment-method 
+[41]
+Overfull \hbox (45.8567pt too wide) in paragraph at lines 152--154
+[]\T1/zi4/m/it/10 select_methods,SconeExperiment,character-method 
+
+Overfull \hbox (35.8567pt too wide) in paragraph at lines 154--156
+[]\T1/zi4/m/it/10 select_methods,SconeExperiment,numeric-method 
+[42]) (./Rd2.aux)
+
+Package rerunfilecheck Warning: File `Rd2.out' has changed.
+(rerunfilecheck)                Rerun to get outlines right
+(rerunfilecheck)                or use package `bookmark'.
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ )
+(see the transcript file for additional information)pdfTeX warning (dest): name
+{Rfn.computeSumFactors} has been referenced but does not exist, replaced by a f
+ixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment.Rdash.class} has been refe
+renced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.bpparam} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantiles} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantileRank.matrix} has been referenc
+ed but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.calcNormFactors} has been referenced but does n
+ot exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toTitleCase} has been referenced but does not e
+xist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.tolower} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toupper} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.clr} has been referenced but does not exist, re
+placed by a fixed one
+
+pdfTeX warning (dest): name{Rfn.prcomp} has been referenced but does not exist,
+ replaced by a fixed one
+
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/us
+r/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texlive
+/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/20
+17/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/t
+exlive/2017/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/
+2017/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf
+-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/font
+s/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on Rd2.pdf (42 pages, 178440 bytes).
+Transcript written on Rd2.log.
+This is makeindex, version 2.15 [TeX Live 2017] (kpathsea + Thai support).
+Scanning input file Rd2.idx....done (149 entries accepted, 0 rejected).
+Sorting entries....done (1234 comparisons).
+Generating output file Rd2.ind....done (175 lines written, 0 warnings).
+Output written in Rd2.ind.
+Transcript written in Rd2.ilg.
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2017-04-15>
+Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
+(./Rd2.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/bk10.clo))
+(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/bm.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/alltt.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/verbatim.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/url/url.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/textcomp.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/times.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/zi4.sty
+`inconsolata-zi4' v1.112, 2017/01/04 Text macros for Inconsolata (msharpe)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/keyval.tex)))))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/color.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-def/pdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/infwarerr.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ltxcmds.sty)))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
+(/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/auxhook.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/hyperref.cfg))
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
+
+Package hyperref Warning: Option `hyperindex' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+
+Package hyperref Warning: Option `pagebackref' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/makeidx.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/inputenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ot1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/omsenc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.dfu))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/latin1.def))
+Writing index file Rd2.idx
+(./Rd2.aux) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1cmr.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
+(./Rd2.out) (./Rd2.out)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc
+[1{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [2]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [3]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (15.6382pt too wide) in paragraph at lines 246--248
+[]\T1/ptm/m/n/10 Eisenberg E, Lev-anon EY. Hu-man house-keep-ing genes, re-vis-
+ited. Trends in Ge-net-ics, 2013, 29(10):569-
+[5] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (1.91644pt too wide) in paragraph at lines 301--307
+[]\T1/ptm/m/n/10 This func-tion im-ple-ments an expectation-maximization al-go-
+rithm for a zero-inflated bernoulli model
+[6] (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [7]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [8] [9]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [10]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [11pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.batch}) has been
+ already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.633 ...d for signature 'SconeExperiment,numeric'
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.batch,SconeExperiment.Rdash.me
+thod}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.633 ...d for signature 'SconeExperiment,numeric'
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.bio,SconeExperiment.Rdash.meth
+od}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.633 ...d for signature 'SconeExperiment,numeric'
+                                                  ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [12]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [13pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.negconeval}) has
+ been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.negconeval,SconeExperiment.Rda
+sh.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.negconruv,SconeExperiment.Rdas
+h.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.poscon}) has been already used
+, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.poscon,SconeExperiment.Rdash.m
+ethod}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  ] [14]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [15pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.params,SconeExpe
+riment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.907 get_qc(x)
+               ] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+[16pdfTeX warning (ext4): destination with the same identifier (name{Rfn.get.Ru
+l.qc,SconeExperiment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.scores,SconeExperiment.Rdash.method}) has been already used
+, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.score.Rul.ranks}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.score.Rul.ranks,SconeExperiment.Rdash.method}) has been alr
+eady used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [17]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [18]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [19]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [20] [21]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [22]
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1400--1404
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1405--1408
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[23]
+Overfull \hbox (7.30814pt too wide) in paragraph at lines 1430--1433
+[]\T1/ptm/m/n/10 If \T1/zi4/m/n/10 x \T1/ptm/m/n/10 has a non-empty \T1/zi4/m/n
+/10 scone_params \T1/ptm/m/n/10 slot, only the sub-set of nor-mal-iza-tions spe
+c-i-fied in \T1/zi4/m/n/10 scone_params
+
+Overfull \hbox (2.82852pt too wide) in paragraph at lines 1447--1454
+\T1/ptm/m/n/10 per-for-mance, in-clud-ing BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RL
+E_MED, and RLE_IQR.
+[24] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [25pdfTeX war
+ning (ext4): destination with the same identifier (name{Rfn.SconeExperiment}) h
+as been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.1569 
+       ] [26]
+Overfull \hbox (19.401pt too wide) in paragraph at lines 1671--1678
+[][][]\T1/zi4/m/n/10 get_normalized[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 ge
+t_params[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_batch[][][]\T1/ptm/m/n/10
+ , [][]\T1/zi4/m/n/10 get_bio[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_desi
+gn[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_negconeval[][][]\T1/ptm/m/n/10 
+, [][]\T1/zi4/m/n/10 get_negconruv[][][]\T1/ptm/m/n/10 ,
+
+Overfull \hbox (7.33965pt too wide) in paragraph at lines 1671--1678
+[][]\T1/zi4/m/n/10 get_poscon[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_qc[]
+[][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_scores[][][]\T1/ptm/m/n/10 , and []
+[]\T1/zi4/m/n/10 get_score_ranks[][][] \T1/ptm/m/n/10 to ac-cess in-ter-nal fie
+lds, [][]\T1/zi4/m/n/10 select_methods[][][]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [27]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [28] [29] [30]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [31]
+Overfull \hbox (5.99652pt too wide) in paragraph at lines 1982--1985
+[]\T1/ptm/m/n/10 logical. If TRUE then max-i-mum ASW is sep-a-rately com-puted 
+for each biological-
+
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1986--1990
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1991--1994
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[32] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [33] [34]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (2.22661pt too wide) in paragraph at lines 2174--2176
+[]\T1/ptm/m/n/10 matrix A ma-trix of transcript-proportional units (genes in ro
+ws, cells in columns). 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [35]
+Overfull \hbox (6.74715pt too wide) in paragraph at lines 2251--2251
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_cells(res,percent=50, at_bio = FAL
+SE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [36]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [37]
+Overfull \hbox (50.24408pt too wide) in paragraph at lines 2350--2350
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_genes(res, percent=50, keep_all_co
+ntrol = TRUE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [38]
+Overfull \hbox (51.75635pt too wide) in paragraph at lines 2413--2413
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_scone(scone_object, subsample_gene
+_level = 50, subsample_cell_level = 100,[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [39]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [40] (./Rd2.ind
+[41]
+
+LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
+(Font)              using `T1/zi4/m/n' instead on input line 12.
+
+
+Overfull \hbox (25.8567pt too wide) in paragraph at lines 51--53
+[]\T1/zi4/m/it/10 get_design,SconeExperiment,character-method 
+
+Overfull \hbox (15.8567pt too wide) in paragraph at lines 53--55
+[]\T1/zi4/m/it/10 get_design,SconeExperiment,numeric-method 
+
+Overfull \hbox (45.8567pt too wide) in paragraph at lines 67--69
+[]\T1/zi4/m/it/10 get_normalized,SconeExperiment,character-method 
+
+Overfull \hbox (35.8567pt too wide) in paragraph at lines 69--71
+[]\T1/zi4/m/it/10 get_normalized,SconeExperiment,numeric-method 
+
+Overfull \hbox (0.8567pt too wide) in paragraph at lines 87--89
+[]\T1/zi4/m/it/10 get_score_ranks,SconeExperiment-method 
+
+Overfull \hbox (25.8567pt too wide) in paragraph at lines 143--145
+[]\T1/zi4/m/it/10 SconeExperiment,SummarizedExperiment-method 
+[42]
+Overfull \hbox (45.8567pt too wide) in paragraph at lines 152--154
+[]\T1/zi4/m/it/10 select_methods,SconeExperiment,character-method 
+
+Overfull \hbox (35.8567pt too wide) in paragraph at lines 154--156
+[]\T1/zi4/m/it/10 select_methods,SconeExperiment,numeric-method 
+[43]) (./Rd2.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ )
+(see the transcript file for additional information)pdfTeX warning (dest): name
+{Rfn.computeSumFactors} has been referenced but does not exist, replaced by a f
+ixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment.Rdash.class} has been refe
+renced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.bpparam} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantiles} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantileRank.matrix} has been referenc
+ed but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.calcNormFactors} has been referenced but does n
+ot exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toTitleCase} has been referenced but does not e
+xist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.tolower} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toupper} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.clr} has been referenced but does not exist, re
+placed by a fixed one
+
+pdfTeX warning (dest): name{Rfn.prcomp} has been referenced but does not exist,
+ replaced by a fixed one
+
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/us
+r/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texlive
+/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/20
+17/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/t
+exlive/2017/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/
+2017/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf
+-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/font
+s/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on Rd2.pdf (43 pages, 179914 bytes).
+Transcript written on Rd2.log.
+This is makeindex, version 2.15 [TeX Live 2017] (kpathsea + Thai support).
+Scanning input file Rd2.idx....done (149 entries accepted, 0 rejected).
+Sorting entries....done (1266 comparisons).
+Generating output file Rd2.ind....done (175 lines written, 0 warnings).
+Output written in Rd2.ind.
+Transcript written in Rd2.ilg.
+This is pdfTeX, Version 3.14159265-2.6-1.40.18 (TeX Live 2017) (preloaded format=pdflatex)
+ restricted \write18 enabled.
+entering extended mode
+LaTeX2e <2017-04-15>
+Babel <3.10> and hyphenation patterns for 84 language(s) loaded.
+(./Rd2.tex
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/book.cls
+Document Class: book 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/bk10.clo))
+(/Library/Frameworks/R.framework/Resources/share/texmf/tex/latex/Rd.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ifthen.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/longtable.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/bm.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/alltt.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/tools/verbatim.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/url/url.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/textcomp.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/fontenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.def))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/times.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/zi4.sty
+`inconsolata-zi4' v1.112, 2017/01/04 Text macros for Inconsolata (msharpe)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/xkeyval/xkeyval.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkeyval.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/xkvutils.tex
+(/usr/local/texlive/2017/texmf-dist/tex/generic/xkeyval/keyval.tex)))))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics/color.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-cfg/color.cfg)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/graphics-def/pdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/infwarerr.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/ltxcmds.sty)))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
+(/usr/local/texlive/2017/texmf-dist/tex/generic/ifxetex/ifxetex.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/auxhook.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/latexconfig/hyperref.cfg))
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
+
+Package hyperref Warning: Option `hyperindex' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+
+Package hyperref Warning: Option `pagebackref' has already been used,
+(hyperref)                setting the option has no effect on input line 366.
+
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/makeidx.sty)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/inputenc.sty
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/t1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ot1enc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/omsenc.dfu)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1enc.dfu))
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/latin1.def))
+Writing index file Rd2.idx
+(./Rd2.aux) (/usr/local/texlive/2017/texmf-dist/tex/latex/base/ts1cmr.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+) (/usr/local/texlive/2017/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/local/texlive/2017/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
+(./Rd2.out) (./Rd2.out)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/t1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/t1phv.fd) (./Rd2.toc
+[1{/usr/local/texlive/2017/texmf-var/fonts/map/pdftex/updmap/pdftex.map}])
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [2]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [3]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [4]
+Overfull \hbox (15.6382pt too wide) in paragraph at lines 246--248
+[]\T1/ptm/m/n/10 Eisenberg E, Lev-anon EY. Hu-man house-keep-ing genes, re-vis-
+ited. Trends in Ge-net-ics, 2013, 29(10):569-
+[5] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (1.91644pt too wide) in paragraph at lines 301--307
+[]\T1/ptm/m/n/10 This func-tion im-ple-ments an expectation-maximization al-go-
+rithm for a zero-inflated bernoulli model
+[6] (/usr/local/texlive/2017/texmf-dist/tex/latex/psnfss/ts1ptm.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [7]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [8] [9]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [10]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/inconsolata/ts1zi4.fd)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [11pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.batch}) has been
+ already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.633 ...d for signature 'SconeExperiment,numeric'
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.batch,SconeExperiment.Rdash.me
+thod}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.633 ...d for signature 'SconeExperiment,numeric'
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.bio,SconeExperiment.Rdash.meth
+od}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.633 ...d for signature 'SconeExperiment,numeric'
+                                                  ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [12]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [13pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.negconeval}) has
+ been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.negconeval,SconeExperiment.Rda
+sh.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.negconruv,SconeExperiment.Rdas
+h.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.poscon}) has been already used
+, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  pdfTeX warning (ext4): destin
+ation with the same identifier (name{Rfn.get.Rul.poscon,SconeExperiment.Rdash.m
+ethod}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.765 ...ve Normalized Matrix}{get.Rul.normalized}
+                                                  ] [14]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [15pdfTeX warning 
+(ext4): destination with the same identifier (name{Rfn.get.Rul.params,SconeExpe
+riment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.907 get_qc(x)
+               ] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+[16pdfTeX warning (ext4): destination with the same identifier (name{Rfn.get.Ru
+l.qc,SconeExperiment.Rdash.method}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.scores,SconeExperiment.Rdash.method}) has been already used
+, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.score.Rul.ranks}) has been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     pdfTeX warning (ext4): destination with the same identifie
+r (name{Rfn.get.Rul.score.Rul.ranks,SconeExperiment.Rdash.method}) has been alr
+eady used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.966 \end{Arguments}
+                     ]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [17]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [18]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [19]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [20] [21]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [22]
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1400--1404
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1405--1408
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[23]
+Overfull \hbox (7.30814pt too wide) in paragraph at lines 1430--1433
+[]\T1/ptm/m/n/10 If \T1/zi4/m/n/10 x \T1/ptm/m/n/10 has a non-empty \T1/zi4/m/n
+/10 scone_params \T1/ptm/m/n/10 slot, only the sub-set of nor-mal-iza-tions spe
+c-i-fied in \T1/zi4/m/n/10 scone_params
+
+Overfull \hbox (2.82852pt too wide) in paragraph at lines 1447--1454
+\T1/ptm/m/n/10 per-for-mance, in-clud-ing BATCH_SIL, EXP_QC_COR, EXP_UV_COR, RL
+E_MED, and RLE_IQR.
+[24] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [25pdfTeX war
+ning (ext4): destination with the same identifier (name{Rfn.SconeExperiment}) h
+as been already used, duplicate ignored
+
+\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
+                                                  \fi \fi 
+l.1569 
+       ] [26]
+Overfull \hbox (19.401pt too wide) in paragraph at lines 1671--1678
+[][][]\T1/zi4/m/n/10 get_normalized[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 ge
+t_params[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_batch[][][]\T1/ptm/m/n/10
+ , [][]\T1/zi4/m/n/10 get_bio[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_desi
+gn[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_negconeval[][][]\T1/ptm/m/n/10 
+, [][]\T1/zi4/m/n/10 get_negconruv[][][]\T1/ptm/m/n/10 ,
+
+Overfull \hbox (7.33965pt too wide) in paragraph at lines 1671--1678
+[][]\T1/zi4/m/n/10 get_poscon[][][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_qc[]
+[][]\T1/ptm/m/n/10 , [][]\T1/zi4/m/n/10 get_scores[][][]\T1/ptm/m/n/10 , and []
+[]\T1/zi4/m/n/10 get_score_ranks[][][] \T1/ptm/m/n/10 to ac-cess in-ter-nal fie
+lds, [][]\T1/zi4/m/n/10 select_methods[][][]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [27]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [28] [29] [30]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [31]
+Overfull \hbox (5.99652pt too wide) in paragraph at lines 1982--1985
+[]\T1/ptm/m/n/10 logical. If TRUE then max-i-mum ASW is sep-a-rately com-puted 
+for each biological-
+
+Overfull \hbox (42.03767pt too wide) in paragraph at lines 1986--1990
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for EXP_QC_COR,
+
+Overfull \hbox (22.30782pt too wide) in paragraph at lines 1991--1994
+\T1/ptm/m/n/10 cross-batch stra-tum (ac-cepts NAs), and weighted av-er-ages are
+ re-turned for RLE_MED
+[32] (/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [33] [34]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+Overfull \hbox (2.22661pt too wide) in paragraph at lines 2174--2176
+[]\T1/ptm/m/n/10 matrix A ma-trix of transcript-proportional units (genes in ro
+ws, cells in columns). 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [35]
+Overfull \hbox (6.74715pt too wide) in paragraph at lines 2251--2251
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_cells(res,percent=50, at_bio = FAL
+SE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [36]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [37]
+Overfull \hbox (50.24408pt too wide) in paragraph at lines 2350--2350
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_genes(res, percent=50, keep_all_co
+ntrol = TRUE, seed = 100, verbose = TRUE)[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [38]
+Overfull \hbox (51.75635pt too wide) in paragraph at lines 2413--2413
+ []\T1/zi4/m/n/9 subsampled_res <- subsample_scone(scone_object, subsample_gene
+_level = 50, subsample_cell_level = 100,[] 
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [39]
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def)
+(/usr/local/texlive/2017/texmf-dist/tex/latex/base/utf8.def) [40] (./Rd2.ind
+[41]
+
+LaTeX Font Warning: Font shape `T1/zi4/m/it' undefined
+(Font)              using `T1/zi4/m/n' instead on input line 12.
+
+
+Overfull \hbox (25.8567pt too wide) in paragraph at lines 51--53
+[]\T1/zi4/m/it/10 get_design,SconeExperiment,character-method 
+
+Overfull \hbox (15.8567pt too wide) in paragraph at lines 53--55
+[]\T1/zi4/m/it/10 get_design,SconeExperiment,numeric-method 
+
+Overfull \hbox (45.8567pt too wide) in paragraph at lines 67--69
+[]\T1/zi4/m/it/10 get_normalized,SconeExperiment,character-method 
+
+Overfull \hbox (35.8567pt too wide) in paragraph at lines 69--71
+[]\T1/zi4/m/it/10 get_normalized,SconeExperiment,numeric-method 
+
+Overfull \hbox (0.8567pt too wide) in paragraph at lines 87--89
+[]\T1/zi4/m/it/10 get_score_ranks,SconeExperiment-method 
+
+Overfull \hbox (25.8567pt too wide) in paragraph at lines 143--145
+[]\T1/zi4/m/it/10 SconeExperiment,SummarizedExperiment-method 
+[42]
+Overfull \hbox (45.8567pt too wide) in paragraph at lines 152--154
+[]\T1/zi4/m/it/10 select_methods,SconeExperiment,character-method 
+
+Overfull \hbox (35.8567pt too wide) in paragraph at lines 154--156
+[]\T1/zi4/m/it/10 select_methods,SconeExperiment,numeric-method 
+[43]) (./Rd2.aux)
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+ )
+(see the transcript file for additional information)pdfTeX warning (dest): name
+{Rfn.computeSumFactors} has been referenced but does not exist, replaced by a f
+ixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment} has been referenced but d
+oes not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.SummarizedExperiment.Rdash.class} has been refe
+renced but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.bpparam} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantiles} has been referenced but doe
+s not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.normalizeQuantileRank.matrix} has been referenc
+ed but does not exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.calcNormFactors} has been referenced but does n
+ot exist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toTitleCase} has been referenced but does not e
+xist, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.tolower} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.toupper} has been referenced but does not exist
+, replaced by a fixed one
+
+pdfTeX warning (dest): name{Rfn.clr} has been referenced but does not exist, re
+placed by a fixed one
+
+pdfTeX warning (dest): name{Rfn.prcomp} has been referenced but does not exist,
+ replaced by a fixed one
+
+{/usr/local/texlive/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-ts1.enc}{/us
+r/local/texlive/2017/texmf-dist/fonts/enc/dvips/base/8r.enc}{/usr/local/texlive
+/2017/texmf-dist/fonts/enc/dvips/inconsolata/i4-t1-0.enc}</usr/local/texlive/20
+17/texmf-dist/fonts/type1/public/inconsolata/Inconsolata-zi4r.pfb></usr/local/t
+exlive/2017/texmf-dist/fonts/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/
+2017/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/local/texlive/2017/texmf
+-dist/fonts/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/font
+s/type1/urw/times/utmr8a.pfb></usr/local/texlive/2017/texmf-dist/fonts/type1/ur
+w/times/utmri8a.pfb>
+Output written on Rd2.pdf (43 pages, 179937 bytes).
+Transcript written on Rd2.log.
+Saving output to ‘scone-manual.pdf’ ...
+Done
+You may want to clean up by 'rm -rf /var/folders/yp/gcj3xljs5bb5t071s35_nwv80000gn/T//Rtmp1skwEy/Rd2pdf22472416f583'
