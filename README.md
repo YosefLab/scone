@@ -16,8 +16,6 @@ source("https://bioconductor.org/biocLite.R")
 biocLite("scone")
 ```
 
-Note that SCONE is currently in Bioconductor devel and hence requires R-devel (>= 3.4).
-
 ### Install from Github ###
 
 Usually not recommended. SCONE is under active development. To download the development version of the package, use the `devtools` package.
@@ -26,7 +24,3 @@ Usually not recommended. SCONE is under active development. To download the deve
 library(devtools)
 install_github("YosefLab/scone")
 ```
-
-### Install for R 3.3 ###
-
-You can download the latest release of SCONE for R 3.3 [here](https://github.com/YosefLab/scone/releases/tag/v0.99.0).
