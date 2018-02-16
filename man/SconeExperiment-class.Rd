@@ -20,130 +20,134 @@ SconeExperiment(object, ...)
   negcon_eval = negcon_ruv, poscon = NULL, is_log = FALSE)
 }
 \arguments{
-\item{object}{Either a matrix or a \code{\link{SummarizedExperiment}} 
+\item{object}{Either a matrix or a \code{\link{SummarizedExperiment}}
 containing the raw gene expression.}
 
 \item{...}{see specific S4 methods for additional arguments.}
 
-\item{which_qc}{index that specifies which columns of `colData` 
-correspond to QC measures.}
+\item{which_qc}{integer. Index of columns of `colData` that contain the QC
+metrics.}
 
-\item{which_bio}{index that specifies which column of `colData`
-corresponds to `bio`.}
+\item{which_bio}{integer. Index of the column of `colData` that contains the
+biological class information (it must be a factor).}
 
-\item{which_batch}{index that specifies which column of `colData`
-corresponds to `batch`.}
+\item{which_batch}{integer. Index of the column of `colData` that contains
+the batch information (it must be a factor).}
 
-\item{which_negconruv}{index that specifies which column of `rowData`
-has information on negative controls for RUV.}
+\item{which_negconruv}{integer. Index of the column of `rowData` that
+contains a logical vector indicating which genes are negative controls for
+RUV normalization.}
 
-\item{which_negconeval}{index that specifies which column of `rowData`
-has information on negative controls for evaluation.}
+\item{which_negconeval}{integer. Index of the column of `rowData` that
+contains a logical vector indicating which genes are negative controls for
+evaluating the normalization performance.}
 
-\item{which_poscon}{index that specifies which column of `rowData` has 
-information on positive controls.}
+\item{which_poscon}{integer. Index of the column of `rowData` that contains
+a logical vector indicating which genes are positive controls for
+evaluating the normalization performance.}
 
-\item{is_log}{are the expression data in log scale?}
+\item{is_log}{logical. Are the expression data in log- scale? (currently not
+supported by \code{\link{scone}})}
 
-\item{qc}{numeric matrix with the QC measures.}
+\item{qc}{matrix. numeric matrix of QC metrics (samples-by-metrics).}
 
-\item{bio}{factor with the biological class of interest.}
+\item{bio}{factor. biological class of interest.}
 
-\item{batch}{factor with the batch information.}
+\item{batch}{factor. batch information.}
 
-\item{negcon_ruv}{a logical vector indicating which genes to use as negative
+\item{negcon_ruv}{logical. vector indicating which genes are negative
 controls for RUV.}
 
-\item{negcon_eval}{a logical vector indicating which genes to use as 
-negative controls for evaluation.}
+\item{negcon_eval}{logical. vector indicating which genes are negative
+controls for evaluation.}
 
-\item{poscon}{a logical vector indicating which genes to use as positive
-controls.}
+\item{poscon}{logical. vector indicating which genes are positive controls.}
 }
 \value{
 A \code{\link{SconeExperiment}} object.
 }
 \description{
-Objects of this class store, at minimum, a gene expression 
-  matrix and a set of covariates (sample metadata) useful for running 
-  \code{\link{scone}}. These include, the quality control (QC) metrics,
-  batch information, and biological classes of interest (if available).
+Objects of this class store, at minimum, a gene expression
+  matrix, sample metadata, and feature data (e.g. gene sets) useful for
+  running \code{\link{scone}}.
 
-The typical way of creating \code{SconeExperiment} objects is 
-  via a call to the \code{\link{SconeExperiment}} function or to the 
-  \code{\link{scone}} function. If the object is a result to a 
-  \code{\link{scone}} call, it will contain the results, e.g., the 
-  performance metrics, scores, and normalization workflow comparisons. (See 
-  Slots for a full list).
+A \code{SconeExperiment} objects is created via a call to the
+  \code{\link{SconeExperiment}} constructor or the main \code{\link{scone}}
+  function. If the object results from a \code{\link{scone}} call, it will
+  contain normalization performance metrics, scores, and all data required
+  to recover individual normalized expression matrices. (See Slots for a
+  full list).
 
-This object extends the 
+This object extends the
   \code{\linkS4class{SummarizedExperiment}} class.
 
 The constructor \code{SconeExperiment} creates an object of the
   class \code{SconeExperiment}.
 }
 \details{
-The QC matrix, biological class, and batch information are 
-  stored as elements of the `colData` of the object.
+The quality control (QC) metrics, biological class, and batch
+  information are stored as elements of the `colData` of the object.
 
-The positive and negative control genes are stored as 
-  elements of the `rowData` of the object.
+Positive and negative control gene sets are stored as elements of
+  the `rowData` of the object.
 }
 \section{Slots}{
 
 \describe{
-\item{\code{which_qc}}{integer. Index of columns of `colData` that contain the
-QC metrics.}
+\item{\code{which_qc}}{integer. Index of columns of `colData` that contain the QC
+metrics.}
 
-\item{\code{which_bio}}{integer. Index of the column of `colData` that contains
-the biological classes information (it must be a factor).}
+\item{\code{which_bio}}{integer. Index of the column of `colData` that contains the
+biological class information (it must be a factor).}
 
-\item{\code{which_batch}}{integer. Index of the column of `colData`
-that contains the batch information (it must be a factor).}
+\item{\code{which_batch}}{integer. Index of the column of `colData` that contains
+the batch information (it must be a factor).}
 
 \item{\code{which_negconruv}}{integer. Index of the column of `rowData` that
-contains a logical vector indicating which genes to use as negative
-controls to infer the factors of unwanted variation in RUV.}
+contains a logical vector indicating which genes are negative controls for
+RUV normalization.}
 
-\item{\code{which_negconeval}}{integer. Index of the column of `rowData` that 
-contains a logical vector indicating which genes to use as negative 
-controls to evaluate the performance of the normalizations.}
+\item{\code{which_negconeval}}{integer. Index of the column of `rowData` that
+contains a logical vector indicating which genes are negative controls for
+evaluating the normalization performance.}
 
-\item{\code{which_poscon}}{integer. Index of the column of `rowData` that
-contains a logical vector indicating which genes to use as positive
-controls to evaluate the performance of the normalizations.}
+\item{\code{which_poscon}}{integer. Index of the column of `rowData` that contains a
+logical vector indicating which genes are positive controls for evaluating
+the normalization performance.}
 
-\item{\code{hdf5_pointer}}{character. A string specifying to which 
-file to write / read the normalized data.}
+\item{\code{hdf5_pointer}}{character. A string specifying to which file to write /
+read the normalized expression data.}
 
-\item{\code{imputation_fn}}{list of functions used by scone for 
-the imputation step.}
+\item{\code{imputation_fn}}{list of functions used by \code{\link{scone}} in the
+imputation step.}
 
-\item{\code{scaling_fn}}{list of functions used by scone for the scaling step.}
+\item{\code{scaling_fn}}{list of functions used by \code{\link{scone}} in the Scale
+step.}
 
-\item{\code{scone_metrics}}{matrix. Matrix containing the "raw" 
-performance metrics. See \code{\link{scone}} for a 
-description of each metric.}
+\item{\code{scone_metrics}}{matrix. Matrix containing the \code{\link{scone}}
+performance metrics.}
 
-\item{\code{scone_scores}}{matrix. Matrix containing the performance scores 
-(transformed metrics). See \code{\link{scone}} for a discussion on the 
-difference between scores and metrics.}
+\item{\code{scone_scores}}{matrix. Matrix containing the \code{\link{scone}}
+performance scores (transformed metrics) and aggregate ranking.}
 
-\item{\code{scone_params}}{data.frame. A data frame containing
-the normalization schemes applied to the data and compared.}
+\item{\code{scone_params}}{data.frame. A data frame containing specifications for
+normalization schemes applied by \code{\link{scone}}.}
 
-\item{\code{scone_run}}{character. Whether \code{\link{scone}} was 
-run and in which mode ("no", "in_memory", "hdf5").}
+\item{\code{scone_run}}{character. Whether \code{\link{scone}} was run and in which
+mode ("no", "in_memory", "hdf5").}
 
-\item{\code{is_log}}{logical. Are the expression data in log scale?}
+\item{\code{is_log}}{logical. Are the expression data in log- scale? (currently not
+supported by \code{\link{scone}})}
 
-\item{\code{nested}}{logical. Is batch nested within bio? 
-(Automatically set by \code{\link{scone}}).}
+\item{\code{nested}}{logical. Is batch nested within bio? (Automatically set by
+\code{\link{scone}}).}
 
-\item{\code{rezero}}{logical. TRUE if \code{\link{scone}} was run with 
+\item{\code{rezero}}{logical. Did \code{\link{scone}} restore zero values following
+the Scale step? TRUE if \code{\link{scone}} was run with
 \code{zero="preadjust"} or \code{zero="strong"}.}
 
-\item{\code{fixzero}}{logical. TRUE if \code{\link{scone}} was run with 
+\item{\code{fixzero}}{logical. Did \code{\link{scone}} fix zero values following the
+Adjust step? TRUE if \code{\link{scone}} was run with
 \code{zero="postadjust"} or \code{zero="strong"}.}
 
 \item{\code{impute_args}}{list. Arguments passed to all imputation functions.}
@@ -167,10 +171,10 @@ scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 }
 \seealso{
 \code{\link{get_normalized}}, \code{\link{get_params}},
-\code{\link{get_batch}}, \code{\link{get_bio}}, \code{\link{get_design}},
-\code{\link{get_negconeval}}, \code{\link{get_negconruv}},
-\code{\link{get_poscon}}, \code{\link{get_qc}}, 
-\code{\link{get_scores}}, and \code{\link{get_score_ranks}} 
-to access internal fields, \code{\link{select_methods}} for subsetting
-by method, and \code{\link{scone}} for running scone workflows.
+  \code{\link{get_batch}}, \code{\link{get_bio}}, \code{\link{get_design}},
+  \code{\link{get_negconeval}}, \code{\link{get_negconruv}},
+  \code{\link{get_poscon}}, \code{\link{get_qc}}, \code{\link{get_scores}},
+  and \code{\link{get_score_ranks}} to access internal fields,
+  \code{\link{select_methods}} for subsetting by method, and
+  \code{\link{scone}} for running scone workflows.
 }

@@ -48,12 +48,12 @@
 #'   read the normalized expression data.
 #' @slot imputation_fn list of functions used by \code{\link{scone}} in the
 #'   imputation step.
-#' @slot scaling_fn list of functions used by \code{\link{scone}} in the
-#'   scaling step.
+#' @slot scaling_fn list of functions used by \code{\link{scone}} in the Scale
+#'   step.
 #' @slot scone_metrics matrix. Matrix containing the \code{\link{scone}}
 #'   performance metrics.
 #' @slot scone_scores matrix. Matrix containing the \code{\link{scone}}
-#'   performance scores (transformed metrics) and aggregate score.
+#'   performance scores (transformed metrics) and aggregate ranking.
 #' @slot scone_params data.frame. A data frame containing specifications for
 #'   normalization schemes applied by \code{\link{scone}}.
 #' @slot scone_run character. Whether \code{\link{scone}} was run and in which
@@ -63,21 +63,21 @@
 #' @slot nested logical. Is batch nested within bio? (Automatically set by
 #'   \code{\link{scone}}).
 #' @slot rezero logical. Did \code{\link{scone}} restore zero values following
-#'   the scaling step? TRUE if \code{\link{scone}} was run with
+#'   the Scale step? TRUE if \code{\link{scone}} was run with
 #'   \code{zero="preadjust"} or \code{zero="strong"}.
 #' @slot fixzero logical. Did \code{\link{scone}} fix zero values following the
-#'   adjustment step? TRUE if \code{\link{scone}} was run with
+#'   Adjust step? TRUE if \code{\link{scone}} was run with
 #'   \code{zero="postadjust"} or \code{zero="strong"}.
 #' @slot impute_args list. Arguments passed to all imputation functions.
 #'
 #' @seealso \code{\link{get_normalized}}, \code{\link{get_params}},
-#' \code{\link{get_batch}}, \code{\link{get_bio}}, \code{\link{get_design}},
-#' \code{\link{get_negconeval}}, \code{\link{get_negconruv}},
-#' \code{\link{get_poscon}}, \code{\link{get_qc}},
-#' \code{\link{get_scores}}, and \code{\link{get_score_ranks}}
-#' to access internal fields, \code{\link{select_methods}} for subsetting
-#' by method, and \code{\link{scone}} for running scone workflows.
-#'
+#'   \code{\link{get_batch}}, \code{\link{get_bio}}, \code{\link{get_design}},
+#'   \code{\link{get_negconeval}}, \code{\link{get_negconruv}},
+#'   \code{\link{get_poscon}}, \code{\link{get_qc}}, \code{\link{get_scores}},
+#'   and \code{\link{get_score_ranks}} to access internal fields,
+#'   \code{\link{select_methods}} for subsetting by method, and
+#'   \code{\link{scone}} for running scone workflows.
+#'   
 setClass(
   Class = "SconeExperiment",
   contains = "SummarizedExperiment",
@@ -236,7 +236,7 @@ setValidity("SconeExperiment", function(object) {
 #'
 #' scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 #'
-#'
+#' 
 setGeneric(
   name = "SconeExperiment",
   def = function(object, ...) {
@@ -265,7 +265,7 @@ setGeneric(
 #'   supported by \code{\link{scone}})
 #'
 #' @export
-#'
+#' 
 setMethod(
   f = "SconeExperiment",
   signature = signature("SummarizedExperiment"),
@@ -320,7 +320,7 @@ setMethod(
 #' @export
 #'
 #' @return A \code{\link{SconeExperiment}} object.
-#'
+#'   
 setMethod(
   f = "SconeExperiment",
   signature = signature("matrix"),

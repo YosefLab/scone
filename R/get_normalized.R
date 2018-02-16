@@ -7,8 +7,6 @@
 #'   
 #' @importFrom rhdf5 h5ls h5read
 #' @export
-#' 
-#' @param log logical. Should the data be returned in log-scale
 #'   
 setMethod(
   f = "get_normalized",

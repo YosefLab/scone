@@ -9,7 +9,7 @@
 \alias{get_score_ranks}
 \alias{get_scores,SconeExperiment-method}
 \alias{get_score_ranks,SconeExperiment-method}
-\title{Extract scone scores}
+\title{Get scone Scores and Aggregate Ranking}
 \usage{
 get_scores(x)
 
@@ -29,7 +29,7 @@ get_score_ranks(x)
 \code{get_score_ranks} returns a vector of average score ranks.
 }
 \description{
-Extract scone scores
+Get scone Scores and Aggregate Ranking
 }
 \examples{
 set.seed(42)

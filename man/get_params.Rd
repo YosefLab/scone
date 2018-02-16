@@ -5,7 +5,7 @@
 \alias{get_params}
 \alias{get_params,SconeExperiment-method}
 \alias{get_params,SconeExperiment-method}
-\title{Extract scone parameters}
+\title{Extract scone Parameters for Normalization Schemes}
 \usage{
 get_params(x)
 
@@ -18,7 +18,7 @@ get_params(x)
 A data.frame containing workflow parameters for each scone workflow.
 }
 \description{
-Extract scone parameters
+Extract scone Parameters for Normalization Schemes
 }
 \examples{
 set.seed(42)

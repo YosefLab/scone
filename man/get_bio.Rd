@@ -9,7 +9,7 @@
 \alias{get_batch}
 \alias{get_bio,SconeExperiment-method}
 \alias{get_batch,SconeExperiment-method}
-\title{Get Factor of Biological Conditions and Batch}
+\title{Get Factors of Biological Class and Batch}
 \usage{
 get_bio(x)
 
@@ -26,7 +26,7 @@ get_batch(x)
 NULL or a factor containing bio or batch covariate.
 }
 \description{
-Get Factor of Biological Conditions and Batch
+Get Factors of Biological Class and Batch
 }
 \examples{
 set.seed(42)

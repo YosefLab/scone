@@ -5,7 +5,7 @@
 \alias{get_qc}
 \alias{get_qc,SconeExperiment-method}
 \alias{get_qc,SconeExperiment-method}
-\title{Get Quality Control Matrix}
+\title{Get Quality Control (QC) Metrics}
 \usage{
 get_qc(x)
 
@@ -18,7 +18,7 @@ get_qc(x)
 NULL or the quality control (QC) metric matrix.
 }
 \description{
-Get Quality Control Matrix
+Get Quality Control (QC) Metrics
 }
 \examples{
 set.seed(42)

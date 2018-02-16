@@ -5,7 +5,7 @@
 \alias{get_design}
 \alias{get_design,SconeExperiment,character-method}
 \alias{get_design,SconeExperiment,numeric-method}
-\title{Retrieve Design Matrix}
+\title{Get Design Matrix}
 \usage{
 get_design(x, method)
 

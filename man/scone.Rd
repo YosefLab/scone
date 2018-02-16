@@ -3,7 +3,7 @@
 \docType{methods}
 \name{scone}
 \alias{scone}
-\alias{scone}
+\alias{scone,SconeExperiment-method}
 \alias{scone,SconeExperiment-method}
 \title{Normalize Expression Data and Evaluate Normalization Performance}
 \usage{
@@ -107,9 +107,9 @@ A \code{\link{SconeExperiment}} object with the log-scaled
   metrics and scores.
 }
 \description{
-This function applies and evaluates a variety of normalization schemes
-with respect to a specified SconeExperiment containing scRNA-Seq data.
-Each normalization consists of three main steps: \itemize{ \item{Impute:}{
+This function applies and evaluates a variety of normalization schemes with
+respect to a specified SconeExperiment containing scRNA-Seq data. Each
+normalization consists of three main steps: \itemize{ \item{Impute:}{
 Replace observations of zeroes with expected expression values. }
 \item{Scale:}{ Match sample-specific expression scales or quantiles. }
 \item{Adjust:}{ Adjust for sample-level batch factors / unwanted variation.}
@@ -162,19 +162,18 @@ In all cases, the normalized matrices can be retrieved via the
   \code{\link{get_normalized}} function.
 }
 \examples{
-
 mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- SconeExperiment(mat)
 no_results <- scone(obj, scaling=list(none=identity,
            uq=UQ_FN, deseq=DESEQ_FN),
            run=FALSE, k_ruv=0, k_qc=0, eval_kclust=2)
-           
+
 results <- scone(obj, scaling=list(none=identity,
            uq=UQ_FN, deseq=DESEQ_FN),
            run=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,
            bpparam = BiocParallel::SerialParam())
-           
+
 results_in_memory <- scone(obj, scaling=list(none=identity,
            uq=UQ_FN, deseq=DESEQ_FN),
            k_ruv=0, k_qc=0, eval_kclust=2,
