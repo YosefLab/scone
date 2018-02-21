@@ -83,18 +83,16 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 #' # Create a scone object
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- SconeExperiment(mat)
+#' obj <- SconeExperiment(mat, bio = c('a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b'))
 #' res <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,
 #'            bpparam = BiocParallel::SerialParam())
 #' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
 #' rownames(qc) = colnames(mat)
 #' colnames(qc) = c("NCOUNTS","NGENES")
-#' res$bio <- c('a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b')
 #' 
 #' # Subsample the scone object
 #' subsampled_res <- subsample_cells_with_min_bio(res, seed = 100, verbose = TRUE)
-#' 
 #' 
 #' @return The subsampled Scone Object
 
@@ -248,15 +246,13 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, 
 #' # Create a scone object
 #' mat <- matrix(rpois(1000, lambda = 5), ncol=10)
 #' colnames(mat) <- paste("X", 1:ncol(mat), sep="")
-#' obj <- SconeExperiment(mat)
+#' obj <- SconeExperiment(mat, bio = c('a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b'))
 #' scone_object <- scone(obj, scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
 #'            evaluate=TRUE, k_ruv=0, k_qc=0, eval_kclust=2,
 #'            bpparam = BiocParallel::SerialParam())
 #' qc = as.matrix(cbind(colSums(mat),colSums(mat > 0)))
 #' rownames(qc) = colnames(mat)
 #' colnames(qc) = c("NCOUNTS","NGENES")
-#' 
-#' scone_object$bio <- c('a', 'a', 'a', 'a', 'a', 'a', 'a', 'b', 'b', 'b')
 #' 
 #' # Subsample the scone object
 #' subsampled_res <- subsample_scone(scone_object, subsample_gene_level = 50, subsample_cell_level = 100, 
@@ -341,8 +337,8 @@ sconeReport = function(x, methods,
                        bio = NULL, batch = NULL,
                        poscon = character(), negcon = character(),
                        eval_proj = NULL,
-                       eval_proj_args = NULL, subsample_genes = 100, subsample_cells = 100, 
-                       sub_scone = TRUE){
+                       eval_proj_args = NULL, 
+                       subsample = (ncol(x) > 100), subsample_args = list()){
 
   if (!requireNamespace("shiny", quietly = TRUE)) {
     stop("shiny package needed for sconeReport()")
@@ -371,9 +367,12 @@ sconeReport = function(x, methods,
   if (!requireNamespace("ggplot2", quietly = TRUE)) {
     stop("ggplot2 package needed for sconeReport()")
   }
-
-  if(sub_scone){
-    x = subsample_scone(x, subsample_gene_level = subsample_genes)
+  
+  original_scone = x
+  
+  if(subsample){
+    message("Subsampling Scone Object")
+    x = do.call(subsample_scone, c(list(x), subsample_args))
   } 
   
   if(is.null(qc)){
@@ -700,6 +699,13 @@ sconeReport = function(x, methods,
                                      shiny::plotOutput("rle",
                                                 width = "850px",
                                                 height = "450px")
+                            ),
+                            shiny::tabPanel("Subsampling",
+                                            shiny::br(),
+                                            plotlyOutput("subbed_genes"),
+                                            splitLayout(cellWidths = c("50%", "50%", "34%"), 
+                                                          plotlyOutput("original_cells_pie"),
+                                                          plotlyOutput("subbed_cells"))
                             )
       ))))
 
@@ -1243,6 +1249,39 @@ sconeReport = function(x, methods,
 
       }
 
+    })
+    
+    output$original_cells_pie <- plotly::renderPlotly({
+      
+      df <- as.data.frame(table(original_scone$bio))
+      plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
+              textposition = 'inside',
+              textinfo = 'label+percent')%>%layout(title = 'Original Cell Bios')
+    })
+    
+    output$subbed_cells <- plotly::renderPlotly({
+      
+      df <- as.data.frame(table(x$bio))
+      hole = 1- (ncol(x) / ncol(original_scone))
+      
+      plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
+              textposition = 'inside', hole = hole,
+              textinfo = 'label+percent')%>%layout(title = paste('Subsample Cell Bios: ',toString(round(hole*100)) ,'% of Original Cells'))
+    })
+    
+    output$subbed_genes <- plotly::renderPlotly({
+      control_total_x = sum(rowData(x)$negcon_ruv) + sum(rowData(x)$negcon_eval) + sum(rowData(x)$poscon)   
+      non_control_x = nrow(x) - control_total_x
+      control_not_in_x = sum(rowData(original_scone)$negcon_ruv) + sum(rowData(original_scone)$negcon_eval) + sum(rowData(original_scone)$poscon) - control_total_x
+      non_control_not_in_x = nrow(original_scone) - control_not_in_x - control_total_x - non_control_x
+      
+      labels = c('Control Genes in Subsample', 'Non Control Genes in Subsample', 'Control Genes Not in Subsample', 'Non Control Genes not in Subsample')
+      values = c(control_total_x, non_control_x, control_not_in_x, non_control_not_in_x)
+      
+      df <- data.frame(labels, values)
+      plot_ly(df, labels = ~labels, values = ~values, type='pie',
+              textposition = 'inside',
+              textinfo = 'label+percent')%>%layout(title = 'Gene Subsampling')
     })
 
     ## ----- Download Button -----
