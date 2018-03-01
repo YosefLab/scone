@@ -369,6 +369,10 @@ sconeReport = function(x, methods,
     stop("ggplot2 package needed for sconeReport()")
   }
   
+  if (!requireNamespace("shinycssloaders", quietly = TRUE)) {
+    stop("shinycssloaders package needed for sconeReport()")
+  }
+  
   original_scone = x
   
   if(subsample){
@@ -543,8 +547,8 @@ sconeReport = function(x, methods,
       shiny::mainPanel(shiny::tabsetPanel(type = "tabs",
                             shiny::tabPanel("Overview",
                                      shiny::br(),
-                                     visNetworkOutput("norm_net",
-                                                      width = "650px"),
+                                     withSpinner(visNetworkOutput("norm_net",
+                                                      width = "650px")),
                                      shiny::br(),
                                      DT::dataTableOutput('tbl_score')
                             ),
@@ -561,18 +565,18 @@ sconeReport = function(x, methods,
                                               " to decide on the ",
                                               "dimensionality of the reduced",
                                               " spaced used for evaluation.")),
-                                shiny::plotOutput("plot_scree",width = "650px",
-                                                height = "400px"),
+                                     withSpinner(shiny::plotOutput("plot_scree",width = "650px",
+                                                height = "400px")),
                                      shiny::br(),
                                      shiny::h6("2D (All Genes)"),
-                                     shiny::plotOutput("plot_base",
+                                     withSpinner(shiny::plotOutput("plot_base",
                                                 width = "650px",
-                                                height = "450px"),
+                                                height = "450px")),
                                      shiny::br(),
                                      shiny::h6("3D Interactive (All Genes)"),
-                                     plotlyOutput("plot3d_base",
+                                     withSpinner(plotlyOutput("plot3d_base",
                                                   width = "650px",
-                                                  height = "650px"),
+                                                  height = "650px")),
                                      shiny::br(),
                                      shiny::selectInput("gene_set",
                                                  label = "Gene selection",
@@ -585,9 +589,9 @@ sconeReport = function(x, methods,
                                      shiny::h6("2D (Select Genes)"),
                                      shiny::p(paste0("Visualize cells by PCs",
                                               " of control gene sets.")),
-                                     shiny::plotOutput("plot_select",
+                                     withSpinner(shiny::plotOutput("plot_select",
                                                 width = "650px",
-                                                height = "450px")
+                                                height = "450px"))
                             ),
                             shiny::tabPanel("QC",
                                      shiny::br(),
@@ -607,18 +611,18 @@ sconeReport = function(x, methods,
                                               "PC1 and 'bad' cells a",
                                               " high value).")),
                                      shiny::br(),
-                                     plotlyOutput('qccorPlot',
+                                     withSpinner(plotlyOutput('qccorPlot',
                                                   width = "650px",
-                                                  height = "450px"),
+                                                  height = "450px")),
                                      shiny::h5("PCA of QC metrics"),
                                      shiny::h6("2D"),
-                                     shiny::plotOutput("plot_qc",
+                                     withSpinner(shiny::plotOutput("plot_qc",
                                                 width = "650px",
-                                                height = "450px"),
+                                                height = "450px")),
                                      shiny::h6("3D Interactive"),
-                                     plotlyOutput("plot3d_qc",
+                                     withSpinner(plotlyOutput("plot3d_qc",
                                                   width = "650px",
-                                                  height = "650px")
+                                                  height = "650px"))
                             ),
                             shiny::tabPanel("Silhouette",
                                      shiny::br(),
@@ -626,9 +630,9 @@ sconeReport = function(x, methods,
                                               " Sample and Contingency",
                                               " Tables")),
                                      shiny::br(),
-                                     shiny::plotOutput("plotsil",
+                                     withSpinner(shiny::plotOutput("plotsil",
                                                 width = "650px",
-                                                height = "450px"),
+                                                height = "450px")),
                                      shiny::selectInput("cat1",
                                                  label =
                                                    "Row Class",
@@ -658,13 +662,13 @@ sconeReport = function(x, methods,
                                               " three categories.")),
                                      shiny::br(),
                                      shiny::p("Positive controls:"),
-                                     shiny::plotOutput("hmposcon",
+                                     withSpinner(shiny::plotOutput("hmposcon",
                                                 width = "650px",
-                                                height = "450px"),
+                                                height = "450px")),
                                      shiny::p("Negative controls:"),
-                                     shiny::plotOutput("hmnegcon",
+                                     withSpinner(shiny::plotOutput("hmnegcon",
                                                 width = "650px",
-                                                height = "450px")
+                                                height = "450px"))
                             ),
 
                             shiny::tabPanel("Stratified PCA",
@@ -684,9 +688,9 @@ sconeReport = function(x, methods,
                                                    min(length(batch)-1,10),
                                                  value = 1),
                                      shiny::h6("All Genes:"),
-                                     shiny::plotOutput("violin_base",
+                                     withSpinner(shiny::plotOutput("violin_base",
                                                 width = "650px",
-                                                height = "450px"),
+                                                height = "450px")),
                                      shiny::selectInput("gene_set2",
                                                  label = "Gene selection",
                                                  choices =
@@ -696,9 +700,9 @@ sconeReport = function(x, methods,
                                                           "pos"),
                                                  selected = "neg"),
                                      shiny::h6("Select Genes:"),
-                                     shiny::plotOutput("violin_select",
+                                     withSpinner(shiny::plotOutput("violin_select",
                                                 width = "650px",
-                                                height = "450px")
+                                                height = "450px"))
                             ),
 
                             shiny::tabPanel("Relative Log-Expression",
@@ -707,16 +711,16 @@ sconeReport = function(x, methods,
                                               "Log-Expression Plot ",
                                               "for top 100 Most ",
                                               "Variable Genes.")),
-                                     shiny::plotOutput("rle",
+                                     withSpinner(shiny::plotOutput("rle",
                                                 width = "850px",
-                                                height = "450px")
+                                                height = "450px"))
                             ),
                             shiny::tabPanel("Subsampling",
                                             shiny::br(),
-                                            plotlyOutput("subbed_genes"),
+                                            withSpinner(plotlyOutput("subbed_genes")),
                                             splitLayout(cellWidths = c("50%", "50%"), 
-                                                          plotlyOutput("original_cells_pie"),
-                                                          plotlyOutput("subbed_cells"))
+                                                        withSpinner(plotlyOutput("original_cells_pie")),
+                                                        withSpinner(plotlyOutput("subbed_cells")))
                             )
       ))))
 
@@ -1342,7 +1346,7 @@ sconeReport = function(x, methods,
       plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
               hole = hole,sort = FALSE,
               marker = list(colors=brewer.pal(9,"Set1"))
-              )%>%layout(showlegend=TRUE, title = paste('Subsample Cell Bios: ',toString(round(hole*100)) ,'% of Original Cells'))
+              )%>%layout(showlegend=TRUE, title = paste('Subsample Cell Bios: ',toString(100 - round(hole*100)),'% of Original Cells'))
     })
     
     output$subbed_genes <- plotly::renderPlotly({
