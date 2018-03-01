@@ -206,8 +206,9 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, 
   else{
     # If do not care about control genes, just sample by percentile
     # Maximum size
-    length <- nrow(scone_object)
+    # length <- nrow(scone_object)
     # Randomly select genes
+    length <- nrow(scone_object)
     num_samples <- ceiling((percent*length) / 100)
     list_possible <- seq(length)
     indices <- sample(list_possible, num_samples)
@@ -397,11 +398,12 @@ sconeReport = function(x, methods,
   scone_res = list()
 
   # List of normalized matrices
-  scone_res$normalized_data = lapply(as.list(methods),
-                                     FUN = function(z){
-                                       get_normalized(x,method = z,log=TRUE)
-                                     })
-  names(scone_res$normalized_data) = methods
+  ## YANAY CHANGE
+  # Original scone_res$normalized_data = lapply(as.list(methods), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
+  first_method = methods[1]
+  scone_res$normalized_data = lapply(as.list(first_method), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
+  
+  names(scone_res$normalized_data) = first_method
 
   # Parameter matrix
   scone_res$params = get_params(x)[methods,]
@@ -526,7 +528,16 @@ sconeReport = function(x, methods,
         shiny::helpText(paste0("Please note that with many cells (>500),",
                         " some plots may take several seconds ",
                         "(sometimes minutes) to appear.")),
-        shiny::downloadLink('downloadData', 'Download')
+        shiny::downloadLink('downloadData', 'Download'),
+        shiny::checkboxInput("subsample", label = "Subsample?", value= subsample),
+        shiny::checkboxInput("at_bio", label = "Subsample Cells at Minimum Bio", value= subsample_args$at_bio),
+        shiny::checkboxInput("keep_all_control", label = "Keep all Control Genes", value= subsample_args$keep_all_control),
+        shiny::sliderInput("subsample_gene_level", label = "Subsample Gene Level",
+                           min=0, max=100,
+                           value = subsample_args['subsample_gene_level']),
+        shiny::sliderInput("subsample_cell_level", label = "Subsample Cell Level",
+                            min=0, max=100,
+                           value= subsample_args$subsample_cell_level)
       ),
 
       shiny::mainPanel(shiny::tabsetPanel(type = "tabs",
@@ -712,7 +723,71 @@ sconeReport = function(x, methods,
   server <- function(input, output, session) {
 
     ## ------ Overview Tab ------
-
+    
+    ## Lets make Scone Res reactive first YANAY
+    
+    subsample_args_input <- shiny::reactive({
+      list(at_bio = input$at_bio, keep_all_control = input$keep_all_control, 
+           subsample_gene_level = input$subsample_gene_level,
+           subsample_cell_level = input$subsample_cell_level)
+      
+    })
+    
+    x <- shiny::reactive({
+      if(is.reactive(x)){
+        if(input$subsample){
+          message("Subsampling Scone Object")
+          ret = do.call(subsample_scone, c(list(original_scone), subsample_args_input()))
+        } else{
+          ret = original_scone
+        }
+      }else{
+        ret = x
+      }
+      ret
+    })
+    
+    qc <- shiny::reactive({
+      get_qc(x())
+      
+    })
+    
+    bio <- shiny::reactive({
+      n <- get_bio(x())
+      n
+    })
+    
+    batch <- shiny::reactive({
+      n <- get_batch(x())
+      if(is.reactive(batch)){
+        if(is.null(n)){
+          b = factor(rep("NA",ncol(scone_res()$normalized_data[[input$norm_code]])))
+        }
+      }else{
+        if(is.null(batch)){
+          b = factor(rep("NA",ncol(scone_res()$normalized_data[[input$norm_code]])))
+        }
+      }
+      b
+    })
+    
+    scone_res <- shiny::reactive({
+      ret = list()
+      if(is.reactive(scone_res)){
+        ret$normalized_data = lapply(as.list(input$norm_code), FUN = function(z){get_normalized(x(),method = z,log=TRUE)}) 
+        ret$params = get_params(x())[methods,]
+        ret$scores = cbind(get_scores(x()),get_score_ranks(x()))[methods,]
+        names(ret$normalized_data) = input$norm_code
+      } else{
+        ret$normalized_data = scone_res$normalized_data
+        names(ret$normalized_data) = first_method
+        ret$params = scone_res$params
+        ret$scores = scone_res$scores
+      }
+      ret
+      })
+    
+  
     # Render Network
     output$norm_net <- renderVisNetwork({
 
@@ -742,7 +817,7 @@ sconeReport = function(x, methods,
                             values = nodes$id[nodes$group == "Loaded"],
                             selected =
                               nodes$id[nodes$title ==
-                                         rownames(scone_res$params)[1]])) %>%
+                                         rownames(scone_res()$params)[1]])) %>%
           visLegend(width = 0.1, position = "right", main = "Status")
       }else{
         visNetwork(nodes, edges,width = "100%",main = "Tree of Methods") %>%
@@ -754,14 +829,14 @@ sconeReport = function(x, methods,
                             values = nodes$id[nodes$group == "Loaded"],
                             selected =
                               nodes$id[nodes$title ==
-                                         rownames(scone_res$params)[1]]))
+                                         rownames(scone_res()$params)[1]]))
       }
 
     })
 
     # Render Table
     output$tbl_score <- DT::renderDataTable({
-      DT::datatable(scone_res$scores,
+      DT::datatable(scone_res()$scores,
                     extensions = 'Buttons',
                     selection = list( mode = 'single',
                                       target = 'row',
@@ -769,13 +844,13 @@ sconeReport = function(x, methods,
                     options=
                       list(columnDefs =
                              list(list(visible=FALSE,
-                                       targets=1:(ncol(scone_res$scores)-1))),
+                                       targets=1:(ncol(scone_res()$scores)-1))),
                            dom = 'Bfrtip',
                            buttons = list(
                              list(extend = 'colvis',
-                                  columns = c(1:(ncol(scone_res$scores)-1))))
+                                  columns = c(1:(ncol(scone_res()$scores)-1))))
                       )) %>%
-        DT::formatSignif(columns=c(1:(ncol(scone_res$scores))), digits=3)
+        DT::formatSignif(columns=c(1:(ncol(scone_res()$scores))), digits=3)
     })
 
     # Update Menu Upon Network Selection of (Loaded) Normalization
@@ -857,13 +932,13 @@ sconeReport = function(x, methods,
     ## ------ PCA Tab ------
 
     normle <- shiny::reactive({
-      as.matrix(scone_res$normalized_data[[input$norm_code]])
+      as.matrix(scone_res()$normalized_data[[input$norm_code]])
     })
 
     strat_col <- shiny::reactive({
       switch(input$color_code,
-             bio = bio,
-             batch = batch,
+             bio = bio(),
+             batch = batch(),
              clust = pam_obj()$clust)
     })
 
@@ -931,7 +1006,7 @@ sconeReport = function(x, methods,
 
     output$plot_scree <- shiny::renderPlot({
       plot(pc_obj_base()$sdev[1:min(input$dim*2,
-                                    length(batch)-1)]^2/
+                                    length(batch())-1)]^2/
              sum(pc_obj_base()$sdev^2),
            typ = "l",
            ylab = "Proportion of Variance",
@@ -985,7 +1060,7 @@ sconeReport = function(x, methods,
     ## ------ QC Tab ------
 
     cor_qc <- shiny::reactive({
-      abs(cor(qc,pc_obj_base()$x))
+      abs(cor(qc(),pc_obj_base()$x))
     })
 
     output$qccorPlot <- plotly::renderPlotly({
@@ -993,7 +1068,7 @@ sconeReport = function(x, methods,
 
       df = reshape2::melt(cor_qc()[,1:input$dim])
       colnames(df) = c("metric","PC","value")
-      df$metric = factor(df$metric,levels = colnames(qc))
+      df$metric = factor(df$metric,levels = colnames(qc()))
       df$PC = factor(df$PC,
                      levels = paste0("PC",1:input$dim))
       p <- ggplot(data = df, aes(x = PC,
@@ -1008,7 +1083,7 @@ sconeReport = function(x, methods,
     })
 
     pc_obj_qc <- shiny::reactive({
-      prcomp(as.matrix(qc),center = TRUE, scale = TRUE)
+      prcomp(as.matrix(qc()),center = TRUE, scale = TRUE)
     })
 
     output$plot_qc <- shiny::renderPlot({
@@ -1070,15 +1145,15 @@ sconeReport = function(x, methods,
 
     cat1 <- shiny::reactive({
       switch(input$cat1,
-             bio = bio,
-             batch = batch,
+             bio = bio(),
+             batch = batch(),
              clust = pam_obj()$clust)
     })
 
     cat2 <- shiny::reactive({
       switch(input$cat2,
-             bio = bio,
-             batch = batch,
+             bio = bio(),
+             batch = batch(),
              clust = pam_obj()$clust)
     })
 
@@ -1102,7 +1177,7 @@ sconeReport = function(x, methods,
         if(length(unique(strat_col())) > 1){
 
           NMF::aheatmap(normle()[negcon,], Colv = silo(),
-                   annCol = list(batch = batch, bio = bio,
+                   annCol = list(batch = batch(), bio = bio(),
                                  pam =  as.factor(pam_obj()$clust)),
                    annColors = list(batch = cc, bio = cc, pam =  cc))
 
@@ -1129,8 +1204,8 @@ sconeReport = function(x, methods,
         if(length(unique(strat_col())) > 1){
 
           NMF::aheatmap(normle()[poscon,], Colv = silo(),
-                   annCol = list(batch = batch,
-                                 bio = bio,
+                   annCol = list(batch = batch(),
+                                 bio = bio(),
                                  pam = as.factor(pam_obj()$clust)),
                    annColors = list(batch = cc, bio = cc, pam =  cc))
 
@@ -1253,25 +1328,27 @@ sconeReport = function(x, methods,
     
     output$original_cells_pie <- plotly::renderPlotly({
       
-      df <- as.data.frame(table(original_scone$bio))
+      df <- as.data.frame(table(original_scone$bio))[order(~Var1)]
       plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
-              textposition = 'inside',
+              textposition = 'inside', sort = FALSE,
+              marker = list(colors=brewer.pal(9,"Set1")),
               textinfo = 'label+percent')%>%layout(title = 'Original Cell Bios')
     })
     
     output$subbed_cells <- plotly::renderPlotly({
       
-      df <- as.data.frame(table(x$bio))
-      hole = 1- (ncol(x) / ncol(original_scone))
+      df <- as.data.frame(table(x()$bio))[order(~Var1)]
+      hole = 1- (ncol(x()) / ncol(original_scone))
       
       plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
-              textposition = 'inside', hole = hole,
+              textposition = 'inside', hole = hole,sort = FALSE,
+              marker = list(colors=brewer.pal(9,"Set1")),
               textinfo = 'label+percent')%>%layout(title = paste('Subsample Cell Bios: ',toString(round(hole*100)) ,'% of Original Cells'))
     })
     
     output$subbed_genes <- plotly::renderPlotly({
-      control_total_x = sum(rowData(x)$negcon_ruv) + sum(rowData(x)$negcon_eval) + sum(rowData(x)$poscon)   
-      non_control_x = nrow(x) - control_total_x
+      control_total_x = sum(rowData(x())$negcon_ruv) + sum(rowData(x())$negcon_eval) + sum(rowData(x())$poscon)   
+      non_control_x = nrow(x()) - control_total_x
       control_not_in_x = sum(rowData(original_scone)$negcon_ruv) + sum(rowData(original_scone)$negcon_eval) + sum(rowData(original_scone)$poscon) - control_total_x
       non_control_not_in_x = nrow(original_scone) - control_not_in_x - control_total_x - non_control_x
       
@@ -1291,8 +1368,8 @@ sconeReport = function(x, methods,
         paste('scone_out-', Sys.Date(), '.csv', sep='')
       },
       content = function(con) {
-        datt = cbind(as.character(bio),
-                     as.character(batch),
+        datt = cbind(as.character(bio()),
+                     as.character(batch()),
                      as.character(pam_obj()$clust))
         colnames(datt) = c("Class-Bio","Class-Batch","Class-Pam")
         rownames(datt) = colnames(normle())
