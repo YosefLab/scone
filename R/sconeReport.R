@@ -714,7 +714,7 @@ sconeReport = function(x, methods,
                             shiny::tabPanel("Subsampling",
                                             shiny::br(),
                                             plotlyOutput("subbed_genes"),
-                                            splitLayout(cellWidths = c("50%", "50%", "34%"), 
+                                            splitLayout(cellWidths = c("50%", "50%"), 
                                                           plotlyOutput("original_cells_pie"),
                                                           plotlyOutput("subbed_cells"))
                             )
@@ -729,7 +729,7 @@ sconeReport = function(x, methods,
     subsample_args_input <- shiny::reactive({
       list(at_bio = input$at_bio, keep_all_control = input$keep_all_control, 
            subsample_gene_level = input$subsample_gene_level,
-           subsample_cell_level = input$subsample_cell_level)
+           subsample_cell_level = input$subsample_cell_level, verbose = subsample_args$verbose)
       
     })
     
@@ -1330,9 +1330,8 @@ sconeReport = function(x, methods,
       
       df <- as.data.frame(table(original_scone$bio))[order(~Var1)]
       plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
-              textposition = 'inside', sort = FALSE,
-              marker = list(colors=brewer.pal(9,"Set1")),
-              textinfo = 'label+percent')%>%layout(title = 'Original Cell Bios')
+              sort = FALSE,
+              marker = list(colors=brewer.pal(9,"Set1")))%>%layout(title = 'Original Cell Bios', showlegend=TRUE)
     })
     
     output$subbed_cells <- plotly::renderPlotly({
@@ -1341,9 +1340,9 @@ sconeReport = function(x, methods,
       hole = 1- (ncol(x()) / ncol(original_scone))
       
       plot_ly(df, labels = ~Var1, values = ~Freq, type='pie',
-              textposition = 'inside', hole = hole,sort = FALSE,
-              marker = list(colors=brewer.pal(9,"Set1")),
-              textinfo = 'label+percent')%>%layout(title = paste('Subsample Cell Bios: ',toString(round(hole*100)) ,'% of Original Cells'))
+              hole = hole,sort = FALSE,
+              marker = list(colors=brewer.pal(9,"Set1"))
+              )%>%layout(showlegend=TRUE, title = paste('Subsample Cell Bios: ',toString(round(hole*100)) ,'% of Original Cells'))
     })
     
     output$subbed_genes <- plotly::renderPlotly({
@@ -1356,9 +1355,8 @@ sconeReport = function(x, methods,
       values = c(control_total_x, non_control_x, control_not_in_x, non_control_not_in_x)
       
       df <- data.frame(labels, values)
-      plot_ly(df, labels = ~labels, values = ~values, type='pie',
-              textposition = 'inside',
-              textinfo = 'label+percent')%>%layout(title = 'Gene Subsampling')
+      plot_ly(df, labels = ~labels, values = ~values, type='pie'
+              )%>%layout(showlegend=TRUE, title = 'Gene Subsampling')
     })
 
     ## ----- Download Button -----
