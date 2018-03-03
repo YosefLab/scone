@@ -375,11 +375,6 @@ sconeReport = function(x, methods,
   
   original_scone = x
   
-  if(subsample){
-    message("Subsampling Scone Object")
-    x = do.call(subsample_scone, c(list(x), subsample_args))
-  } 
-  
   if(is.null(qc)){
     qc <- get_qc(x)
     
@@ -398,16 +393,44 @@ sconeReport = function(x, methods,
   if(length(negcon) < 1 && !(is.null((row.names(x)[get_negconeval(x)])))){
     negcon <- (row.names(x)[get_negconeval(x)])
   }
+  
+  
+  if(is.null(subsample_args$subsample_gene_level)){
+    subsample_args['subsample_gene_level'] = 100
+  }
 
+  if(is.null(subsample_args$subsample_cell_level)){
+    subsample_args['subsample_cell_level'] = 100
+  }
+  
+  if(is.null(subsample_args$cells_first)){
+    subsample_args['cells_first'] = TRUE
+  }
+  
+  if(is.null(subsample_args$at_bio)){
+    subsample_args['at_bio'] = TRUE
+  }
+  
+  if(is.null(subsample_args$keep_all_control)){
+    subsample_args['keep_all_control'] = TRUE
+  }
+  
+  if(is.null(subsample_args$seed)){
+    subsample_args['seed'] = 100
+  }
+   
+  if(is.null(subsample_args$verbose)){
+    subsample_args['verbose'] = TRUE
+  }
   scone_res = list()
 
   # List of normalized matrices
   ## YANAY CHANGE
   # Original scone_res$normalized_data = lapply(as.list(methods), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
   first_method = methods[1]
-  scone_res$normalized_data = lapply(as.list(first_method), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
+  # scone_res$normalized_data = lapply(as.list(first_method), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
   
-  names(scone_res$normalized_data) = first_method
+  # names(scone_res$normalized_data) = first_method
 
   # Parameter matrix
   scone_res$params = get_params(x)[methods,]
@@ -419,13 +442,13 @@ sconeReport = function(x, methods,
 
   ## ----- If NULL classifications, Replace with NA ------
 
-  if(is.null(bio)){
-    bio = factor(rep("NA",ncol(scone_res$normalized_data[[1]])))
-  }
-
-  if(is.null(batch)){
-    batch = factor(rep("NA",ncol(scone_res$normalized_data[[1]])))
-  }
+  # if(is.null(bio)){
+  #   bio = factor(rep("NA",ncol(scone_res$normalized_data[[1]])))
+  # }
+  # 
+  # if(is.null(batch)){
+  #   batch = factor(rep("NA",ncol(scone_res$normalized_data[[1]])))
+  # }
 
   ## ----- Network Data for Visualization -----
 
@@ -534,14 +557,7 @@ sconeReport = function(x, methods,
                         "(sometimes minutes) to appear.")),
         shiny::downloadLink('downloadData', 'Download'),
         shiny::checkboxInput("subsample", label = "Subsample?", value= subsample),
-        shiny::checkboxInput("at_bio", label = "Subsample Cells at Minimum Bio", value= subsample_args$at_bio),
-        shiny::checkboxInput("keep_all_control", label = "Keep all Control Genes", value= subsample_args$keep_all_control),
-        shiny::sliderInput("subsample_gene_level", label = "Subsample Gene Level",
-                           min=0, max=100,
-                           value = subsample_args['subsample_gene_level']),
-        shiny::sliderInput("subsample_cell_level", label = "Subsample Cell Level",
-                            min=0, max=100,
-                           value= subsample_args$subsample_cell_level)
+        shiny::uiOutput("subsampleMenu")
       ),
 
       shiny::mainPanel(shiny::tabsetPanel(type = "tabs",
@@ -1363,6 +1379,19 @@ sconeReport = function(x, methods,
               )%>%layout(showlegend=TRUE, title = 'Gene Subsampling')
     })
 
+    output$subsampleMenu <- renderUI({
+      if(input$subsample){
+      list(shiny::checkboxInput("at_bio", label = "Subsample Cells at Minimum Bio", value= subsample_args$at_bio),
+      shiny::checkboxInput("keep_all_control", label = "Keep all Control Genes", value= subsample_args$keep_all_control),
+      shiny::sliderInput("subsample_gene_level", label = "Subsample Gene Level",
+                         min=0, max=100,
+                         value = subsample_args['subsample_gene_level']),
+      shiny::sliderInput("subsample_cell_level", label = "Subsample Cell Level",
+                         min=0, max=100,
+                         value= subsample_args$subsample_cell_level))
+      }
+    })
+    
     ## ----- Download Button -----
 
     output$downloadData <- shiny::downloadHandler(
