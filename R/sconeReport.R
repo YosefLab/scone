@@ -383,11 +383,11 @@ sconeReport = function(x, methods,
     stop("shinycssloaders package needed for sconeReport()")
   }
   
+  # Keep track of the original object before any subsampling
   original_scone = x
   
   if(is.null(qc)){
     qc <- get_qc(x)
-    
   }
   if(is.null(bio)){
     bio <- get_bio(x)
@@ -404,7 +404,7 @@ sconeReport = function(x, methods,
     negcon <- (row.names(x)[get_negconeval(x)])
   }
   
-  
+  ## -----Fill in empty list parameters -----
   if(is.null(subsample_args$subsample_gene_level)){
     subsample_args$subsample_gene_level = 100
   }
@@ -445,33 +445,17 @@ sconeReport = function(x, methods,
     subsample_args$max_norm_cache_size = 'None'
   }
 
-scone_res = list()
+  scone_res = list()
 
-  # List of normalized matrices
-  ## YANAY CHANGE
-  # Original scone_res$normalized_data = lapply(as.list(methods), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
+  # On load, use the first provided method
   first_method = methods[1]
-  # scone_res$normalized_data = lapply(as.list(first_method), FUN = function(z){get_normalized(x,method = z,log=TRUE)})
   
-  # names(scone_res$normalized_data) = first_method
-
   # Parameter matrix
   scone_res$params = get_params(x)[methods,]
 
   # Merged score matrix
   scone_res$scores = cbind(get_scores(x),get_score_ranks(x))[methods,]
   colnames(scone_res$scores)[ncol(scone_res$scores)] = "mean_score_rank"
-
-
-  ## ----- If NULL classifications, Replace with NA ------
-
-  # if(is.null(bio)){
-  #   bio = factor(rep("NA",ncol(scone_res$normalized_data[[1]])))
-  # }
-  # 
-  # if(is.null(batch)){
-  #   batch = factor(rep("NA",ncol(scone_res$normalized_data[[1]])))
-  # }
 
   ## ----- Network Data for Visualization -----
 
@@ -579,10 +563,12 @@ scone_res = list()
                         " some plots may take several seconds ",
                         "(sometimes minutes) to appear.")),
         shiny::downloadLink('downloadData', 'Download'),
+        # Subsample Menus
         shiny::checkboxInput("subsample", label = "Subsample?", value= subsample),
         shiny::uiOutput("subsampleMenu")
       ),
 
+      ## ----- Main Panel: withSpinner loads a shiny output until it is ready to be rendered -----
       shiny::mainPanel(shiny::tabsetPanel(type = "tabs",
                             shiny::tabPanel("Overview",
                                      shiny::br(),
@@ -767,67 +753,84 @@ scone_res = list()
 
     ## ------ Overview Tab ------
     
-    #  Reactive Subsample Inputs
+    #  Reactive Subsample Inputs, responds to menu changes
     subsample_args_input <- shiny::reactive({
       list(at_bio = input$at_bio, keep_all_control = input$keep_all_control, 
            subsample_gene_level = input$subsample_gene_level,
            subsample_cell_level = input$subsample_cell_level, verbose = subsample_args$verbose)
-      
     })
     
-    #  Subsample Cache
+    #  Subsample Cache storage
     subsampled_cache <- shiny::reactiveValues()
     
     #  Reactive Subsampled Scone Object
     x <- shiny::reactive({
+      # The object has to react differentely between the first load of the app and subsequent calls
+      # On the first load, if you don't want to subsample, use the x parameter,
+      # if you do want to subsample, subsample using arguments.
+      # This behavior is a consequence of reassigning a variable to itself.
       if(is.reactive(x)){
+        # After the first load, the object is now reactive.
         if(input$subsample){
-          # Check if in caches
+          # If subsampling the object
+          # Create the look up / storage key for caching
+          # The key is the subsample arguments used to create the scone object
           cache_name <- paste(subsample_args_input(), collapse = ', ')
+          # Check if the cache contains this subsample routine
           if (is.null(subsampled_cache[[cache_name]])){
+            # If the routine is not cached
+            # verbosity check
             if(memoise_args$verbose){
               print('Not Found in subsample Cache')
             }
-            #  Check if theres enough space to add the subsample
+            # Check if theres enough space to add the subsample
+            # Get the current size of the cache
             cache_size = object.size(isolate(reactiveValuesToList(subsampled_cache)))
-            #  print(cache_size)
-            #  print(length(isolate(reactiveValuesToList(subsampled_cache))))
+            # If the cache size is limited, and adding an estimated size of subsample would cause the size to exceed the limit,
+            # remove the first two cached subsamples, to make more room
             if(memoise_args$max_subsample_cache_size != 'None' && cache_size + object.size(original_scone) > memoise_args$max_subsample_cache_size){
+              # Verbosity check
               if(memoise_args$verbose){
                 print("Too Big! Removing the first two saved entries")
               }
-              smaller_cache_list = tail(isolate(reactiveValuesToList(subsampled_cache)), -1)
+              
+              # Get the all but the first two cache items, and reset the cache to only include them
+              smaller_cache_list = tail(isolate(reactiveValuesToList(subsampled_cache)), -2)
               subsampled_cache = reactiveValues()
               for(name in names(smaller_cache_list)){
                 subsampled_cache[[name]] = smaller_cache_list[[name]]
               }
             }
-            #  print(length(isolate(reactiveValuesToList(subsampled_cache))))
+            
+            # Subsample scone and add to the cache
             ret = do.call(subsample_scone, c(list(original_scone), subsample_args_input()))
             subsampled_cache[[cache_name]] = ret
-            #  print(length(isolate(reactiveValuesToList(subsampled_cache))))
           } else {
+            # If the routine is cached
+            # Verbosity check
             if(memoise_args$verbose){
               print('Found in Cache')
             }
+            
+            # Get the existing item from cache
             ret = subsampled_cache[[cache_name]]
           }
         } else{
+          # If you are not subsampling, you can just return the orginal scone object
           ret = original_scone
         }
       }else{
+        # If this isfirst load, you can just return the orginal scone object
         ret = x
       }
       ret
     })
-    
     
     #  Reactive QC
     qc <- shiny::reactive({
       get_qc(x())
       
     })
-    
     
     #  Reactive Bio
     bio <- shiny::reactive({
@@ -850,45 +853,62 @@ scone_res = list()
       b
     })
     
-    #  Reactive Normalization
+    #  Reactive Normalization cache
     normalized_data_cache <- shiny::reactiveValues()
+    # Initial estimate for normalization size, update once you get first normalization.
+    # Normalization sizes are hard to estimate, so just use the first one
     norm_first_size = 0
     
     #  Reactive Scone Res Object
     scone_res <- shiny::reactive({
       ret = list()
+      # On first load we have different behavior, once the name is reassigned, it is reactive
       if(is.reactive(scone_res)){
+        # Record the parameters used to create this normalization, the method and subsample metrics
         cache_name <- paste(append(subsample_args_input(), isolate(input$norm_code)), collapse = ', ')
+        # Check if it is cached
         if (is.null(normalized_data_cache[[cache_name]])){
+          # It is not cached
+          # Verbosity check
           if(memoise_args$verbose){
             print('Normalization not found in cache')
           }
+          # Get the current size of cache
           cache_size = object.size(isolate(reactiveValuesToList(normalized_data_cache)))
-          #  print(cache_size)
-          #  print(length(isolate(reactiveValuesToList(normalized_data_cache))))
+          
+          # Check if the cache size + an estiamte (the size of the first normalization) will exceed the provided limit
+          # If it will exceed the limit, uncache the first two items.
           if(memoise_args$max_norm_cache_size != 'None' && cache_size + norm_first_size > memoise_args$max_norm_cache_size){
+            # Verbosity check
             if(memoise_args$verbose){
               print("Too Big! Removing the first two cached Normalization entries")
             }
+            # Remove the first two items in the cache
             normalized_data_cache_list = tail(isolate(reactiveValuesToList(normalized_data_cache)), -2)
             normalized_data_cache = reactiveValues()
             for(name in names(normalized_data_cache_list)){
               normalized_data_cache[[name]] = normalized_data_cache_list[[name]]
             }
           }
+          
+          # Create the notmalization and cache it
           ret$normalized_data = lapply(as.list(input$norm_code), FUN = function(z){get_normalized(x(),method = z,log=TRUE)}) 
           normalized_data_cache[[cache_name]] = ret
         } else {
+          # Verbosity check
           if(memoise_args$verbose){
             print('Normalization Found in cache')
           }
+          # Get thecached normalization
           ret = normalized_data_cache[[cache_name]]
         }
+        # These are not costly(I think, so are not cached)
           ret$params = get_params(x())[methods,]
           ret$scores = cbind(get_scores(x()),get_score_ranks(x()))[methods,]
           names(ret$normalized_data) = input$norm_code
         }
         else{
+          # First load, use non reactive style
           ret$normalized_data = scone_res$normalized_data
           norm_first_size = object.size(scone_res$normalized_data)
           print(norm_first_size)
