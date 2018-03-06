@@ -339,7 +339,7 @@ sconeReport = function(x, methods,
                        poscon = character(), negcon = character(),
                        eval_proj = NULL,
                        eval_proj_args = NULL, 
-                       subsample = (ncol(x) > 100), subsample_args = list()){
+                       subsample = (ncol(x) > 100), subsample_args = list(verbose=TRUE), memoise_cache = length(methods)){
 
   if (!requireNamespace("shiny", quietly = TRUE)) {
     stop("shiny package needed for sconeReport()")
@@ -396,31 +396,31 @@ sconeReport = function(x, methods,
   
   
   if(is.null(subsample_args$subsample_gene_level)){
-    subsample_args['subsample_gene_level'] = 100
+    subsample_args$subsample_gene_level = 100
   }
 
   if(is.null(subsample_args$subsample_cell_level)){
-    subsample_args['subsample_cell_level'] = 100
+    subsample_args$subsample_cell_level = 100
   }
   
   if(is.null(subsample_args$cells_first)){
-    subsample_args['cells_first'] = TRUE
+    subsample_args$cells_first = TRUE
   }
   
   if(is.null(subsample_args$at_bio)){
-    subsample_args['at_bio'] = TRUE
+    subsample_args$at_bio = TRUE
   }
   
   if(is.null(subsample_args$keep_all_control)){
-    subsample_args['keep_all_control'] = TRUE
+    subsample_args$keep_all_control = TRUE
   }
   
   if(is.null(subsample_args$seed)){
-    subsample_args['seed'] = 100
+    subsample_args$seed = 100
   }
    
   if(is.null(subsample_args$verbose)){
-    subsample_args['verbose'] = TRUE
+    subsample_args$verbose = TRUE
   }
   scone_res = list()
 
@@ -753,11 +753,21 @@ sconeReport = function(x, methods,
       
     })
     
+    subsampled_cache <- shiny::reactiveValues()
+    
     x <- shiny::reactive({
       if(is.reactive(x)){
         if(input$subsample){
-          message("Subsampling Scone Object")
-          ret = do.call(subsample_scone, c(list(original_scone), subsample_args_input()))
+          # Check if in caches
+          cache_name <- paste(subsample_args_input(), collapse = ', ')
+          if (is.null(subsampled_cache[[cache_name]])){
+            print('Not Found in subsample Cache')
+            ret = do.call(subsample_scone, c(list(original_scone), subsample_args_input()))
+            subsampled_cache[[cache_name]] = ret
+          } else {
+            print('Found in Cache')
+            ret = subsampled_cache[[cache_name]]
+          }
         } else{
           ret = original_scone
         }
@@ -791,20 +801,32 @@ sconeReport = function(x, methods,
       b
     })
     
+    normalized_data_cache <- shiny::reactiveValues()
+    
     scone_res <- shiny::reactive({
+      print("Normalizing")
       ret = list()
       if(is.reactive(scone_res)){
-        ret$normalized_data = lapply(as.list(input$norm_code), FUN = function(z){get_normalized(x(),method = z,log=TRUE)}) 
-        ret$params = get_params(x())[methods,]
-        ret$scores = cbind(get_scores(x()),get_score_ranks(x()))[methods,]
-        names(ret$normalized_data) = input$norm_code
-      } else{
-        ret$normalized_data = scone_res$normalized_data
-        names(ret$normalized_data) = first_method
-        ret$params = scone_res$params
-        ret$scores = scone_res$scores
-      }
-      ret
+        cache_name <- paste(append(subsample_args_input(), isolate(input$norm_code)), collapse = ', ')
+        if (is.null(normalized_data_cache[[cache_name]])){
+          print('Normalization not found in cache')
+          ret$normalized_data = lapply(as.list(input$norm_code), FUN = function(z){get_normalized(x(),method = z,log=TRUE)}) 
+          normalized_data_cache[[cache_name]] = ret
+        } else {
+          print('Normalization Found in cache')
+          ret = normalized_data_cache[[cache_name]]
+        }
+          ret$params = get_params(x())[methods,]
+          ret$scores = cbind(get_scores(x()),get_score_ranks(x()))[methods,]
+          names(ret$normalized_data) = input$norm_code
+        }
+        else{
+          ret$normalized_data = scone_res$normalized_data
+          names(ret$normalized_data) = first_method
+          ret$params = scone_res$params
+          ret$scores = scone_res$scores
+        }
+        ret
       })
     
   
@@ -837,7 +859,7 @@ sconeReport = function(x, methods,
                             values = nodes$id[nodes$group == "Loaded"],
                             selected =
                               nodes$id[nodes$title ==
-                                         rownames(scone_res()$params)[1]])) %>%
+                                         rownames(scone_res()$params)[c(match(c(input$norm_code), methods))]])) %>%
           visLegend(width = 0.1, position = "right", main = "Status")
       }else{
         visNetwork(nodes, edges,width = "100%",main = "Tree of Methods") %>%
@@ -849,7 +871,7 @@ sconeReport = function(x, methods,
                             values = nodes$id[nodes$group == "Loaded"],
                             selected =
                               nodes$id[nodes$title ==
-                                         rownames(scone_res()$params)[1]]))
+                                         rownames(scone_res()$params)[c(match(c(input$norm_code), methods))]]))
       }
 
     })
@@ -860,7 +882,7 @@ sconeReport = function(x, methods,
                     extensions = 'Buttons',
                     selection = list( mode = 'single',
                                       target = 'row',
-                                      selected = c(1)),
+                                      selected = c(match(c(input$norm_code), methods))),
                     options=
                       list(columnDefs =
                              list(list(visible=FALSE,
@@ -908,17 +930,14 @@ sconeReport = function(x, methods,
 
     # Upon Menu Selection of Normalization
     shiny::observeEvent(input$norm_code,{
-
       # Update Network
       if(is.character(input$norm_net_selected)){
-
         # If selection is empty, then no valid node is selected.
         if(input$norm_net_selected == ""){
           visNetworkProxy("norm_net") %>%
             visSelectNodes(id =
                              array(nodes$id[nodes$title == input$norm_code]))
         }else{
-
           # If selection is different from menu, then network must be updated.
           if(as.character(nodes$title[nodes$id ==
                                       as.integer(
