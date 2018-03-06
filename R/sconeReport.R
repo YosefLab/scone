@@ -125,8 +125,6 @@ subsample_cells_with_min_bio <- function(scone_object, seed = 100, percent = 100
   }
   
   # Back to original \code{SconeExperiment} object, get those indices
-  # Note_MC: technically this is not required, since good_cells accesses the correct columns of scone_obj-
-  # Note_YR: I remeber the column numbers being rewritten, which is why I added this step
   indices <- (colnames(scone_object) %in% good_cells)
   
   # Remove empty cells (no gene data)
@@ -308,7 +306,14 @@ subsample_scone <- function(my_scone, subsample_gene_level = 100, subsample_cell
 #'   projection.
 #' @param eval_proj_args list. List of args passed to projection function as
 #'   eval_proj_args.
-#'
+#' @param subsample bool. Should subsampling occur on startup of report. 
+#' @param subsample_args list. Options for subsampling on startup of report. See subsample_scone for default options.
+#' @param memoise_args list. List of args that control storage and verbosity of subsampling
+#'   and normalization cache sizes. Pass sizes as a number of bytes. List arguments are 'verbose',
+#'   'max_subsample_cache_size' and 'max_norm_cache_size'
+#' 
+#' 
+#' 
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom rARPACK svds
 #' @importFrom graphics boxplot
@@ -340,7 +345,11 @@ sconeReport = function(x, methods,
                        poscon = character(), negcon = character(),
                        eval_proj = NULL,
                        eval_proj_args = NULL, 
-                       subsample = (ncol(x) > 100), subsample_args = list(verbose=TRUE), memoise_cache = length(methods)){
+                       subsample = (ncol(x) > 100), subsample_args = list(verbose=TRUE), 
+                       memoise_args = list(verbose = TRUE, 
+                                           max_subsample_cache_size = 10 * object.size(x), 
+                                           max_norm_cache_size = 50000000)
+                                            ){
 
   if (!requireNamespace("shiny", quietly = TRUE)) {
     stop("shiny package needed for sconeReport()")
@@ -423,7 +432,20 @@ sconeReport = function(x, methods,
   if(is.null(subsample_args$verbose)){
     subsample_args$verbose = TRUE
   }
-  scone_res = list()
+
+  if(is.null(memoise_args$verbose)){
+    memoise_args$verbose = TRUE
+  }
+  
+  if(is.null(memoise_args$max_subsample_cache_size)){
+    memoise_args$max_subsample_cache_size = 10 * object.size(x)
+  }
+  
+  if(is.null(memoise_args$max_norm_cache_size)){
+    subsample_args$max_norm_cache_size = 50000000
+  }
+
+scone_res = list()
 
   # List of normalized matrices
   ## YANAY CHANGE
@@ -745,8 +767,7 @@ sconeReport = function(x, methods,
 
     ## ------ Overview Tab ------
     
-    ## Lets make Scone Res reactive first YANAY
-    
+    #  Reactive Subsample Inputs
     subsample_args_input <- shiny::reactive({
       list(at_bio = input$at_bio, keep_all_control = input$keep_all_control, 
            subsample_gene_level = input$subsample_gene_level,
@@ -754,19 +775,41 @@ sconeReport = function(x, methods,
       
     })
     
+    #  Subsample Cache
     subsampled_cache <- shiny::reactiveValues()
     
+    #  Reactive Subsampled Scone Object
     x <- shiny::reactive({
       if(is.reactive(x)){
         if(input$subsample){
           # Check if in caches
           cache_name <- paste(subsample_args_input(), collapse = ', ')
           if (is.null(subsampled_cache[[cache_name]])){
-            print('Not Found in subsample Cache')
+            if(memoise_args$verbose){
+              print('Not Found in subsample Cache')
+            }
+            #  Check if theres enough space to add the subsample
+            cache_size = object.size(isolate(reactiveValuesToList(subsampled_cache)))
+            #  print(cache_size)
+            #  print(length(isolate(reactiveValuesToList(subsampled_cache))))
+            if(memoise_args$max_subsample_cache_size != 'None' && cache_size + object.size(original_scone) > memoise_args$max_subsample_cache_size){
+              if(memoise_args$verbose){
+                print("Too Big! Removing the first two saved entries")
+              }
+              smaller_cache_list = tail(isolate(reactiveValuesToList(subsampled_cache)), -1)
+              subsampled_cache = reactiveValues()
+              for(name in names(smaller_cache_list)){
+                subsampled_cache[[name]] = smaller_cache_list[[name]]
+              }
+            }
+            #  print(length(isolate(reactiveValuesToList(subsampled_cache))))
             ret = do.call(subsample_scone, c(list(original_scone), subsample_args_input()))
             subsampled_cache[[cache_name]] = ret
+            #  print(length(isolate(reactiveValuesToList(subsampled_cache))))
           } else {
-            print('Found in Cache')
+            if(memoise_args$verbose){
+              print('Found in Cache')
+            }
             ret = subsampled_cache[[cache_name]]
           }
         } else{
@@ -778,16 +821,21 @@ sconeReport = function(x, methods,
       ret
     })
     
+    
+    #  Reactive QC
     qc <- shiny::reactive({
       get_qc(x())
       
     })
     
+    
+    #  Reactive Bio
     bio <- shiny::reactive({
       n <- get_bio(x())
       n
     })
     
+    #  Reactive Batch
     batch <- shiny::reactive({
       n <- get_batch(x())
       if(is.reactive(batch)){
@@ -802,19 +850,38 @@ sconeReport = function(x, methods,
       b
     })
     
+    #  Reactive Normalization
     normalized_data_cache <- shiny::reactiveValues()
+    norm_first_size = 0
     
+    #  Reactive Scone Res Object
     scone_res <- shiny::reactive({
-      print("Normalizing")
       ret = list()
       if(is.reactive(scone_res)){
         cache_name <- paste(append(subsample_args_input(), isolate(input$norm_code)), collapse = ', ')
         if (is.null(normalized_data_cache[[cache_name]])){
-          print('Normalization not found in cache')
+          if(memoise_args$verbose){
+            print('Normalization not found in cache')
+          }
+          cache_size = object.size(isolate(reactiveValuesToList(normalized_data_cache)))
+          #  print(cache_size)
+          #  print(length(isolate(reactiveValuesToList(normalized_data_cache))))
+          if(memoise_args$max_norm_cache_size != 'None' && cache_size + norm_first_size > memoise_args$max_norm_cache_size){
+            if(memoise_args$verbose){
+              print("Too Big! Removing the first two cached Normalization entries")
+            }
+            normalized_data_cache_list = tail(isolate(reactiveValuesToList(normalized_data_cache)), -2)
+            normalized_data_cache = reactiveValues()
+            for(name in names(normalized_data_cache_list)){
+              normalized_data_cache[[name]] = normalized_data_cache_list[[name]]
+            }
+          }
           ret$normalized_data = lapply(as.list(input$norm_code), FUN = function(z){get_normalized(x(),method = z,log=TRUE)}) 
           normalized_data_cache[[cache_name]] = ret
         } else {
-          print('Normalization Found in cache')
+          if(memoise_args$verbose){
+            print('Normalization Found in cache')
+          }
           ret = normalized_data_cache[[cache_name]]
         }
           ret$params = get_params(x())[methods,]
@@ -823,6 +890,8 @@ sconeReport = function(x, methods,
         }
         else{
           ret$normalized_data = scone_res$normalized_data
+          norm_first_size = object.size(scone_res$normalized_data)
+          print(norm_first_size)
           names(ret$normalized_data) = first_method
           ret$params = scone_res$params
           ret$scores = scone_res$scores
