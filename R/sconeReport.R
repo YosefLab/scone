@@ -346,9 +346,9 @@ sconeReport = function(x, methods,
                        eval_proj = NULL,
                        eval_proj_args = NULL, 
                        subsample = (ncol(x) > 100), subsample_args = list(verbose=TRUE), 
-                       memoise_args = list(verbose = TRUE, 
-                                           max_subsample_cache_size = 10 * object.size(x), 
-                                           max_norm_cache_size = 50000000)
+                       memoise_args = list(verbose = FALSE, 
+                                           max_subsample_cache_size = 'None', 
+                                           max_norm_cache_size = 'None')
                                             ){
 
   if (!requireNamespace("shiny", quietly = TRUE)) {
@@ -434,15 +434,15 @@ sconeReport = function(x, methods,
   }
 
   if(is.null(memoise_args$verbose)){
-    memoise_args$verbose = TRUE
+    memoise_args$verbose = FALSE
   }
   
   if(is.null(memoise_args$max_subsample_cache_size)){
-    memoise_args$max_subsample_cache_size = 10 * object.size(x)
+    memoise_args$max_subsample_cache_size = 'None'
   }
   
   if(is.null(memoise_args$max_norm_cache_size)){
-    subsample_args$max_norm_cache_size = 50000000
+    subsample_args$max_norm_cache_size = 'None'
   }
 
 scone_res = list()
