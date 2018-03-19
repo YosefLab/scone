@@ -4,11 +4,14 @@
 #' Function to subsample \code{SconeExperiment} object by subsampling cells
 #'
 #' This function subsamples a \code{SconeExperiment} object in a number of different ways
-#'
+#' Note_MC: Add @description
+#' Note_MC: Describe defaults
 #' @param scone_object a \code{SconeExperiment} object
 #' @param percent percent of cells you should take if subsampling purely by percent
 #' @param at_bio option to subsample to the number of cells of within the smallest bio group,
+#' Note_MC: Clarify which option overrrides what (e.g. what happens if user provides % and at_bio = TRUE?)
 #' @param seed the random seed
+#' Note_MC: only useful if this is stored internally, otherwise we should remove the option - this might be easiest path forward.
 #' @param verbose option to display more information about subsampling
 #' reducing every cell count in a bio group to the same number
 #' 
@@ -36,6 +39,7 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
   if(at_bio){
    # Default is to subsample at bio, returning a subsampled scone with numbers of cells
    # at the same amiunt, the amount of the size of the smallest bio
+   # Note_MC: move this descr. to the R documentation
    return(subsample_cells_with_min_bio(scone_object, seed = seed, percent = percent, verbose = verbose)) 
   }
   else{
@@ -68,16 +72,17 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 
 #' Note_MC: Add @example for each function
 #' Note_MC: Add @export to each function
-#' 
+#' Note_MC: Be sure to describe what happens if no bio is part of the object
 #' Internal function to subsample \code{SconeExperiment} object by subsampling cells by size of smallest bio group
 #'
 #' This function subsamples a \code{SconeExperiment} object to the size of smallest bio group
 #'
 #' @param scone_object a \code{SconeExperiment} object
 #' @param seed the random seed
+#' Note_MC: see note on seed above
 #' @param verbose option to display more information about subsampling
 #' @param percent option to get percentage of smallest bio
-#'
+#' Note_MC: Ah i see now - make sure that this is clarified above
 #' @export
 #' 
 #' @examples
@@ -100,11 +105,12 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 subsample_cells_with_min_bio <- function(scone_object, seed = 100, percent = 100, verbose= FALSE){
   # Find the minimum size of bio
   set.seed(seed)
-  # Note_MC: Check $bio is defined properly and handle appropriately
+  # Note_MC: Important: Check $bio is defined properly and handle appropriately
   bios <- colData(scone_object)$bio
   bio_table <- table(bios)
   bio_uniq <- names(bio_table)
   min_size <- min(bio_table) * (percent /100)
+  # Note_MC: Does this need to be rounded? What if 0?
 
   # Now we have the minimum size, we need to seperate into bio groups
   # Let's do this with indices because don't know how to append summarized experiments
