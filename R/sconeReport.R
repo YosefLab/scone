@@ -841,16 +841,7 @@ sconeReport = function(x, methods,
     #  Reactive Batch
     batch <- shiny::reactive({
       n <- get_batch(x())
-      if(is.reactive(batch)){
-        if(is.null(n)){
-          b = factor(rep("NA",ncol(scone_res()$normalized_data[[input$norm_code]])))
-        }
-      }else{
-        if(is.null(batch)){
-          b = factor(rep("NA",ncol(scone_res()$normalized_data[[input$norm_code]])))
-        }
-      }
-      b
+      n
     })
     
     #  Reactive Normalization cache
