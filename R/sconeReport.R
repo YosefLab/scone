@@ -1,15 +1,15 @@
-#' Note_MC: Add @example for each function
-#' Note_MC: Add @export to each function
-#' 
 #' Function to subsample \code{SconeExperiment} object by subsampling cells
 #'
-#' This function subsamples a \code{SconeExperiment} object in a number of different ways
-#' Note_MC: Add @description
-#' Note_MC: Describe defaults
+#' This function subsamples a \code{SconeExperiment} object in a number of different ways based
+#' by selecting different cells in the object. You can randomly subsample a certain percent of cells,
+#' or randomly subsample a certain percent of cells while making the distribution of cells in each bio
+#' the same. The default parameters are to just subsample each bio group to be the size of the smallest
+#' bio group.
+#' 
 #' @param scone_object a \code{SconeExperiment} object
-#' @param percent percent of cells you should take if subsampling purely by percent
-#' @param at_bio option to subsample to the number of cells of within the smallest bio group,
-#' Note_MC: Clarify which option overrrides what (e.g. what happens if user provides % and at_bio = TRUE?)
+#' @param percent percent of cells you should take if subsampling purely by percent. If at_bio is true,
+#' will subsample each bio group to the percent size of the smallest bio group.
+#' @param at_bio option to subsample to the number of cells of within the smallest bio group.
 #' @param seed the random seed
 #' Note_MC: only useful if this is stored internally, otherwise we should remove the option - this might be easiest path forward.
 #' @param verbose option to display more information about subsampling
@@ -39,7 +39,6 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
   if(at_bio){
    # Default is to subsample at bio, returning a subsampled scone with numbers of cells
    # at the same amiunt, the amount of the size of the smallest bio
-   # Note_MC: move this descr. to the R documentation
    return(subsample_cells_with_min_bio(scone_object, seed = seed, percent = percent, verbose = verbose)) 
   }
   else{
@@ -55,8 +54,7 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
     list_possible <- seq(length)
     
     # Randomly select which cells to get and return the \code{SconeExperiment} object with only those cells
-    # Note_MC: Consider: gdata::resample for edge case of 1 index possible see ?sample
-    indices <- sample(list_possible, num_samples)
+    indices <- gdata::resample(list_possible, num_samples)
     intermediate <- scone_object[,indices]
     exists <- rowSums(assay(intermediate)) > 0
     
@@ -70,10 +68,10 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
  
 }
 
-#' Note_MC: Add @example for each function
-#' Note_MC: Add @export to each function
+
 #' Note_MC: Be sure to describe what happens if no bio is part of the object
-#' Internal function to subsample \code{SconeExperiment} object by subsampling cells by size of smallest bio group
+#' Internal function to subsample \code{SconeExperiment} object by subsampling cells by size of smallest bio group.
+#' 
 #'
 #' This function subsamples a \code{SconeExperiment} object to the size of smallest bio group
 #'
@@ -82,7 +80,7 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 #' Note_MC: see note on seed above
 #' @param verbose option to display more information about subsampling
 #' @param percent option to get percentage of smallest bio
-#' Note_MC: Ah i see now - make sure that this is clarified above
+#' 
 #' @export
 #' 
 #' @examples
@@ -147,9 +145,7 @@ subsample_cells_with_min_bio <- function(scone_object, seed = 100, percent = 100
   return(inter)
 }
 
-#' Note_MC: Add @example for each function
-#' Note_MC: Add @export to each function
-#' 
+
 #' Function to subsample \code{SconeExperiment} object by subsampling genes
 #'
 #' This function subsamples a \code{SconeExperiment} object in a number of different ways by genes
@@ -227,8 +223,7 @@ subsample_genes <- function(scone_object, percent=100, keep_all_control = TRUE, 
   }
 }
 
-#' Note_MC: Add @example for each function
-#' Note_MC: Add @export to each function
+#' Note_YR: Add option to set scone_run to no when subsampling
 #' 
 #' Wrapper Function to subsample \code{SconeExperiment} object 
 #'
@@ -1489,10 +1484,10 @@ sconeReport = function(x, methods,
       if(input$subsample){
       list(shiny::checkboxInput("at_bio", label = "Subsample Cells at Minimum Bio", value= subsample_args$at_bio),
       shiny::checkboxInput("keep_all_control", label = "Keep all Control Genes", value= subsample_args$keep_all_control),
-      shiny::sliderInput("subsample_gene_level", label = "Subsample Gene Level",
+      shiny::numericInput("subsample_gene_level", label = "Subsample Gene Level",
                          min=0, max=100,
                          value = subsample_args['subsample_gene_level']),
-      shiny::sliderInput("subsample_cell_level", label = "Subsample Cell Level",
+      shiny::numericInput("subsample_cell_level", label = "Subsample Cell Level",
                          min=0, max=100,
                          value= subsample_args$subsample_cell_level))
       }
