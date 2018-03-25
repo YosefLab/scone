@@ -69,11 +69,10 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 }
 
 
-#' Note_MC: Be sure to describe what happens if no bio is part of the object
 #' Internal function to subsample \code{SconeExperiment} object by subsampling cells by size of smallest bio group.
 #' 
-#'
-#' This function subsamples a \code{SconeExperiment} object to the size of smallest bio group
+#' This function subsamples a \code{SconeExperiment} object to the size of smallest bio group. If there aren't any
+#' bio labels, subsamples by percentile only.
 #'
 #' @param scone_object a \code{SconeExperiment} object
 #' @param seed the random seed
@@ -103,12 +102,15 @@ subsample_cells <- function(scone_object, percent=100, at_bio = FALSE, seed = 10
 subsample_cells_with_min_bio <- function(scone_object, seed = 100, percent = 100, verbose= FALSE){
   # Find the minimum size of bio
   set.seed(seed)
-  # Note_MC: Important: Check $bio is defined properly and handle appropriately
   bios <- colData(scone_object)$bio
   bio_table <- table(bios)
   bio_uniq <- names(bio_table)
   min_size <- min(bio_table) * (percent /100)
-  # Note_MC: Does this need to be rounded? What if 0?
+  
+  # Checks that there is a minimum size, if there isn't just subsample cells normally, not at bio
+  if(min_size == Inf){
+    return(subsample_cells(scone_object, percent = percent, verbose = verbose, at_bio = FALSE))
+  }
 
   # Now we have the minimum size, we need to seperate into bio groups
   # Let's do this with indices because don't know how to append summarized experiments
