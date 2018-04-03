@@ -1,3 +1,19 @@
+
+compare_scores <- function(original_scone, scone_list){
+  original = get_score_ranks(original_scone)
+
+  
+  scores_df <- lapply(scone_list,get_score_ranks)
+  cor_by_order <- function(row){
+    return(cor(original, row[names(original)]))
+  }
+  corrs <- lapply(scores_df, cor_by_order)
+  corrs <- unlist(corrs)
+  return(corrs)
+}
+
+
+
 compare_subsample <- function(original_scone, 
                               min_percent_power, max_percent_power, 
                               min_seed, max_seed
@@ -6,6 +22,8 @@ compare_subsample <- function(original_scone,
   percents = 2 ^ seq(from=min_percent_power, to = max_percent_power, by=1)
   seeds = runif(2^ max_seed,0,100)
   list_percents <- c()
+  number_scored = 0
+  start_time = format(Sys.time(), "%r")
   
   for(percent in percents){
     # generate a random seed array
@@ -34,6 +52,9 @@ compare_subsample <- function(original_scone,
           eval_pcs = 10,
           verbose = FALSE
         )
+        number_scored = number_scored + 1
+        print("Number Scored")
+        print(toString(number_scored))
         print('Scored')
         print(format(Sys.time(), "%r"))
         # Add the metadata
@@ -54,6 +75,10 @@ compare_subsample <- function(original_scone,
   matrixed <- matrix(list_percents, ncol = max_percent_power - min_percent_power +1, byrow = FALSE)
   df <- as.data.frame(matrixed)
   names(df) <- percents
+  print("Started At")
+  print(start_time)
+  print("Ended At")
+  print(format(Sys.time(), "%r"))
   return(df)
 }
 
