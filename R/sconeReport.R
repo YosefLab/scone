@@ -1,3 +1,99 @@
+compare_subsample <- function(original_scone, 
+                              min_percent_power, max_percent_power, 
+                              min_seed, max_seed
+                              ){
+  original_scores = get_score_ranks(original_scone)
+  percents = 2 ^ seq(from=min_percent_power, to = max_percent_power, by=1)
+  seeds = runif(2^ max_seed,0,100)
+  list_percents <- c()
+  
+  for(percent in percents){
+    # generate a random seed array
+    list_of_seeds <- c()
+    for(seed in seeds){
+        
+        # Generate the subsample
+        print("Starting subsample")
+        print(format(Sys.time(), "%r"))
+        subsample <- subsample_scone(original_scone, subsample_cell_level = percent, 
+                                     at_bio = FALSE, verbose = FALSE, seed = seed)
+        print('Subsampled')
+        print(format(Sys.time(), "%r"))
+        # Score that Subsample
+        scored_subsample = scone(
+          subsample,
+          scaling = original_scone@scaling_fn,
+          k_qc = 8,
+          k_ruv = 8,
+          run = TRUE,
+          zero = "postadjust",
+          stratified_pam = FALSE,
+          stratified_cor = FALSE,
+          stratified_rle = FALSE,
+          eval_kclust = 2:10,
+          eval_pcs = 10,
+          verbose = FALSE
+        )
+        print('Scored')
+        print(format(Sys.time(), "%r"))
+        # Add the metadata
+        #scored_subsample$metadata$'percent' = percent
+        #scored_subsample$metadata$'seed' = seed
+        # Append to the list of seeds
+        list_of_seeds <- c(list_of_seeds, scored_subsample)
+        
+      }
+    list_percents <- c(list_percents, list_of_seeds)
+  }
+
+  # subsampled_scores = get_score_ranks(subsampled_scone_scored)
+  # return(plot(original_scores, subsampled_scores[names(original_scores)]))
+  
+  
+  # Reshape list
+  matrixed <- matrix(list_percents, ncol = max_percent_power - min_percent_power +1, byrow = FALSE)
+  df <- as.data.frame(matrixed)
+  names(df) <- percents
+  return(df)
+}
+
+
+compare_subsample_pca<- function(original_scone, subsampled_scone, method){
+  # Get the normalizations
+  subsampled_normalized <- get_normalized(subsampled_scone, method = method, log= TRUE)
+  original_normalized <- get_normalized(original_scone, method = method, log= TRUE)
+  
+  # Calculate PCA of subsample and apply it to original
+  pca_sub <- prcomp(subsampled_normalized, scale=TRUE, center=TRUE)
+  pca_original <- predict(pca_sub, original_normalized)[,1:10]
+  
+  # This is useless because it jsut shows the whole point of principal components
+  
+  # Get proportions of Variance for original
+  variance_orignals <- apply(pca_original,2, sd) ^ 2
+  sum_variances_original <- sum(variance_orignals)
+  proportions_of_variance_original <- variance_orignals / sum_variances_original
+  
+  # Get proportions of Variance for subsample
+  variance_subbed <- pca_sub$sdev[1:10] ^ 2
+  sum_variances_sub <- sum(variance_subbed)
+  proportions_of_variance_subbed <- variance_subbed / sum_variances_sub
+  
+  # Plot the linreg of PC's
+  df <- data.frame(proportions_of_variance_subbed, proportions_of_variance_original)
+  #plot(lm(data = df))
+  
+  pca_original_2 <- prcomp(original_normalized, scale=TRUE, center=TRUE)
+  
+  # Return the proprtional difference between principal components
+ # return(c(proportions_of_variance_original - proportions_of_variance_subbed 
+      #   / proportions_of_variance_subbed, proportions_of_variance_original, proportions_of_variance_subbed, pca_sub, pca_original))
+  return(pca_original_2)
+  
+}
+
+
+
 #' Function to subsample \code{SconeExperiment} object by subsampling cells
 #'
 #' This function subsamples a \code{SconeExperiment} object in a number of different ways based
@@ -760,7 +856,7 @@ sconeReport = function(x, methods,
     subsample_args_input <- shiny::reactive({
       list(at_bio = input$at_bio, keep_all_control = input$keep_all_control, 
            subsample_gene_level = input$subsample_gene_level,
-           subsample_cell_level = input$subsample_cell_level, verbose = subsample_args$verbose)
+           subsample_cell_level = input$subsample_cell_level, verbose = subsample_args$verbose, seed = input$seed)
     })
     
     #  Subsample Cache storage
@@ -896,7 +992,7 @@ sconeReport = function(x, methods,
           # Get thecached normalization
           ret = normalized_data_cache[[cache_name]]
         }
-        # These are not costly(I think, so are not cached)
+        # These are not costly (I think, so are not cached)
           ret$params = get_params(x())[methods,]
           ret$scores = cbind(get_scores(x()),get_score_ranks(x()))[methods,]
           names(ret$normalized_data) = input$norm_code
@@ -1484,15 +1580,20 @@ sconeReport = function(x, methods,
 
     output$subsampleMenu <- renderUI({
       if(input$subsample){
-      list(shiny::checkboxInput("at_bio", label = "Subsample Cells at Minimum Bio", value= subsample_args$at_bio),
-      shiny::checkboxInput("keep_all_control", label = "Keep all Control Genes", value= subsample_args$keep_all_control),
-      shiny::numericInput("subsample_gene_level", label = "Subsample Gene Level",
-                         min=0, max=100,
-                         value = subsample_args['subsample_gene_level']),
-      shiny::numericInput("subsample_cell_level", label = "Subsample Cell Level",
-                         min=0, max=100,
-                         value= subsample_args$subsample_cell_level))
-      }
+        list(shiny::checkboxInput("at_bio", label = "Subsample Cells at Minimum Bio", value= subsample_args$at_bio),
+        shiny::checkboxInput("keep_all_control", label = "Keep all Control Genes", value= subsample_args$keep_all_control),
+        shiny::numericInput("subsample_gene_level", label = "Subsample Gene Level",
+                           min=0, max=100,
+                           value = subsample_args['subsample_gene_level']),
+        shiny::numericInput("subsample_cell_level", label = "Subsample Cell Level",
+                           min=0, max=100,
+                           value= subsample_args$subsample_cell_level),
+        shiny::numericInput("seed", label = "Sample Seed",
+                            value= subsample_args$seed)
+        )
+        
+        }
+      
     })
     
     ## ----- Download Button -----

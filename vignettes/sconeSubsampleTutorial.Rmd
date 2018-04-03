@@ -19,12 +19,6 @@ First let's load the required libraries.
 ```{r sconeReport, eval= FALSE}
 library(scone)
 
-library(cellrangerRkit)
-library(scran)
-library(SingleCellExperiment)
-library(scater)
-library(cluster)
-
 library(RColorBrewer)
 library(shinycssloaders)
 library(visNetwork)
@@ -187,20 +181,35 @@ Now let's create the large Scone object
 #   run = FALSE
 # )
 # 
-# scone_obj <- scone(
-#   scone_obj,
-#   scaling = scaling,
-#   k_qc = k_ruv,
-#   k_ruv = k_ruv,
-#   run = TRUE,
-#   zero = "postadjust",
-#   stratified_pam = FALSE,
-#   stratified_cor = FALSE,
-#   stratified_rle = FALSE,
-#   eval_kclust = 2:10,
-#   eval_pcs = 10,
-#   verbose = TRUE
-# )
+subsampled_scone_1_scored <- scone(
+  subsampled_scone_1,
+  scaling = subsampled_scone_1@scaling_fn,
+  k_qc = 8,
+  k_ruv = 8,
+  run = TRUE,
+  zero = "postadjust",
+  stratified_pam = FALSE,
+  stratified_cor = FALSE,
+  stratified_rle = FALSE,
+  eval_kclust = 2:10,
+  eval_pcs = 10,
+  verbose = TRUE
+)
+
+subsampled_scone_2_scored <- scone(
+  subsampled_scone_2,
+  scaling = subsampled_scone_2@scaling_fn,
+  k_qc = 8,
+  k_ruv = 8,
+  run = TRUE,
+  zero = "postadjust",
+  stratified_pam = FALSE,
+  stratified_cor = FALSE,
+  stratified_rle = FALSE,
+  eval_kclust = 2:10,
+  eval_pcs = 10,
+  verbose = TRUE
+)
 
 load("scone_obj.rda")
 scone_obj
