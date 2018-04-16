@@ -24,6 +24,7 @@ library(shinycssloaders)
 library(visNetwork)
 library(plotly)
 library(shiny)
+library(scran)
 ```
 
 Now let's create the large Scone object

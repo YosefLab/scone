@@ -1,7 +1,7 @@
 
 compare_scores <- function(original_scone, scone_list){
   original = get_score_ranks(original_scone)
-
+  scone_list = unlist(scone_list)
   
   scores_df <- lapply(scone_list,get_score_ranks)
   cor_by_order <- function(row){
@@ -49,8 +49,9 @@ compare_subsample <- function(original_scone,
           stratified_cor = FALSE,
           stratified_rle = FALSE,
           eval_kclust = 2:10,
-          eval_pcs = 10,
+          eval_pcs = 6,
           verbose = FALSE
+          
         )
         number_scored = number_scored + 1
         print("Number Scored")
