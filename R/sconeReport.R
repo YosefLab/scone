@@ -1,3 +1,17 @@
+generate_subsamples <- function(base=2, start=1, end=6, per=16, scone_object, dir = '~/Desktop/subsampled_scone_objects/'){
+  dir.create(dir)
+  d = 1
+  for(exp in start:end){
+    percent = base^exp
+    for(i in 1:per){
+      sub = subsample_scone(scone_obj, seed = i, subsample_cell_level = percent,
+                            at_bio = FALSE, keep_all_control = TRUE,
+                            verbose = FALSE)
+      saveRDS(sub, file = paste(dir, toString(d), sep=""))
+      d = d+1
+    }
+  }
+}
 
 compare_scores <- function(original_scone, scone_list){
   original = get_score_ranks(original_scone)
