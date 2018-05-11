@@ -1,6 +1,6 @@
 #!/bin/env Rscript
 # arrayScript.R
-library(somelibrary) # We don't want to reload the libraries every time that increases the individual compute time a lot
+# Maybe We don't want to reload the libraries every time that might increase the individual compute time a lot
 library(scone)
 library(scran)
 
