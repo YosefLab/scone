@@ -12,8 +12,9 @@ SCONE (Single-Cell Overview of Normalized Expression), a package for single-cell
 We recommend installation of the package via bioconductor.
 
 ```{r}
-source("https://bioconductor.org/biocLite.R")
-biocLite("scone")
+if (!requireNamespace("BiocManager", quietly=TRUE))
+    install.packages("BiocManager")
+BiocManager::install("scone")
 ```
 
 Note that SCONE is currently in Bioconductor devel and hence requires R-devel (>= 3.4).
