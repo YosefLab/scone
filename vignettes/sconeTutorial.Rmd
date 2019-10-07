@@ -71,7 +71,7 @@ pluripotent stem cells, primary cortical samples at gestation weeks 16 and 21
 from the `scRNAseq` package on 
 [Bioconductor](http://bioconductor.org/packages/scRNAseq/).
 
-```{r datain}
+```{r datain, message=FALSE}
 
 library(scRNAseq)
 
