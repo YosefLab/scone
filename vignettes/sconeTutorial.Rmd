@@ -76,11 +76,7 @@ from the `scRNAseq` package on
 library(scRNAseq)
 
 ## ----- Load Example Data -----
-data(fluidigm)
-
-# Set assay to RSEM estimated counts
-assay(fluidigm) = assays(fluidigm)$rsem_counts
-
+fluidigm <- ReprocessedFluidigmData(assays = "rsem_counts")
 ```
 
 The `rsem_counts` assay contains expected gene-level read counts via RSEM
@@ -646,7 +642,8 @@ BiocParallel::register(
 my_scone <- scone(my_scone,
                   scaling=scaling,
                   run=TRUE,
-                  eval_kclust = 2:6,stratified_pam = TRUE,
+                  eval_kclust = 2:6,
+                  stratified_pam = TRUE,
                   return_norm = "in_memory",
                   zero = "postadjust")
 
