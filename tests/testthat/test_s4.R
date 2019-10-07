@@ -15,6 +15,6 @@ test_that("The two constructors are equivalent", {
   scone1 <- SconeExperiment(assay(se), bio=coldata$bio, poscon=rowdata$poscon)
   scone2 <- SconeExperiment(se, which_bio=1L, which_poscon=1L)
 
-  expect_equal(scone1, scone2)
+  expect_equivalent(scone1, scone2)
   }
 )
