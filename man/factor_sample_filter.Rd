@@ -6,9 +6,10 @@
 libraries.}
 \usage{
 factor_sample_filter(expr, qual, gene_filter = NULL, max_exp_pcs = 5,
-  qual_select_q_thresh = 0.01, force_metrics = NULL, good_metrics = NULL,
-  min_qual_variance = 0.7, zcut = 1, mixture = TRUE, dip_thresh = 0.01,
-  plot = FALSE, hist_breaks = 20)
+  qual_select_q_thresh = 0.01, force_metrics = NULL,
+  good_metrics = NULL, min_qual_variance = 0.7, zcut = 1,
+  mixture = TRUE, dip_thresh = 0.01, plot = FALSE,
+  hist_breaks = 20)
 }
 \arguments{
 \item{expr}{matrix The data matrix (genes in rows, cells in columns).}

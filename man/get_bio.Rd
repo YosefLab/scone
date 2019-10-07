@@ -6,9 +6,6 @@
 \alias{get_batch}
 \alias{get_bio,SconeExperiment-method}
 \alias{get_batch,SconeExperiment-method}
-\alias{get_batch}
-\alias{get_bio,SconeExperiment-method}
-\alias{get_batch,SconeExperiment-method}
 \title{Get Factor of Biological Conditions and Batch}
 \usage{
 get_bio(x)

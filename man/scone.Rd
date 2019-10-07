@@ -3,20 +3,20 @@
 \docType{methods}
 \name{scone}
 \alias{scone}
-\alias{scone}
 \alias{scone,SconeExperiment-method}
 \title{Normalize Expression Data and Evaluate Normalization Performance}
 \usage{
 scone(x, ...)
 
-\S4method{scone}{SconeExperiment}(x, imputation = list(none = impute_null),
-  impute_args = NULL, zero = c("none", "preadjust", "postadjust", "strong"),
-  scaling, k_ruv = 5, k_qc = 5, adjust_bio = c("no", "yes", "force"),
-  adjust_batch = c("no", "yes", "force"), run = TRUE, evaluate = TRUE,
-  eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
-  eval_kclust = 2:10, verbose = FALSE, stratified_pam = FALSE,
-  stratified_cor = FALSE, stratified_rle = FALSE, return_norm = c("no",
-  "in_memory", "hdf5"), hdf5file, bpparam = BiocParallel::bpparam())
+\S4method{scone}{SconeExperiment}(x, imputation = list(none =
+  impute_null), impute_args = NULL, zero = c("none", "preadjust",
+  "postadjust", "strong"), scaling, k_ruv = 5, k_qc = 5,
+  adjust_bio = c("no", "yes", "force"), adjust_batch = c("no", "yes",
+  "force"), run = TRUE, evaluate = TRUE, eval_pcs = 3,
+  eval_proj = NULL, eval_proj_args = NULL, eval_kclust = 2:10,
+  verbose = FALSE, stratified_pam = FALSE, stratified_cor = FALSE,
+  stratified_rle = FALSE, return_norm = c("no", "in_memory", "hdf5"),
+  hdf5file, bpparam = BiocParallel::bpparam())
 }
 \arguments{
 \item{x}{a \code{\link{SconeExperiment}} object.}

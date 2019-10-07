@@ -8,11 +8,6 @@
 \alias{get_negconruv,SconeExperiment-method}
 \alias{get_negconeval,SconeExperiment-method}
 \alias{get_poscon,SconeExperiment-method}
-\alias{get_negconeval}
-\alias{get_poscon}
-\alias{get_negconruv,SconeExperiment-method}
-\alias{get_negconeval,SconeExperiment-method}
-\alias{get_poscon,SconeExperiment-method}
 \title{Get Negative and Positive Controls}
 \usage{
 get_negconruv(x)

@@ -9,9 +9,11 @@
 \usage{
 get_normalized(x, method, ...)
 
-\S4method{get_normalized}{SconeExperiment,character}(x, method, log = FALSE)
+\S4method{get_normalized}{SconeExperiment,character}(x, method,
+  log = FALSE)
 
-\S4method{get_normalized}{SconeExperiment,numeric}(x, method, log = FALSE)
+\S4method{get_normalized}{SconeExperiment,numeric}(x, method,
+  log = FALSE)
 }
 \arguments{
 \item{x}{a \code{\link{SconeExperiment}} object containing the results of 

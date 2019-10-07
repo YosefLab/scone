@@ -6,9 +6,6 @@
 \alias{get_scores,SconeExperiment-method}
 \alias{get_score_ranks}
 \alias{get_score_ranks,SconeExperiment-method}
-\alias{get_score_ranks}
-\alias{get_scores,SconeExperiment-method}
-\alias{get_score_ranks,SconeExperiment-method}
 \title{Extract scone scores}
 \usage{
 get_scores(x)

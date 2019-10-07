@@ -66,4 +66,4 @@ biocViews: ImmunoOncology,
   SingleCell,
   Coverage
 BugReports: https://github.com/YosefLab/scone/issues
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1

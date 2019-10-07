@@ -10,10 +10,11 @@ scone_easybake(expr, qc, bio = NULL, batch = NULL, negcon = NULL,
   fnr_maxiter = 1000, norm_impute = c("yes", "no", "force"),
   norm_scaling = c("none", "sum", "deseq", "tmm", "uq", "fq", "detect"),
   norm_rezero = FALSE, norm_k_max = NULL, norm_qc_expl = 0.5,
-  norm_adjust_bio = c("yes", "no", "force"), norm_adjust_batch = c("yes",
-  "no", "force"), eval_dim = NULL, eval_expr_expl = 0.1,
-  eval_poscon = NULL, eval_negcon = negcon, eval_max_kclust = 10,
-  eval_stratified_pam = TRUE, report_num = 13, out_rda = FALSE, ...)
+  norm_adjust_bio = c("yes", "no", "force"),
+  norm_adjust_batch = c("yes", "no", "force"), eval_dim = NULL,
+  eval_expr_expl = 0.1, eval_poscon = NULL, eval_negcon = negcon,
+  eval_max_kclust = 10, eval_stratified_pam = TRUE, report_num = 13,
+  out_rda = FALSE, ...)
 }
 \arguments{
 \item{expr}{matrix. The expression data matrix (genes in rows, cells in

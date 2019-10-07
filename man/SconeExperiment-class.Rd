@@ -4,20 +4,21 @@
 \name{SconeExperiment-class}
 \alias{SconeExperiment-class}
 \alias{SconeExperiment}
-\alias{SconeExperiment}
 \alias{SconeExperiment,SummarizedExperiment-method}
 \alias{SconeExperiment,matrix-method}
 \title{Class SconeExperiment}
 \usage{
 SconeExperiment(object, ...)
 
-\S4method{SconeExperiment}{SummarizedExperiment}(object, which_qc = integer(),
-  which_bio = integer(), which_batch = integer(),
-  which_negconruv = integer(), which_negconeval = integer(),
-  which_poscon = integer(), is_log = FALSE)
+\S4method{SconeExperiment}{SummarizedExperiment}(object,
+  which_qc = integer(), which_bio = integer(),
+  which_batch = integer(), which_negconruv = integer(),
+  which_negconeval = integer(), which_poscon = integer(),
+  is_log = FALSE)
 
-\S4method{SconeExperiment}{matrix}(object, qc, bio, batch, negcon_ruv = NULL,
-  negcon_eval = negcon_ruv, poscon = NULL, is_log = FALSE)
+\S4method{SconeExperiment}{matrix}(object, qc, bio, batch,
+  negcon_ruv = NULL, negcon_eval = negcon_ruv, poscon = NULL,
+  is_log = FALSE)
 }
 \arguments{
 \item{object}{Either a matrix or a \code{\link{SummarizedExperiment}} 

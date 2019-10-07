@@ -4,7 +4,6 @@
 \name{get_params}
 \alias{get_params}
 \alias{get_params,SconeExperiment-method}
-\alias{get_params,SconeExperiment-method}
 \title{Extract scone parameters}
 \usage{
 get_params(x)

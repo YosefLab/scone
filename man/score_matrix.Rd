@@ -4,10 +4,11 @@
 \alias{score_matrix}
 \title{SCONE Evaluation: Evaluate an Expression Matrix}
 \usage{
-score_matrix(expr, eval_pcs = 3, eval_proj = NULL, eval_proj_args = NULL,
-  eval_kclust = NULL, bio = NULL, batch = NULL, qc_factors = NULL,
-  uv_factors = NULL, wv_factors = NULL, is_log = FALSE,
-  stratified_pam = FALSE, stratified_cor = FALSE, stratified_rle = FALSE)
+score_matrix(expr, eval_pcs = 3, eval_proj = NULL,
+  eval_proj_args = NULL, eval_kclust = NULL, bio = NULL,
+  batch = NULL, qc_factors = NULL, uv_factors = NULL,
+  wv_factors = NULL, is_log = FALSE, stratified_pam = FALSE,
+  stratified_cor = FALSE, stratified_rle = FALSE)
 }
 \arguments{
 \item{expr}{matrix. The expression data matrix (genes in rows, cells in

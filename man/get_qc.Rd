@@ -4,7 +4,6 @@
 \name{get_qc}
 \alias{get_qc}
 \alias{get_qc,SconeExperiment-method}
-\alias{get_qc,SconeExperiment-method}
 \title{Get Quality Control Matrix}
 \usage{
 get_qc(x)
