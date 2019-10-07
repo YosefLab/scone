@@ -51,7 +51,9 @@ Suggests:
   scRNAseq,
   shiny,
   testthat,
-  visNetwork
+  visNetwork,
+  doParallel,
+  BatchJobs
 VignetteBuilder: knitr
 LazyLoad: yes
 biocViews: ImmunoOncology, 
