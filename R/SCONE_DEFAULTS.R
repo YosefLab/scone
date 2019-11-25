@@ -138,7 +138,7 @@ SCRAN_FN = function(ei){
     stop("scran package needed for SCRAN_FN()")
   }
 
-  scales = scran::computeSumFactors(ei, sizes = ceiling(sqrt(ncol(ei))))
+  scales = scran::calculateSumFactors(ei, sizes = ceiling(sqrt(ncol(ei))))
   eo = t(t(ei) * mean(scales) / scales)
   return(eo)
 }
