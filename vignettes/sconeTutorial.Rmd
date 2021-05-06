@@ -12,7 +12,7 @@ vignette: >
 
 <!--
 %\VignetteEngine{knitr::rmarkdown}
-%\VignetteIndexEntry{scone Vignette}
+%\VignetteIndexEntry{Introduction to SCONE}
 -->
 
 ```{r options, include=FALSE, cache=FALSE, results='hide', message=FALSE}

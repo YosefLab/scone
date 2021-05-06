@@ -57,7 +57,7 @@ colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- SconeExperiment(mat, bio = factor(rep(c(1,2),each = 5)),
            batch = factor(rep(c(1,2),times = 5)))
 res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
-           evaluate=TRUE, k_ruv=0, k_qc=0, 
+           evaluate=TRUE, k_ruv=0, k_qc=0,
            adjust_batch = "yes", adjust_bio = "yes",
            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 design_top = get_design(res,1)

@@ -7,8 +7,12 @@ Description: SCONE is an R package for comparing and ranking the performance of
 Authors@R: c(person("Michael", "Cole", email = "mbeloc@gmail.com",
 	          role = c("aut", "cph")),
 	     person("Davide", "Risso", email = "risso.davide@gmail.com",
-	          role = c("aut", "cre", "cph")))
-Maintainer: Davide Risso <risso.davide@gmail.com>
+	          role = c("aut", "cre", "cph")),
+	     person("Matteo", "Borella", 
+           email = "matteobor94@gmail.com", 
+           role = "ctb"),
+           person("Chiara", "Romualdi", role = c("ctb"),
+             email = "chiara.romualdi@gmail.com"))
 License: Artistic-2.0
 Depends:
   R (>= 3.4),
@@ -36,7 +40,9 @@ Imports:
   boot,
   rhdf5,
   RUVSeq,
-  rARPACK
+  rARPACK,
+  MatrixGenerics,
+  SingleCellExperiment
 Suggests:
   BiocStyle,
   DT,
@@ -53,10 +59,16 @@ Suggests:
   testthat,
   visNetwork,
   doParallel,
-  BatchJobs
+  BatchJobs,
+  splatter,
+  scater,
+  cluster,
+  kableExtra,
+  mclust
 VignetteBuilder: knitr
 LazyLoad: yes
-biocViews: ImmunoOncology, 
+biocViews: 
+  ImmunoOncology, 
   Normalization,
   Preprocessing,
   QualityControl,
@@ -69,3 +81,4 @@ biocViews: ImmunoOncology,
   Coverage
 BugReports: https://github.com/YosefLab/scone/issues
 RoxygenNote: 7.1.1
+Encoding: UTF-8

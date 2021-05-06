@@ -23,11 +23,11 @@ A \code{SconeExperiment} object with selected method data.
 }
 \description{
 This method let a user extract a subset of normalizations. This
-  is useful when the original dataset is large and/or many normalization 
+  is useful when the original dataset is large and/or many normalization
   schemes have been applied.
 
-In such cases, the user may want to run scone in mode 
-  \code{return_norm = "no"}, explore the results, and then select the top 
+In such cases, the user may want to run scone in mode
+  \code{return_norm = "no"}, explore the results, and then select the top
   performing methods for additional exploration.
 }
 \details{
@@ -57,7 +57,7 @@ mat <- matrix(rpois(500, lambda = 5), ncol=10)
 colnames(mat) <- paste("X", 1:ncol(mat), sep="")
 obj <- SconeExperiment(mat)
 res <- scone(obj, scaling=list(none=identity, uq=UQ_FN),
-           evaluate=TRUE, k_ruv=0, k_qc=0, 
+           evaluate=TRUE, k_ruv=0, k_qc=0,
            eval_kclust=2, bpparam = BiocParallel::SerialParam())
 select_res = select_methods(res,1:2)
 
