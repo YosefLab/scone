@@ -62,7 +62,6 @@ Suggests:
   BatchJobs,
   splatter,
   scater,
-  cluster,
   kableExtra,
   mclust
 VignetteBuilder: knitr
