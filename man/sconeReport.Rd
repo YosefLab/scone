@@ -4,9 +4,17 @@
 \alias{sconeReport}
 \title{SCONE Report Browser: Browse Evaluation of Normalization Performance}
 \usage{
-sconeReport(x, methods, qc, bio = NULL, batch = NULL,
-  poscon = character(), negcon = character(), eval_proj = NULL,
-  eval_proj_args = NULL)
+sconeReport(
+  x,
+  methods,
+  qc,
+  bio = NULL,
+  batch = NULL,
+  poscon = character(),
+  negcon = character(),
+  eval_proj = NULL,
+  eval_proj_args = NULL
+)
 }
 \arguments{
 \item{x}{a \code{SconeExperiment} object}

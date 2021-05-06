@@ -6,8 +6,15 @@
 points color-coded according to a quantitative variable.
 For example: the rank of normalization performance.}
 \usage{
-biplot_color(x, y, rank = TRUE, ties_method = c("max", "min", "first",
-  "last", "random"), choices = 1:2, expand = 1, ...)
+biplot_color(
+  x,
+  y,
+  rank = TRUE,
+  ties_method = c("max", "min", "first", "last", "random"),
+  choices = 1:2,
+  expand = 1,
+  ...
+)
 }
 \arguments{
 \item{x}{\code{\link[stats]{prcomp}} object.}

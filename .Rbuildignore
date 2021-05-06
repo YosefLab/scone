@@ -39,3 +39,4 @@ R/.Rhistory
 ^.*\.Rproj$
 ^\.Rproj\.user$
 scripts
+^\.github$

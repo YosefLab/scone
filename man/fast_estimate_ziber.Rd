@@ -4,9 +4,16 @@
 \alias{fast_estimate_ziber}
 \title{Fast parameter estimation of zero-inflated bernoulli model}
 \usage{
-fast_estimate_ziber(x, fp_tresh = 0, gfeatM = NULL,
-  bulk_model = FALSE, pos_controls = NULL, rate_tol = 0.01,
-  maxiter = 100, verbose = FALSE)
+fast_estimate_ziber(
+  x,
+  fp_tresh = 0,
+  gfeatM = NULL,
+  bulk_model = FALSE,
+  pos_controls = NULL,
+  rate_tol = 0.01,
+  maxiter = 100,
+  verbose = FALSE
+)
 }
 \arguments{
 \item{x}{matrix. An expression data matrix (genes in rows, cells in columns)}
