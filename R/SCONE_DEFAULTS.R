@@ -142,3 +142,18 @@ SCRAN_FN = function(ei){
   eo = t(t(ei) * mean(scales) / scales)
   return(eo)
 }
+
+#' PsiNorm normalization wrapper
+#' @details SCONE scaling wrapper for \code{\link{PsiNorm}}).
+#' @export
+#' @param ei Numerical matrix. (rows = genes, cols = samples).
+#' @return PsiNorm normalized matrix.
+#'
+#' @examples
+#' ei <- matrix(c(1,0,2,0,2,9,3,0), ncol=2)
+#' eo <- PSINORM_FN(ei)
+#'
+PSINORM_FN = function(ei){
+  eo = PsiNorm(ei)
+  return(eo)
+}
