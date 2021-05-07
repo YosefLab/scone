@@ -56,8 +56,8 @@ setMethod(
   f = "PsiNorm",
   signature = signature(x = "ANY"),
   definition = function(x){
-    sf <- computePsiNormSF(x)
-    t(t(x)/sf)
+    inv_sf <- pareto.MLE(x+1)
+    t(t(x) * inv_sf)
 })
 
 # can we simplify the function and assume min is always 1?
