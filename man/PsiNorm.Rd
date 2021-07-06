@@ -31,8 +31,8 @@ which to save the normalized data (default to "PsiNorm").}
 If the input is a SingleCellExperiment object the function returns
   the same object adding as sizeFactors those computed by PsiNorm. If the
   object is a SummarizedExperiment object, the function returns the same
-  objject adding an assay with the normalized count matrix. If the input
-  is a matrix-like object pareto_norm returns a matrix with the
+  object adding an assay with the normalized count matrix. If the input
+  is a matrix-like object PsiNorm returns a matrix with the
   same dimensions containing the normalized counts.
 }
 \description{
