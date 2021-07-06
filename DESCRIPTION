@@ -63,7 +63,9 @@ Suggests:
   splatter,
   scater,
   kableExtra,
-  mclust
+  mclust,
+  Seurat,
+  TENxPBMCData
 VignetteBuilder: knitr
 biocViews: 
   ImmunoOncology, 

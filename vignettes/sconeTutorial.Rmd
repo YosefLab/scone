@@ -501,6 +501,7 @@ scaling=list(none=identity, # Identity - do nothing
              tmm = TMM_FN, 
              uq = UQ_FN,
              fq = FQT_FN,
+             psi = PSINORM_FN,
              deseq = DESEQ_FN)
 
 ```
