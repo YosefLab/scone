@@ -64,7 +64,6 @@ Suggests:
   scater,
   kableExtra,
   mclust,
-  Seurat,
   TENxPBMCData
 VignetteBuilder: knitr
 biocViews: 
