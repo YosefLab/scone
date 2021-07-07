@@ -22,15 +22,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Installation
 
-First of all we need to install PsiNorm:
-
-```{r, eval = FALSE}
-if(!requireNamespace("BiocManager", quietly = TRUE))
-    install.packages("BiocManager")
-BiocManager::install("PsiNorm")
-```
+# Introduction
 
 ```{r, message=FALSE, warning=FALSE}
 library(SingleCellExperiment)
@@ -40,14 +33,18 @@ library(cluster)
 library(scone)
 ```
 
-# Introduction
-
-PsiNorm is a new scalable between-sample normalization for single cell RNA-seq count data based on the power-law Pareto type I distribution. It can be demonstrated that the Pareto parameter is inversely proportional to the sequencing depth, it is sample specific and its estimate can be obtained for each cell independently. PsiNorm computes the shape parameter for each cellular sample and then uses it as multiplicative size factor to normalize the data. The final goal of the transformation is to align the gene expression distribution especially for those genes characterised by high expression. Note that, similar to other global scaling methods, our method does not remove batch effects, which can be dealt with downstream tools. 
+PsiNorm is a scalable between-sample normalization for single cell RNA-seq count data based on the power-law Pareto type I distribution. It can be demonstrated that the Pareto parameter is inversely proportional to the sequencing depth, it is sample specific and its estimate can be obtained for each cell independently. PsiNorm computes the shape parameter for each cellular sample and then uses it as multiplicative size factor to normalize the data. The final goal of the transformation is to align the gene expression distribution especially for those genes characterised by high expression. Note that, similar to other global scaling methods, our method does not remove batch effects, which can be dealt with downstream tools.
 
 To evaluate the ability of PsiNorm to remove technical bias and  reveal the true cell similarity structure, we used both an unsupervised and a supervised approach.
 We first simulate a scRNA-seq experiment with four known clusters using the _splatter_ Bioconductor package.  Then in the unsupervised approach, we i) reduce dimentionality using PCA, ii) identify clusters using the _clara_ partitional method and then we iii)  computed the Adjusted Rand Index (ARI) to compare the known and the estimated partition.
 
-In the supervised approach, we i) reduce dimentionality using PCA, and we  ii)  compute the silhouette index of the  known partition in the reduced dimensional space. 
+In the supervised approach, we i) reduce dimentionality using PCA, and we  ii)  compute the silhouette index of the  known partition in the reduced dimensional space.
+
+# Citation
+
+If you use `PsiNorm` in publications, please cite the following article:
+
+Borella, M., Martello, G., Risso, D., & Romualdi, C. (2021). PsiNorm: a scalable normalization for single-cell RNA-seq data. bioRxiv. https://doi.org/10.1101/2021.04.07.438822.
 
 # Data Simulation
 
@@ -165,18 +162,13 @@ See Section 3.2 of the "Introduction to SCONE" vignette for an example on how to
 
 # Using PsiNorm with Seurat
 
-The PsiNorm normalization method can be used as a replacement for Seurat's default normalization methods. To do so, we need to first normalize the data stored in a `SingleCellExperiment` object and then coerce that object to a Seurat object. This can be done with the `as.Seurat` function provided in the `Seurat` package.
+The PsiNorm normalization method can be used as a replacement for Seurat's default normalization methods. To do so, we need to first normalize the data stored in a `SingleCellExperiment` object and then coerce that object to a Seurat object. This can be done with the `as.Seurat` function provided in the `Seurat` package (tested with Seurat 4.0.3).
 
-```{r seurat, message=FALSE, warning=FALSE}
+```{r seurat, eval=FALSE}
 library(Seurat)
+sce <- PsiNorm(sce)
+sce <- logNormCounts(sce)
 seu <- as.Seurat(sce)
-```
-
-Note that the `data` slot of the Seurat object will contained the PsiNorm log-normalized data.
-
-```{r check}
-head(seu@assays$RNA@data[,1:3])
-head(logcounts(sce)[,1:3])
 ```
 
 From this point on, one can continue the analysis with the recommended Seurat workflow, but using PsiNorm log-normalized data.
