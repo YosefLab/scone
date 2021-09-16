@@ -136,7 +136,7 @@
 #'   dnbinom fitted.values glm mad median model.matrix na.omit p.adjust pnorm 
 #'   prcomp quantile quasibinomial sd
 #' @importFrom utils capture.output
-#' @importFrom rhdf5 h5createFile h5write.default h5write H5close
+#' @importFrom rhdf5 h5createFile h5write H5close
 #' @importFrom rARPACK svds
 #' @export
 #'
