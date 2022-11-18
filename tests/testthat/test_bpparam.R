@@ -48,12 +48,12 @@ test_that("all back-ends work", {
   expect_equal(res1, res4)
 
   # batch jobs
-  if(require(BatchJobs)) {
+  if(require(batchtools)) {
     res5 <- scone(obj, imputation=list(none=impute_null),
                 scaling=list(none=identity, uq=UQ_FN, deseq=DESEQ_FN),
                 k_ruv=3, k_qc=2, adjust_bio="force", adjust_batch="yes",
                 evaluate=TRUE, run=TRUE, return_norm = "in_memory",
-                eval_kclust=2, bpparam=BiocParallel::BatchJobsParam(2))
+                eval_kclust=2, bpparam=BiocParallel::BatchtoolsParam(2))
     expect_equal(res1, res5)
   }
 

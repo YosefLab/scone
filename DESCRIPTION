@@ -59,7 +59,7 @@ Suggests:
   testthat,
   visNetwork,
   doParallel,
-  BatchJobs,
+  batchtools,
   splatter,
   scater,
   kableExtra,
