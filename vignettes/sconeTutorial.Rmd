@@ -77,6 +77,7 @@ library(scRNAseq)
 
 ## ----- Load Example Data -----
 fluidigm <- ReprocessedFluidigmData(assays = "rsem_counts")
+assay(fluidigm) <- as.matrix(assay(fluidigm))
 ```
 
 The `rsem_counts` assay contains expected gene-level read counts via RSEM
