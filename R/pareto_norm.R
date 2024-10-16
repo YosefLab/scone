@@ -52,6 +52,8 @@ setMethod(
 
 #' @rdname PsiNorm
 #' @export
+#' @importFrom DelayedMatrixStats colSums2 colMins
+#' @importFrom sparseMatrixStats colSums2 colMins
 setMethod(
   f = "PsiNorm",
   signature = signature(x = "ANY"),

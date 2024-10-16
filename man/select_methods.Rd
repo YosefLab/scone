@@ -40,17 +40,17 @@ The numeric method will always return the normalization
 }
 \section{Functions}{
 \itemize{
-\item \code{select_methods,SconeExperiment,character-method}: If 
+\item \code{select_methods(x = SconeExperiment, methods = character)}: If 
 \code{methods} is a character, it will return the subset of
 methods named in \code{methods} (only perfect match). The 
 string must be a subset of the \code{row.names} of the slot
 \code{scone_params}.
 
-\item \code{select_methods,SconeExperiment,numeric-method}: If
+\item \code{select_methods(x = SconeExperiment, methods = numeric)}: If
 \code{methods} is a numeric, it will return the subset of methods
 according to the scone ranking.
-}}
 
+}}
 \examples{
 set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)

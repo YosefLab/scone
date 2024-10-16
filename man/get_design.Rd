@@ -39,17 +39,17 @@ The numeric method will always return the design matrix
 }
 \section{Functions}{
 \itemize{
-\item \code{get_design,SconeExperiment,character-method}: If 
+\item \code{get_design(x = SconeExperiment, method = character)}: If 
 \code{method} is a character, it will return the design
 matrix corresponding to the normalization scheme specified
 by the character string. The string must be one of the
 \code{row.names} of the slot \code{scone_params}.
 
-\item \code{get_design,SconeExperiment,numeric-method}: If
+\item \code{get_design(x = SconeExperiment, method = numeric)}: If
 \code{method} is a numeric, it will return the design matrix
 according to the scone ranking.
-}}
 
+}}
 \examples{
 set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)

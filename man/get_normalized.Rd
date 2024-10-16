@@ -53,17 +53,17 @@ The numeric method will always return the normalization
 }
 \section{Functions}{
 \itemize{
-\item \code{get_normalized,SconeExperiment,character-method}: If 
+\item \code{get_normalized(x = SconeExperiment, method = character)}: If 
 \code{method} is a character, it will return the normalized
 matrix corresponding to the normalization scheme specified
 by the character string.The string must be one of the 
 \code{row.names} of the slot \code{scone_params}.
 
-\item \code{get_normalized,SconeExperiment,numeric-method}: If 
+\item \code{get_normalized(x = SconeExperiment, method = numeric)}: If 
 \code{method} is a numeric, it will return the normalized
 matrix according to the scone ranking.
-}}
 
+}}
 \examples{
 set.seed(42)
 mat <- matrix(rpois(500, lambda = 5), ncol=10)
