@@ -56,10 +56,13 @@ simple_FNR_params = function(expr, pos_controls, fn_tresh = 0.01) {
   # Median log-expression in positive observations
   mu_obs = log(rowMedians(pos_expr, na.rm = TRUE))
   if (any(is.na(mu_obs))) {
+    na_rows <- (1:nrow(expr))[pos_controls][which(is.na(mu_obs))]
+    na_rowsm <- paste(na_rows, sep=", ")
     stop(
       paste0(
         "Median log-expression in positive ",
-        "observations NA for some positive control gene/s"
+        "observations NA for some positive control gene/s in rows: ",
+        na_rowsm
       )
     )
   }
