@@ -154,7 +154,8 @@ SCRAN_FN = function(ei){
 #' eo <- PSINORM_FN(ei)
 #'
 PSINORM_FN = function(ei){
-  inv_sf <- pareto.MLE(ei+1)
-  eo = t(t(ei) / mean(inv_sf) * inv_sf)
+  tei <- t(ei)
+  sf <- compute_transposed_PsiNorm_sf(tei)
+  eo <- t(mat_v_div(tei, mean(1 / sf) * sf))
   return(eo)
 }

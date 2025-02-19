@@ -54,22 +54,79 @@ setMethod(
 #' @export
 #' @importFrom DelayedMatrixStats colSums2 colMins
 #' @importFrom sparseMatrixStats colSums2 colMins
+#' @importClassesFrom SparseArray SparseMatrix
+#' @importFrom SparseArray nzwhich
 setMethod(
   f = "PsiNorm",
   signature = signature(x = "ANY"),
   definition = function(x){
-    inv_sf <- pareto.MLE(x+1)
-    t(t(x) * inv_sf)
+    ## Uses only two transpostions (instead of four in original implementation).
+    ## Preserves sparsity.
+    tx <- t(x)
+    sf <- compute_transposed_PsiNorm_sf(tx)
+    t(mat_v_div(tx, sf))
 })
 
-# can we simplify the function and assume min is always 1?
-pareto.MLE <- function(sce) {
-  n <- nrow(sce)
-  m <- MatrixGenerics::colMins(sce)
-  a <- n/MatrixGenerics::colSums2(t(t(log(sce)) - log(m)))
-  return(a)
+## Preserves sparsity.
+compute_transposed_PsiNorm_sf <- function(tx) {
+  ## Temporary workaround until operations from the Math group (e.g. log1p)
+  ## are supported on a SparseMatrix object of type "integer".
+  ## See https://github.com/Bioconductor/SparseArray/blob/devel/TODO
+  if (type(tx) != "double")
+    type(tx) <- "double"
+  x2 <- log1p(tx)
+  m2 <- MatrixGenerics::rowMins(x2)
+  x2 <- mat_v_sub(x2, m2)
+  MatrixGenerics::rowSums2(x2) / ncol(tx)
 }
 
+## Preserves sparsity.
 computePsiNormSF <- function(x) {
-  1/pareto.MLE(x+1)
+  compute_transposed_PsiNorm_sf(t(x))
 }
+
+.build_linear_index <- function(nr, nc, i) {
+  stopifnot(is.integer(nr), length(nr) == 1L,
+            is.integer(nc), length(nc) == 1L, is.integer(i))
+  rep.int(nr * (seq_len(nc) - 1L), rep.int(length(i), nc)) + i
+}
+
+## Implements optimized substraction between a matrix-like object 'mat' and
+## an ordinary vector 'v' with mostly zeros that accepts a SparseMatrix
+## object (in which case it also returns a SparseMatrix object). Note that
+## the SparseArray package does not support this operation out-of-the-box at
+## the moment.
+mat_v_sub <- function(mat, v) {
+  mat_dim <- dim(mat)
+  stopifnot(length(mat_dim) == 2L, is.vector(v), length(v) == mat_dim[[1L]])
+  nzidx <- nzwhich(v)  # indices of nonzero values in 'v'
+  if (length(nzidx) == 0L)
+    return(mat)  # no-op
+  if (!is(mat, "SparseMatrix"))
+    return(mat - v)
+  ## Works well if 'nzidx' is short (i.e. 'v' contains mostly zeros).
+  Lidx <- .build_linear_index(mat_dim[[1L]], mat_dim[[2L]], nzidx)
+  mat[Lidx] <- mat[Lidx] - v[nzidx]
+  mat
+}
+
+## Implements division between a matrix-like object 'mat' and an ordinary
+## vector 'v' with mostly nonzero/non-NA values that accepts a SparseMatrix
+## object (in which case it also returns a SparseMatrix object). Note that
+## the SparseArray package only supports this operation when 'v' contains
+## no zeros or NAs at the moment.
+mat_v_div <- function(mat, v) {
+  mat_dim <- dim(mat)
+  stopifnot(length(mat_dim) == 2L, is.vector(v), length(v) == mat_dim[[1L]])
+  idx <- which(is.na(v) | v == 0)
+  if (length(idx) == 0L || !is(mat, "SparseMatrix"))
+    return(mat / v)
+  ## Works well if 'idx' is short (i.e. if 'v' contains very few zeros/NAs).
+  v2 <- v
+  v2[idx] <- 1L
+  mat <- mat / v2
+  Lidx <- .build_linear_index(mat_dim[[1L]], mat_dim[[2L]], idx)
+  mat[Lidx] <- mat[Lidx] / v[idx]
+  mat
+}
+
