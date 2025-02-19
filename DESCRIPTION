@@ -1,5 +1,5 @@
 Package: scone
-Version: 1.31.0
+Version: 1.31.1
 Title: Single Cell Overview of Normalized Expression data
 Description: SCONE is an R package for comparing and ranking the performance of
 	different normalization schemes for single-cell RNA-seq and other 
@@ -44,7 +44,8 @@ Imports:
   MatrixGenerics,
   SingleCellExperiment,
   DelayedMatrixStats,
-  sparseMatrixStats
+  sparseMatrixStats,
+  SparseArray (>= 1.7.6)
 Suggests:
   BiocStyle,
   DT,
@@ -59,6 +60,7 @@ Suggests:
   scRNAseq,
   shiny,
   testthat,
+  DelayedArray,
   visNetwork,
   doParallel,
   batchtools,
